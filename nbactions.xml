@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <actions>
         <action>
-            <actionName>CUSTOM-Integration Test</actionName>
-            <displayName>Integration Test</displayName>
-            <goals>
-                <goal>integration-test</goal>
-            </goals>
-        </action>
-        <action>
             <actionName>CUSTOM-Deploy to Sonatype</actionName>
             <displayName>Deploy to Sonatype</displayName>
             <goals>
@@ -33,6 +26,7 @@
             </packagings>
             <goals>
                 <goal>install</goal>
+                
             </goals>
             <properties>
                 <skipTests>true</skipTests>
@@ -51,4 +45,5 @@
                 <skipTests>true</skipTests>
             </properties>
         </action>
+        
     </actions>

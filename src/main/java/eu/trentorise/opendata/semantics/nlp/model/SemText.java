@@ -2,8 +2,11 @@ package eu.trentorise.opendata.semantics.nlp.model;
 
 import com.google.common.base.Optional;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkPositionIndex;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.commons.LocalizedString;
 import eu.trentorise.opendata.commons.NotFoundException;
@@ -52,7 +55,7 @@ public final class SemText implements Serializable, HasMetadata {
     /**
      * @param locale if unknown use {@link Locale#ROOT}
      */
-    private SemText(String text, Locale locale, List<Sentence> sentences, Map<String, ?> metadata) {
+    private SemText(String text, Locale locale, Iterable<Sentence> sentences, Map<String, ?> metadata) {
         this();
         checkNotNull(text);
         checkNotNull(locale);
@@ -127,17 +130,118 @@ public final class SemText implements Serializable, HasMetadata {
         return text.substring(span.getStart(), span.getEnd());
     }
 
-    @Override
-    public String toString() {
-        return "SemText{" + "text=" + text + ", locale=" + locale + ", sentences=" + sentences + ", metadata=" + metadata + '}';
+    /**
+     * Returns an terms that walks through all the terms, regardless of the
+     * sentences.
+     */
+    public TermIterator terms() {
+        return new TermIterator(this);
+    }
+
+    /**
+     * @see #merge(java.lang.Iterable) 
+     */
+    public SemText merge(Term... terms) {
+        return merge(Arrays.asList(terms));
+    }
+
+   
+    /**
+     * Returns a new semantic text having existing terms plus the provided ones.
+     * If new terms overlaps with other ones, existing overlapping terms are
+     * removed. If a term is precisely overlapping an existing one, resulting
+     * term will have the selected meaning and meaning status of the provided
+     * term and the list of meanings will be a merge of the meanings found in
+     * the provided term plus the meanings of the existing term.
+     *
+     * NOTE: Currently the method only works with text of one sentence! If it is
+     * not an IllegalStateException will be thrown!.
+     */
+    public SemText merge(Iterable<Term> termsToMerge) {
+        checkNotNull(termsToMerge);
+
+        if (sentences.size() > 1) {
+            throw new IllegalStateException("The merge method currently only works with text of at most one sentence!");
+        }
+
+        ImmutableList.Builder<Term> newTermsB = ImmutableList.builder();
+        TermIterator origTermIter = terms();
+        @Nullable
+        Term curOrigTerm = origTermIter.hasNext() ? origTermIter.next() : null;
+
+        Term lastTerm = null;
+
+        for (Term termToAdd : termsToMerge) {
+            while (curOrigTerm != null
+                    && curOrigTerm.getEnd() <= termToAdd.getStart()) {
+                newTermsB.add(curOrigTerm);
+                curOrigTerm = origTermIter.hasNext() ? origTermIter.next() : null;
+            }
+            if (curOrigTerm != null // terms coincide, we merge
+                    && termToAdd.getStart() == curOrigTerm.getStart()
+                    && termToAdd.getEnd() == curOrigTerm.getEnd()) {
+
+                newTermsB.add(termToAdd.with(Iterables.concat(termToAdd.getMeanings(), curOrigTerm.getMeanings())));
+
+            } else { // terms don't coincide
+                newTermsB.add(termToAdd);
+            }
+            while (curOrigTerm != null
+                    && curOrigTerm.getStart() < termToAdd.getEnd()) {
+                curOrigTerm = origTermIter.hasNext() ? origTermIter.next() : null;
+            }
+            lastTerm = termToAdd;
+        }
+
+        if (lastTerm == null) {
+            return this;
+        } else {
+            while (curOrigTerm != null
+                    && curOrigTerm.getStart() >= lastTerm.getEnd()) {
+                newTermsB.add(curOrigTerm);
+                curOrigTerm = origTermIter.hasNext() ? origTermIter.next() : null;
+            }
+            return this.withTerms(newTermsB.build());
+        }
+
+    }
+
+    /**
+     * Returns a copy of this object with the provided lcoale set.
+     *
+     * @param locale if unknown use {@link Locale#ROOT}
+     */
+    public SemText with(Locale locale) {
+        checkNotNull(locale);
+
+        SemText ret = new SemText(this);
+        ret.locale = locale;
+        return ret;
+    }
+
+    /**
+     * Returns a copy of this object with the provided text set.
+     */
+    public SemText with(String text) {
+        checkNotNull(text);
+
+        SemText ret = new SemText(this);
+        ret.text = text;
+        for (Sentence s : sentences) {
+            if (s.getEnd() > text.length()) {
+                throw new IllegalArgumentException("Tried to change text of semantic text, but there is a sentence longer thean the provided text! Semtext is\n:" + this + " new text to set is: " + text);
+            }
+        }
+        return ret;
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 17 * hash + (this.text != null ? this.text.hashCode() : 0);
-        hash = 17 * hash + (this.locale != null ? this.locale.hashCode() : 0);
-        hash = 17 * hash + (this.sentences != null ? this.sentences.hashCode() : 0);
+        hash = 29 * hash + (this.text != null ? this.text.hashCode() : 0);
+        hash = 29 * hash + (this.locale != null ? this.locale.hashCode() : 0);
+        hash = 29 * hash + (this.sentences != null ? this.sentences.hashCode() : 0);
+        hash = 29 * hash + (this.metadata != null ? this.metadata.hashCode() : 0);
         return hash;
     }
 
@@ -159,144 +263,39 @@ public final class SemText implements Serializable, HasMetadata {
         if (this.sentences != other.sentences && (this.sentences == null || !this.sentences.equals(other.sentences))) {
             return false;
         }
+        if (this.metadata != other.metadata && (this.metadata == null || !this.metadata.equals(other.metadata))) {
+            return false;
+        }
         return true;
     }
 
-    /**
-     * Returns an terms that walks through all the terms, regardless of the
-     * sentences.
-     */
-    public TermIterator terms() {
-        return new TermIterator(this);
+   
+
+    @Override
+    public String toString() {
+        return "SemText{" + "text=" + text + ", locale=" + locale + ", sentences=" + sentences + ", metadata=" + metadata + '}';
     }
 
     /**
-     * @see #update(java.util.List)
+     * Returns a copy of this object with the provided terms set under one
+     * sentence spanning the whole text. Terms existing in the current object
+     * will be ignored.
      */
-    public SemText merge(Term... terms) {
-        return merge(Arrays.asList(terms));
-    }
-
-    private static Optional<Term> nextTerm(Iterator<Term> iter) {
-        if (iter.hasNext()) {
-            return Optional.of(iter.next());
-        } else {
-            return Optional.absent();
-        }
-    }
-
-    /**
-     * Returns a new semantic text having existing terms plus the provided ones.
-     * If new terms overlaps with other ones, existing overlapping terms are
-     * removed. If a term is precisely overlapping an existing one, resulting
-     * term will have the selected meaning of the provided term and the list of
-     * meanings will be a merge of the meanings found in the provided term plus
-     * the meanings of the existing term.
-     */
-    public SemText merge(List<Term> termsToMerge) {
-
-        if (termsToMerge.isEmpty()) {
-            return this;
-        } else {
-
-            List<Term> newTerms = new ArrayList();
-            TermIterator origTermIter = terms();
-            Optional<Term> curOrigTerm = nextTerm(origTermIter);
-
-            for (Term termToAdd : termsToMerge) {
-
-                // adds orig terms until they overlap with new one
-                while (curOrigTerm.isPresent()
-                        && curOrigTerm.get().getEnd() <= termToAdd.getStart()) {
-                    newTerms.add(curOrigTerm.get());
-                    curOrigTerm = nextTerm(origTermIter);
-                }
-                if (curOrigTerm.isPresent() // terms coincide, we merge
-                        && termToAdd.getStart() == curOrigTerm.get().getStart()
-                        && termToAdd.getEnd() == curOrigTerm.get().getEnd()) {
-                    
-                    
-                    if (termToAdd.getSelectedMeaning() != null) {
-                        newTerms.add(termToAdd.add(curOrigTerm.get().getMeanings()));
-                    }
-
-                } else { // terms don't coincide
-                    if (termToAdd.getSelectedMeaning() != null) {
-                        newTerms.add(termToAdd);
-                    }
-                }
-                while (curOrigTerm.isPresent()
-                        && curOrigTerm.get().getStart() < termToAdd.getEnd()) {
-                    curOrigTerm = nextTerm(origTermIter);
-                }
-            }
-
-            while (curOrigTerm.isPresent()
-                    && curOrigTerm.get().getStart() >= termsToMerge.get(termsToMerge.size() - 1).getEnd()) {
-                newTerms.add(curOrigTerm.get());
-                curOrigTerm = nextTerm(origTermIter);
-            }
-
-            return this.with(newTerms);
-
-        }
-
-    }
-
-    /**
-     * Returns a copy of this object with the provided lcoale set.
-     *
-     * @param locale if unknown use {@link Locale#ROOT}
-     */
-    public SemText with(Locale locale) {
-        checkNotNull(locale);
-
-        SemText ret = new SemText(this);
-        ret.locale = locale;
-        return ret;
-    }
-
-    /**
-     * Returns a copy of this semantic text which is made of one sentence and
-     * one term spanning the whole text.
-     *
-     * @param locale if unknown use {@link Locale#ROOT}
-     * @param selectedMeaning if unknown use null
-     * @param meanings a list of suggested meanings. First one is the most
-     * probable. Meaning propabilities will be normalized.
-     *
-     */
-    public SemText with(
-            MeaningStatus meaningStatus,
-            @Nullable Meaning selectedMeaning) {
-        SemText ret = new SemText(this);
-        ret.sentences = ImmutableList.of(Sentence.of(0, text.length(), Term.of(0, text.length(), meaningStatus, selectedMeaning)));
-        return ret;
-    }
-
-    /**
-     * Returns a copy of this object with the provided text set.
-     */
-    public SemText with(String text) {
-        checkNotNull(text);
-
-        SemText ret = new SemText(this);
-        ret.text = text;
-        for (Sentence s : sentences) {
-            if (s.getEnd() > text.length()) {
-                throw new IllegalArgumentException("Tried to change text of semantic text, but there is a sentence longer thean the provided text! Semtext is\n:" + this + " new text to set is: " + text);
-            }
-        }
-        return ret;
-    }
-
-    /**
-     * Returns a copy of this object with the provided terms set. Terms existing
-     * in the current object will be ignored.
-     */
-    public SemText with(List<Term> terms) {
+    public SemText withTerms(Iterable<Term> terms) {
         SemText ret = new SemText(this);
         ret.sentences = ImmutableList.of(Sentence.of(0, text.length(), terms));
+        return ret;
+    }
+
+    /**
+     * Returns a copy of this object with the provided terms set under one
+     * sentence spanning the whole text. Terms existing in the current object
+     * will be ignored.
+     */
+    public SemText withSentences(Iterable<Sentence> sentences) {
+        SemText ret = new SemText(this);
+        SemTexts.checkSpans(sentences, 0, text.length(), "Invalid sentences found!");
+        ret.sentences = ImmutableList.copyOf(sentences);
         return ret;
     }
 

@@ -3,10 +3,11 @@ package eu.trentorise.opendata.semantics.nlp.model;
 import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import eu.trentorise.opendata.commons.NotFoundException;
-import static eu.trentorise.opendata.semantics.nlp.model.Checker.checkMeaningStatus;
-import static eu.trentorise.opendata.semantics.nlp.model.Checker.checkSpan;
+import static eu.trentorise.opendata.semantics.nlp.model.SemTexts.checkMeaningStatus;
+import static eu.trentorise.opendata.semantics.nlp.model.SemTexts.checkSpan;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,14 +65,14 @@ public final class Term implements Span, Serializable, HasMetadata {
      * @param meaningStatus the status of the meaning.
      * @param selectedMeaning if meaning is unknown use null
      * @param meanings a new collection is created internally to store the
-     * deduplicated meanings. If the selectedMeaning is present it is merged
-     * in the stored meanings
+     * deduplicated meanings. If the selectedMeaning is present it is merged in
+     * the stored meanings
      */
     private Term(int start,
             int end,
             MeaningStatus meaningStatus,
             @Nullable Meaning selectedMeaning,
-            List<Meaning> meanings,
+            Iterable<Meaning> meanings,
             Map<String, ?> metadata) {
         this();
 
@@ -79,7 +80,7 @@ public final class Term implements Span, Serializable, HasMetadata {
         checkNotNull(meanings);
         checkNotNull(meaningStatus);
 
-        checkMeaningStatus(meaningStatus, selectedMeaning);
+        checkMeaningStatus(meaningStatus, selectedMeaning, "Term has invalid selected meaning!");
 
         normalizeMeanings(meanings, selectedMeaning);
 
@@ -146,11 +147,13 @@ public final class Term implements Span, Serializable, HasMetadata {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 67 * hash + this.start;
-        hash = 67 * hash + this.end;
-        hash = 67 * hash + (this.meanings != null ? this.meanings.hashCode() : 0);
-        hash = 67 * hash + (this.selectedMeaning != null ? this.selectedMeaning.hashCode() : 0);
+        int hash = 5;
+        hash = 97 * hash + this.start;
+        hash = 97 * hash + this.end;
+        hash = 97 * hash + (this.meanings != null ? this.meanings.hashCode() : 0);
+        hash = 97 * hash + (this.meaningStatus != null ? this.meaningStatus.hashCode() : 0);
+        hash = 97 * hash + (this.selectedMeaning != null ? this.selectedMeaning.hashCode() : 0);
+        hash = 97 * hash + (this.metadata != null ? this.metadata.hashCode() : 0);
         return hash;
     }
 
@@ -172,11 +175,23 @@ public final class Term implements Span, Serializable, HasMetadata {
         if (this.meanings != other.meanings && (this.meanings == null || !this.meanings.equals(other.meanings))) {
             return false;
         }
+        if (this.meaningStatus != other.meaningStatus) {
+            return false;
+        }
         if (this.selectedMeaning != other.selectedMeaning && (this.selectedMeaning == null || !this.selectedMeaning.equals(other.selectedMeaning))) {
             return false;
         }
-
+        if (this.metadata != other.metadata && (this.metadata == null || !this.metadata.equals(other.metadata))) {
+            return false;
+        }
         return true;
+    }
+
+   
+
+    @Override
+    public String toString() {
+        return "Term{" + "start=" + start + ", end=" + end + ", meanings=" + meanings + ", meaningStatus=" + meaningStatus + ", selectedMeaning=" + selectedMeaning + ", metadata=" + metadata + '}';
     }
 
     /**
@@ -192,19 +207,16 @@ public final class Term implements Span, Serializable, HasMetadata {
 
     /**
      * Stores in the term normalized versions of the provided meaning
-     * probabilities and the selected meaning accordingly. Inputs are not
+     * probabilities and also the provided selected meaning. Inputs are not
      * changed.
      *
-     * @param meanings won't be changed by the method
+     * @param meanings won't be changed by the method. When deduplicating, meanings occurring first will be used.
      * @param selectedMeaning if unknown use null
      */
-    private void normalizeMeanings(List<Meaning> meanings, @Nullable Meaning selectedMeaning) {
-        checkNotNull(meanings);        
+    private void normalizeMeanings(Iterable<Meaning> meanings, @Nullable Meaning selectedMeaning) {
+        checkNotNull(meanings);
 
-        Set<Meaning> dedupMeanings = new HashSet(meanings);
-        if (selectedMeaning == null) {
-            dedupMeanings.add(selectedMeaning);
-        }
+        Set<Meaning> dedupMeanings = Sets.newHashSet(meanings);        
 
         float total = 0;
         for (Meaning m : dedupMeanings) {
@@ -214,62 +226,43 @@ public final class Term implements Span, Serializable, HasMetadata {
             total = dedupMeanings.size();
         }
 
-        Meaning newSelectedMeaning = null;
         List<Meaning> mgs = new ArrayList();
         for (Meaning m : dedupMeanings) {
-            Meaning newM = Meaning.of(m.getId(), m.getProbability() / total, m.getKind(), m.getName());
-            if (newM.equals(selectedMeaning)) {
-                newSelectedMeaning = newM;
-            }
+            Meaning newM = m.withProbability(m.getProbability() / total);
+
             mgs.add(newM);
         }
 
         Collections.sort(mgs, Collections.reverseOrder());
 
         this.meanings = ImmutableList.copyOf(mgs);
-        this.selectedMeaning = newSelectedMeaning;
+
+        this.selectedMeaning = selectedMeaning;
+
     }
 
     /**
-     * A new term is returned with the provided meanings merged to the
-     * existing ones.
+     * Returns a new term with the provided meanings. Internally, a new list of
+     * normalized and deduplicated meanings will be stored.
+     * @param meanings won't be changed by the method. When deduplicating, meanings occurring first will be used.
      */
-    public Term add(List<Meaning> meanings) {
-
-        Set<Meaning> newMeanings = new HashSet();
-
-        for (Meaning m1 : this.meanings) {
-            newMeanings.add(m1);
-        }
-        for (Meaning m2 : meanings) {
-            newMeanings.add(m2);
-        }
-                
-        return this.with(ImmutableList.copyOf(newMeanings));
-    }
-
-    /**
-     * Returns a new term with the provided meanings. If current selected
-     * meaning is not among the new meanings, the stored meanings will
-     * also have the current selected meaning.
-     */
-    public Term with(List<Meaning> meanings) {
+    public Term with(Iterable<Meaning> meanings) {
         Term ret = new Term(this);
         ret.normalizeMeanings(meanings, selectedMeaning);
         return ret;
     }
 
     /**
-     * A new term is returned with the provided meaning added to the existing
-     * meanings and set as the selected meaning.
+     * A new term is returned with the provided pair meaning status and selected
+     * meaning set.
      *
      * @param meaningStatus
-     * @param selectedMeaning if unknown use {@link Meaning#of()}
+     * @param selectedMeaning if unknown use null
      */
-    public Term with(MeaningStatus meaningStatus, Meaning selectedMeaning) {
-        checkNotNull(selectedMeaning);
+    public Term with(MeaningStatus meaningStatus, @Nullable Meaning selectedMeaning) {
         Term ret = new Term(this);
-        ret.normalizeMeanings(meanings, selectedMeaning);
+        checkMeaningStatus(meaningStatus, selectedMeaning, "Trying to modify a term with invalid meaning status / selected meaning!");
+        ret.normalizeMeanings(ret.meanings, selectedMeaning);
         return ret;
     }
 
@@ -310,14 +303,14 @@ public final class Term implements Span, Serializable, HasMetadata {
      * @param meaningStatus
      * @param selectedMeaning if unknown use null
      * @param meanings a new collection is created internally to store the
-     * deduplicated meanings. If the selectedMeaning is present it is merged
-     * in the stored meanings with top score.
+     * deduplicated meanings. If the selectedMeaning is present it is merged in
+     * the stored meanings with top score.
      */
     public static Term of(int start,
             int end,
             MeaningStatus meaningStatus,
             @Nullable Meaning selectedMeaning,
-            List<Meaning> meanings) {
+            Iterable<Meaning> meanings) {
 
         return new Term(start,
                 end,
@@ -326,6 +319,5 @@ public final class Term implements Span, Serializable, HasMetadata {
                 meanings,
                 HasMetadata.EMPTY);
     }
-                      
-    
+
 }

@@ -65,4 +65,38 @@ public class TermIterator extends UnmodifiableIterator<Term> {
         throw new NoSuchElementException();
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 29 * hash + (this.sentenceIter != null ? this.sentenceIter.hashCode() : 0);
+        hash = 29 * hash + (this.termIter != null ? this.termIter.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TermIterator other = (TermIterator) obj;
+        if (this.sentenceIter != other.sentenceIter && (this.sentenceIter == null || !this.sentenceIter.equals(other.sentenceIter))) {
+            return false;
+        }
+        if (this.termIter != other.termIter && (this.termIter == null || !this.termIter.equals(other.termIter))) {
+            return false;
+        }
+        return true;
+    }
+
+    
+
+    @Override
+    public String toString() {
+        return "TermIterator{" + "sentenceIter=" + sentenceIter + ", termIter=" + termIter + '}';
+    }
+
+        
 }

@@ -3,8 +3,8 @@ package eu.trentorise.opendata.semantics.nlp.model;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import eu.trentorise.opendata.commons.NotFoundException;
-import static eu.trentorise.opendata.semantics.nlp.model.Checker.checkSpan;
-import static eu.trentorise.opendata.semantics.nlp.model.Checker.checkSpans;
+import static eu.trentorise.opendata.semantics.nlp.model.SemTexts.checkSpan;
+import static eu.trentorise.opendata.semantics.nlp.model.SemTexts.checkSpans;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +35,7 @@ public final class Sentence implements Span, Serializable, HasMetadata {
         this.metadata = ImmutableMap.of();
     }
 
-    private Sentence(int start, int end, List<Term> terms, Map<String, ?> metadata) {
+    private Sentence(int start, int end, Iterable<Term> terms, Map<String, ?> metadata) {
         this();
 
         checkSpan(start, end, "Sentence bounds are not correct!");
@@ -84,9 +84,10 @@ public final class Sentence implements Span, Serializable, HasMetadata {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 37 * hash + this.start;
-        hash = 37 * hash + this.end;
-        hash = 37 * hash + (this.terms != null ? this.terms.hashCode() : 0);
+        hash = 89 * hash + this.start;
+        hash = 89 * hash + this.end;
+        hash = 89 * hash + (this.terms != null ? this.terms.hashCode() : 0);
+        hash = 89 * hash + (this.metadata != null ? this.metadata.hashCode() : 0);
         return hash;
     }
 
@@ -108,8 +109,20 @@ public final class Sentence implements Span, Serializable, HasMetadata {
         if (this.terms != other.terms && (this.terms == null || !this.terms.equals(other.terms))) {
             return false;
         }
+        if (this.metadata != other.metadata && (this.metadata == null || !this.metadata.equals(other.metadata))) {
+            return false;
+        }
         return true;
     }
+
+    
+
+    @Override
+    public String toString() {
+        return "Sentence{" + "start=" + start + ", end=" + end + ", terms=" + terms + ", metadata=" + metadata + '}';
+    }
+
+  
 
     /**
      * Creates a sentence of one term.
@@ -123,7 +136,7 @@ public final class Sentence implements Span, Serializable, HasMetadata {
     /**
      * Creates a sentence.
      */
-    public static Sentence of(int startOffset, int endOffset, List<Term> terms) {
+    public static Sentence of(int startOffset, int endOffset, Iterable<Term> terms) {
         return new Sentence(startOffset, endOffset, terms, HasMetadata.EMPTY);
     }
 

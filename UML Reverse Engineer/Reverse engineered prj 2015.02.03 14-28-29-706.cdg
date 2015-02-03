@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ClassDiagram name="Reverse engineered prj 2015.02.03 14-28-29-706">
+  <ClassDiagramComponents>
+    <Interface xPosition="20.0" yPosition="20.0" package="eu.trentorise.opendata.semantics.nlp.model" name="HasMetadata" visibility="public">
+      <Methods>
+        <Method name="hasMetadata" visibility="public" returnType="boolean">
+          <Argument type="String" name="namespace"/>
+        </Method>
+        <Method name="getMetadata" visibility="public" returnType="ImmutableMap&lt;String, ?&gt;"/>
+        <Method name="getMetadata" visibility="public" returnType="Object">
+          <Argument type="String" name="namespace"/>
+        </Method>
+      </Methods>
+    </Interface>
+    <Class xPosition="320.0" yPosition="20.0" package="eu.trentorise.opendata.semantics.nlp.model" name="Meaning" visibility="public">
+      <Constructors>
+        <Constructor name="Meaning" visibility="private"/>
+        <Constructor name="Meaning" visibility="private">
+          <Argument type="Meaning" name="m"/>
+        </Constructor>
+        <Constructor name="Meaning" visibility="private">
+          <Argument type="String" name="id"/>
+          <Argument type="double" name="probability"/>
+          <Argument type="MeaningKind" name="meaningKind"/>
+          <Argument type="Dict" name="name"/>
+          <Argument type="Map&lt;String, ?&gt;" name="metadata"/>
+        </Constructor>
+      </Constructors>
+      <Fields>
+        <Field name="INSTANCE" visibility="private" type="Meaning" isStatic="true" isFinal="true"/>
+        <Field name="id" visibility="private" type="String"/>
+        <Field name="kind" visibility="private" type="MeaningKind"/>
+        <Field name="probability" visibility="private" type="double"/>
+        <Field name="status" visibility="private" type="MeaningStatus"/>
+        <Field name="name" visibility="private" type="Dict"/>
+        <Field name="metadata" visibility="private" type="ImmutableMap&lt;String, ?&gt;"/>
+      </Fields>
+      <Methods>
+        <Method name="getStatus" visibility="public" returnType="MeaningStatus"/>
+        <Method name="hasMetadata" visibility="public" returnType="boolean">
+          <Argument type="String" name="namespace"/>
+        </Method>
+        <Method name="getMetadata" visibility="public" returnType="ImmutableMap&lt;String, ?&gt;"/>
+        <Method name="getMetadata" visibility="public" returnType="Object">
+          <Argument type="String" name="namespace"/>
+        </Method>
+        <Method name="hashCode" visibility="public" returnType="int"/>
+        <Method name="equals" visibility="public" returnType="boolean">
+          <Argument type="Object" name="obj"/>
+        </Method>
+        <Method name="of" visibility="public" returnType="Meaning" isStatic="true">
+          <Argument type="String" name="id"/>
+          <Argument type="MeaningKind" name="meaningKind"/>
+          <Argument type="double" name="probability"/>
+        </Method>
+        <Method name="of" visibility="public" returnType="Meaning" isStatic="true">
+          <Argument type="String" name="id"/>
+          <Argument type="MeaningKind" name="meaningKind"/>
+          <Argument type="double" name="probability"/>
+          <Argument type="Dict" name="name"/>
+        </Method>
+        <Method name="of" visibility="public" returnType="Meaning" isStatic="true">
+          <Argument type="String" name="id"/>
+          <Argument type="MeaningKind" name="meaningKind"/>
+          <Argument type="Dict" name="name"/>
+        </Method>
+        <Method name="of" visibility="public" returnType="Meaning" isStatic="true"/>
+        <Method name="compareTo" visibility="public" returnType="int">
+          <Argument type="Meaning" name="om"/>
+        </Method>
+        <Method name="getProbability" visibility="public" returnType="double"/>
+        <Method name="getId" visibility="public" returnType="String"/>
+        <Method name="getKind" visibility="public" returnType="MeaningKind"/>
+        <Method name="getName" visibility="public" returnType="Dict"/>
+        <Method name="withProbability" visibility="public" returnType="Meaning">
+          <Argument type="double" name="probability"/>
+        </Method>
+        <Method name="toString" visibility="public" returnType="String"/>
+        <Method name="withMetadata" visibility="public" returnType="Meaning">
+          <Argument type="String" name="namespace"/>
+          <Argument type="Object" name="metadata"/>
+        </Method>
+      </Methods>
+    </Class>
+    <Enum xPosition="620.0" yPosition="20.0" package="eu.trentorise.opendata.semantics.nlp.model" name="MeaningKind" visibility="public">
+      <Literals>
+        <Literal name="ENTITY"/>
+        <Literal name="CONCEPT"/>
+        <Literal name="UNKNOWN"/>
+      </Literals>
+    </Enum>
+    <Enum xPosition="920.0" yPosition="20.0" package="eu.trentorise.opendata.semantics.nlp.model" name="MeaningStatus" visibility="public">
+      <Literals>
+        <Literal name="SELECTED"/>
+        <Literal name="TO_DISAMBIGUATE"/>
+        <Literal name="REVIEWED"/>
+        <Literal name="NOT_SURE"/>
+      </Literals>
+    </Enum>
+    <Class xPosition="20.0" yPosition="420.0" package="eu.trentorise.opendata.semantics.nlp.model" name="SemText" visibility="public">
+      <Constructors>
+        <Constructor name="SemText" visibility="private"/>
+        <Constructor name="SemText" visibility="private">
+          <Argument type="String" name="text"/>
+          <Argument type="Locale" name="locale"/>
+          <Argument type="Iterable&lt;Sentence&gt;" name="sentences"/>
+          <Argument type="Map&lt;String, ?&gt;" name="metadata"/>
+        </Constructor>
+        <Constructor name="SemText" visibility="private">
+          <Argument type="SemText" name="semText"/>
+        </Constructor>
+      </Constructors>
+      <Fields>
+        <Field name="INSTANCE" visibility="private" type="SemText" isStatic="true" isFinal="true"/>
+        <Field name="text" visibility="private" type="String"/>
+        <Field name="locale" visibility="private" type="Locale"/>
+        <Field name="sentences" visibility="private" type="ImmutableList&lt;Sentence&gt;"/>
+        <Field name="metadata" visibility="private" type="ImmutableMap&lt;String, ?&gt;"/>
+      </Fields>
+      <Methods>
+        <Method name="hasMetadata" visibility="public" returnType="boolean">
+          <Argument type="String" name="namespace"/>
+        </Method>
+        <Method name="getMetadata" visibility="public" returnType="ImmutableMap&lt;String, ?&gt;"/>
+        <Method name="getMetadata" visibility="public" returnType="Object">
+          <Argument type="String" name="namespace"/>
+        </Method>
+        <Method name="getSentences" visibility="public" returnType="ImmutableList&lt;Sentence&gt;"/>
+        <Method name="getLocale" visibility="public" returnType="Locale"/>
+        <Method name="getText" visibility="public" returnType="String"/>
+        <Method name="getText" visibility="public" returnType="String">
+          <Argument type="Span" name="span"/>
+        </Method>
+        <Method name="terms" visibility="public" returnType="TermIterator"/>
+        <Method name="delete" visibility="public" returnType="SemText">
+          <Argument type="Iterable&lt;Range&lt;Integer&gt;&gt;" name="deletionRanges"/>
+        </Method>
+        <Method name="merge" visibility="public" returnType="SemText">
+          <Argument type="Term" name="terms"/>
+        </Method>
+        <Method name="merge" visibility="public" returnType="SemText">
+          <Argument type="Iterable&lt;Term&gt;" name="termsToMerge"/>
+        </Method>
+        <Method name="with" visibility="public" returnType="SemText">
+          <Argument type="Locale" name="locale"/>
+        </Method>
+        <Method name="with" visibility="public" returnType="SemText">
+          <Argument type="String" name="text"/>
+        </Method>
+        <Method name="hashCode" visibility="public" returnType="int"/>
+        <Method name="equals" visibility="public" returnType="boolean">
+          <Argument type="Object" name="obj"/>
+        </Method>
+        <Method name="toString" visibility="public" returnType="String"/>
+        <Method name="withTerms" visibility="public" returnType="SemText">
+          <Argument type="Iterable&lt;Term&gt;" name="terms"/>
+        </Method>
+        <Method name="withSentences" visibility="public" returnType="SemText">
+          <Argument type="Iterable&lt;Sentence&gt;" name="sentences"/>
+        </Method>
+        <Method name="withMetadata" visibility="public" returnType="SemText">
+          <Argument type="String" name="namespace"/>
+          <Argument type="Object" name="metadata"/>
+        </Method>
+        <Method name="of" visibility="public" returnType="SemText" isStatic="true"/>
+        <Method name="of" visibility="public" returnType="SemText" isStatic="true">
+          <Argument type="String" name="text"/>
+          <Argument type="Locale" name="locale"/>
+          <Argument type="MeaningStatus" name="meaningStatus"/>
+          <Argument type="Meaning" name="selectedMeaning"/>
+        </Method>
+        <Method name="of" visibility="public" returnType="SemText" isStatic="true">
+          <Argument type="String" name="text"/>
+          <Argument type="Locale" name="locale"/>
+          <Argument type="MeaningStatus" name="meaningStatus"/>
+          <Argument type="Meaning" name="selectedMeaning"/>
+          <Argument type="List&lt;Meaning&gt;" name="meanings"/>
+        </Method>
+        <Method name="of" visibility="public" returnType="SemText" isStatic="true">
+          <Argument type="String" name="text"/>
+        </Method>
+        <Method name="of" visibility="public" returnType="SemText" isStatic="true">
+          <Argument type="String" name="text"/>
+          <Argument type="Locale" name="locale"/>
+        </Method>
+        <Method name="of" visibility="public" returnType="SemText" isStatic="true">
+          <Argument type="String" name="text"/>
+          <Argument type="Locale" name="locale"/>
+          <Argument type="Sentence" name="sentence"/>
+        </Method>
+        <Method name="ofSentences" visibility="public" returnType="SemText" isStatic="true">
+          <Argument type="String" name="text"/>
+          <Argument type="Locale" name="locale"/>
+          <Argument type="List&lt;Sentence&gt;" name="sentences"/>
+        </Method>
+        <Method name="ofTerms" visibility="public" returnType="SemText" isStatic="true">
+          <Argument type="String" name="text"/>
+          <Argument type="Locale" name="locale"/>
+          <Argument type="Iterable&lt;Term&gt;" name="terms"/>
+        </Method>
+        <Method name="ofTerms" visibility="public" returnType="SemText" isStatic="true">
+          <Argument type="String" name="text"/>
+          <Argument type="Locale" name="locale"/>
+          <Argument type="Term" name="terms"/>
+        </Method>
+        <Method name="of" visibility="public" returnType="SemText" isStatic="true">
+          <Argument type="Dict" name="dict"/>
+          <Argument type="Iterable&lt;Locale&gt;" name="locales"/>
+        </Method>
+        <Method name="of" visibility="public" returnType="SemText" isStatic="true">
+          <Argument type="Dict" name="dict"/>
+          <Argument type="Locale" name="locales"/>
+        </Method>
+        <Method name="of" visibility="public" returnType="SemText" isStatic="true">
+          <Argument type="LocalizedString" name="string"/>
+        </Method>
+      </Methods>
+    </Class>
+    <Class xPosition="320.0" yPosition="420.0" package="eu.trentorise.opendata.semantics.nlp.model" name="SemTexts" visibility="public">
+      <Constructors/>
+      <Fields>
+        <Field name="TOLERANCE" visibility="public" type="double" isStatic="true" isFinal="true"/>
+        <Field name="DISAMBIGUATION_FACTOR" visibility="package" type="double" isStatic="true" isFinal="true"/>
+      </Fields>
+      <Methods>
+        <Method name="disambiguate" visibility="public" returnType="Meaning" isStatic="true">
+          <Argument type="Iterable&lt;Meaning&gt;" name="meanings"/>
+        </Method>
+        <Method name="checkMeaningStatus" visibility="public" returnType="void" isStatic="true">
+          <Argument type="MeaningStatus" name="meaningStatus"/>
+          <Argument type="Meaning" name="selectedMeaning"/>
+          <Argument type="String" name="prependedErrorMessage"/>
+        </Method>
+        <Method name="checkMeaning" visibility="public" returnType="void" isStatic="true">
+          <Argument type="Meaning" name="m"/>
+          <Argument type="String" name="prependedErrorMessage"/>
+        </Method>
+        <Method name="checkPositiveScore" visibility="public" returnType="double" isStatic="true">
+          <Argument type="double" name="score"/>
+          <Argument type="String" name="prependedErrorMessage"/>
+        </Method>
+        <Method name="checkScore" visibility="public" returnType="void" isStatic="true">
+          <Argument type="double" name="score"/>
+          <Argument type="String" name="prependedErrorMessage"/>
+        </Method>
+        <Method name="checkSpan" visibility="public" returnType="void" isStatic="true">
+          <Argument type="int" name="startOffset"/>
+          <Argument type="int" name="endOffset"/>
+          <Argument type="String" name="prependedErrorMessage"/>
+        </Method>
+        <Method name="checkSpans" visibility="public" returnType="void" isStatic="true">
+          <Argument type="Iterable&lt;? extends Span&gt;" name="spans"/>
+          <Argument type="int" name="startOffset"/>
+          <Argument type="int" name="endOffset"/>
+          <Argument type="String" name="prependedErrorMessage"/>
+        </Method>
+        <Method name="mergeMeanings" visibility="public" returnType="List&lt;Meaning&gt;">
+          <Argument type="Iterable&lt;Meaning&gt;" name="oldMeanings"/>
+          <Argument type="Iterable&lt;Meaning&gt;" name="newMeanings"/>
+        </Method>
+        <Method name="spanToRange" visibility="public" returnType="Range" isStatic="true">
+          <Argument type="Span" name="span"/>
+        </Method>
+        <Method name="replaceMetadata" visibility="package" returnType="ImmutableMap&lt;String, ?&gt;" isStatic="true">
+          <Argument type="ImmutableMap&lt;String, ?&gt;" name="metadata"/>
+          <Argument type="String" name="namespace"/>
+          <Argument type="Object" name="newMetadata"/>
+        </Method>
+      </Methods>
+    </Class>
+    <Class xPosition="620.0" yPosition="420.0" package="eu.trentorise.opendata.semantics.nlp.model" name="Sentence" visibility="public">
+      <Constructors>
+        <Constructor name="Sentence" visibility="private"/>
+        <Constructor name="Sentence" visibility="private">
+          <Argument type="Sentence" name="sentence"/>
+        </Constructor>
+        <Constructor name="Sentence" visibility="private">
+          <Argument type="int" name="start"/>
+          <Argument type="int" name="end"/>
+          <Argument type="Iterable&lt;Term&gt;" name="terms"/>
+          <Argument type="Map&lt;String, ?&gt;" name="metadata"/>
+        </Constructor>
+      </Constructors>
+      <Fields>
+        <Field name="start" visibility="private" type="int"/>
+        <Field name="end" visibility="private" type="int"/>
+        <Field name="terms" visibility="private" type="ImmutableList&lt;Term&gt;"/>
+        <Field name="metadata" visibility="private" type="ImmutableMap&lt;String, ?&gt;"/>
+      </Fields>
+      <Methods>
+        <Method name="hasMetadata" visibility="public" returnType="boolean">
+          <Argument type="String" name="namespace"/>
+        </Method>
+        <Method name="getMetadata" visibility="public" returnType="ImmutableMap&lt;String, ?&gt;"/>
+        <Method name="getMetadata" visibility="public" returnType="Object">
+          <Argument type="String" name="namespace"/>
+        </Method>
+        <Method name="getTerms" visibility="public" returnType="ImmutableList&lt;Term&gt;"/>
+        <Method name="getStart" visibility="public" returnType="int"/>
+        <Method name="getEnd" visibility="public" returnType="int"/>
+        <Method name="hashCode" visibility="public" returnType="int"/>
+        <Method name="equals" visibility="public" returnType="boolean">
+          <Argument type="Object" name="obj"/>
+        </Method>
+        <Method name="toString" visibility="public" returnType="String"/>
+        <Method name="of" visibility="public" returnType="Sentence" isStatic="true">
+          <Argument type="int" name="startOffset"/>
+          <Argument type="int" name="endOffset"/>
+          <Argument type="Term" name="term"/>
+        </Method>
+        <Method name="of" visibility="public" returnType="Sentence" isStatic="true">
+          <Argument type="int" name="startOffset"/>
+          <Argument type="int" name="endOffset"/>
+          <Argument type="Iterable&lt;Term&gt;" name="terms"/>
+        </Method>
+        <Method name="of" visibility="public" returnType="Sentence" isStatic="true">
+          <Argument type="int" name="startOffset"/>
+          <Argument type="int" name="endOffset"/>
+        </Method>
+        <Method name="withMetadata" visibility="public" returnType="Sentence">
+          <Argument type="String" name="namespace"/>
+          <Argument type="Object" name="metadata"/>
+        </Method>
+      </Methods>
+    </Class>
+    <Interface xPosition="920.0" yPosition="420.0" package="eu.trentorise.opendata.semantics.nlp.model" name="Span" visibility="public">
+      <Methods>
+        <Method name="getStart" visibility="public" returnType="int"/>
+        <Method name="getEnd" visibility="public" returnType="int"/>
+      </Methods>
+    </Interface>
+    <Class xPosition="20.0" yPosition="820.0" package="eu.trentorise.opendata.semantics.nlp.model" name="Term" visibility="public">
+      <Constructors>
+        <Constructor name="Term" visibility="private"/>
+        <Constructor name="Term" visibility="private">
+          <Argument type="int" name="start"/>
+          <Argument type="int" name="end"/>
+          <Argument type="MeaningStatus" name="meaningStatus"/>
+          <Argument type="Meaning" name="selectedMeaning"/>
+          <Argument type="Iterable&lt;Meaning&gt;" name="meanings"/>
+          <Argument type="Map&lt;String, ?&gt;" name="metadata"/>
+        </Constructor>
+        <Constructor name="Term" visibility="private">
+          <Argument type="Term" name="term"/>
+        </Constructor>
+      </Constructors>
+      <Fields>
+        <Field name="start" visibility="private" type="int"/>
+        <Field name="end" visibility="private" type="int"/>
+        <Field name="meanings" visibility="private" type="ImmutableList&lt;Meaning&gt;"/>
+        <Field name="meaningStatus" visibility="private" type="MeaningStatus"/>
+        <Field name="selectedMeaning" visibility="private" type="Meaning"/>
+        <Field name="metadata" visibility="private" type="ImmutableMap&lt;String, ?&gt;"/>
+      </Fields>
+      <Methods>
+        <Method name="getMeaningStatus" visibility="public" returnType="MeaningStatus"/>
+        <Method name="getStart" visibility="public" returnType="int"/>
+        <Method name="getEnd" visibility="public" returnType="int"/>
+        <Method name="getMeanings" visibility="public" returnType="ImmutableList&lt;Meaning&gt;"/>
+        <Method name="hasMetadata" visibility="public" returnType="boolean">
+          <Argument type="String" name="namespace"/>
+        </Method>
+        <Method name="getMetadata" visibility="public" returnType="ImmutableMap&lt;String, ?&gt;"/>
+        <Method name="getMetadata" visibility="public" returnType="Object">
+          <Argument type="String" name="namespace"/>
+        </Method>
+        <Method name="getSelectedMeaning" visibility="public" returnType="Meaning"/>
+        <Method name="hashCode" visibility="public" returnType="int"/>
+        <Method name="equals" visibility="public" returnType="boolean">
+          <Argument type="Object" name="obj"/>
+        </Method>
+        <Method name="toString" visibility="public" returnType="String"/>
+        <Method name="normalizeMeanings" visibility="private" returnType="void">
+          <Argument type="Iterable&lt;Meaning&gt;" name="meanings"/>
+          <Argument type="Meaning" name="selectedMeaning"/>
+        </Method>
+        <Method name="with" visibility="public" returnType="Term">
+          <Argument type="Iterable&lt;Meaning&gt;" name="meanings"/>
+        </Method>
+        <Method name="with" visibility="public" returnType="Term">
+          <Argument type="MeaningStatus" name="meaningStatus"/>
+          <Argument type="Meaning" name="selectedMeaning"/>
+        </Method>
+        <Method name="withMetadata" visibility="public" returnType="Term">
+          <Argument type="String" name="namespace"/>
+          <Argument type="Object" name="metadata"/>
+        </Method>
+        <Method name="of" visibility="public" returnType="Term" isStatic="true">
+          <Argument type="int" name="start"/>
+          <Argument type="int" name="end"/>
+          <Argument type="MeaningStatus" name="status"/>
+          <Argument type="Meaning" name="selectedMeaning"/>
+        </Method>
+        <Method name="of" visibility="public" returnType="Term" isStatic="true">
+          <Argument type="int" name="start"/>
+          <Argument type="int" name="end"/>
+          <Argument type="MeaningStatus" name="meaningStatus"/>
+          <Argument type="Meaning" name="selectedMeaning"/>
+          <Argument type="Iterable&lt;Meaning&gt;" name="meanings"/>
+        </Method>
+      </Methods>
+    </Class>
+    <Class xPosition="320.0" yPosition="820.0" package="eu.trentorise.opendata.semantics.nlp.model" name="TermIterator" visibility="public">
+      <Constructors>
+        <Constructor name="TermIterator" visibility="public">
+          <Argument type="SemText" name="semtext"/>
+        </Constructor>
+      </Constructors>
+      <Fields>
+        <Field name="sentenceIter" visibility="private" type="UnmodifiableIterator&lt;Sentence&gt;"/>
+        <Field name="termIter" visibility="private" type="UnmodifiableIterator&lt;Term&gt;"/>
+      </Fields>
+      <Methods>
+        <Method name="hasNext" visibility="public" returnType="boolean"/>
+        <Method name="next" visibility="public" returnType="Term"/>
+        <Method name="hashCode" visibility="public" returnType="int"/>
+        <Method name="equals" visibility="public" returnType="boolean">
+          <Argument type="Object" name="obj"/>
+        </Method>
+        <Method name="toString" visibility="public" returnType="String"/>
+      </Methods>
+    </Class>
+  </ClassDiagramComponents>
+  <ClassDiagramRelations>
+    <ImplementsRelation name="&lt;&lt;implements&gt;&gt;" source="Meaning" target="HasMetadata"/>
+    <UseRelation source="Meaning" target="MeaningStatus" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="SemText" target="Sentence" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="Meaning" target="Meaning" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <ImplementsRelation name="&lt;&lt;implements&gt;&gt;" source="Term" target="HasMetadata"/>
+    <HasRelation name="status" source="Meaning" target="MeaningStatus" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <HasRelation name="INSTANCE" source="SemText" target="SemText" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="SemText" target="Span" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <HasRelation name="sentences" source="SemText" target="Sentence" sourceCardinality="1..1" targetCardinality="0..*" collectionType="List"/>
+    <UseRelation source="Meaning" target="MeaningKind" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <HasRelation name="terms" source="Sentence" target="Term" sourceCardinality="1..1" targetCardinality="0..*" collectionType="List"/>
+    <ImplementsRelation name="&lt;&lt;implements&gt;&gt;" source="SemText" target="HasMetadata"/>
+    <UseRelation source="SemText" target="SemText" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="Term" target="MeaningStatus" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="SemText" target="TermIterator" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="Sentence" target="Term" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="TermIterator" target="Term" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <HasRelation name="termIter" source="TermIterator" target="Term" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="SemText" target="Term" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <HasRelation name="meanings" source="Term" target="Meaning" sourceCardinality="1..1" targetCardinality="0..*" collectionType="List"/>
+    <HasRelation name="INSTANCE" source="Meaning" target="Meaning" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <ImplementsRelation name="&lt;&lt;implements&gt;&gt;" source="Sentence" target="HasMetadata"/>
+    <UseRelation source="SemTexts" target="Meaning" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <ImplementsRelation name="&lt;&lt;implements&gt;&gt;" source="Term" target="Span"/>
+    <HasRelation name="kind" source="Meaning" target="MeaningKind" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <ImplementsRelation name="&lt;&lt;implements&gt;&gt;" source="Sentence" target="Span"/>
+    <HasRelation name="selectedMeaning" source="Term" target="Meaning" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="Term" target="Meaning" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="SemTexts" target="Span" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="SemTexts" target="MeaningStatus" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="Sentence" target="Sentence" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <HasRelation name="meaningStatus" source="Term" target="MeaningStatus" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <HasRelation name="sentenceIter" source="TermIterator" target="Sentence" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="Term" target="Term" sourceCardinality="1..1" targetCardinality="1..1"/>
+  </ClassDiagramRelations>
+</ClassDiagram>

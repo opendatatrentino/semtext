@@ -26,8 +26,7 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
 
     private String id;    
     private MeaningKind kind;
-    private double probability;
-    private MeaningStatus status;
+    private double probability;    
     private Dict name;    
     private ImmutableMap<String, ?> metadata;
 
@@ -45,12 +44,7 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
         this.kind = m.getKind();
         this.probability = m.getProbability();
         this.name = m.getName();
-        this.metadata = m.getMetadata();
-        this.status = m.getStatus();
-    }
-
-    public MeaningStatus getStatus() {
-        return status;
+        this.metadata = m.getMetadata();        
     }
         
 
@@ -249,7 +243,7 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
 
     @Override
     public String toString() {
-        return "Meaning{" + "id=" + id + ", kind=" + kind + ", probability=" + probability + ", status=" + status + ", name=" + name + ", metadata=" + metadata + '}';
+        return "Meaning{" + "id=" + id + ", kind=" + kind + ", probability=" + probability  + ", name=" + name + ", metadata=" + metadata + '}';
     }
     
     /**

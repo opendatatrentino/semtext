@@ -4,11 +4,13 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Range;
+import com.sun.xml.internal.ws.api.model.MEP;
 import eu.trentorise.opendata.semantics.nlp.model.MeaningKind;
 
 import eu.trentorise.opendata.semantics.nlp.model.Meaning;
 import eu.trentorise.opendata.semantics.nlp.model.MeaningStatus;
 import eu.trentorise.opendata.semantics.nlp.model.SemText;
+import eu.trentorise.opendata.semantics.nlp.model.SemTexts;
 import eu.trentorise.opendata.semantics.nlp.model.Sentence;
 import eu.trentorise.opendata.semantics.nlp.model.Term;
 import eu.trentorise.opendata.semantics.nlp.model.TermIterator;
@@ -157,13 +159,12 @@ public class SemTextTest {
 
         assertEquals("b", SemText.of("a").with("b").getText());
         assertEquals(Locale.ITALIAN, SemText.of("a").with(Locale.ITALIAN).getLocale());
-        
+
         assertEquals("b", SemText.of("").withMetadata("a", "b").getMetadata("a"));
-        
+
         assertEquals("c", SemText.of("").withMetadata("a", "b")
-                                         .withMetadata("a", "c").getMetadata("a"));
-        
-        
+                .withMetadata("a", "c").getMetadata("a"));
+
     }
 
     /**
@@ -373,6 +374,44 @@ public class SemTextTest {
 
         SemText newText = st.delete(ImmutableList.of(Range.closed(0, 1)));
         assertEquals(0, Iterators.size(newText.terms()));
+    }
+
+    @Test
+    public void testTerms() {
+        try {
+            Term.of(-1, 1, MeaningStatus.NOT_SURE, null);
+            Assert.fail("Terms can't have negative start");
+        }
+        catch (Exception ex) {
+
+        }
+
+        try {
+            Term.of(0, 1, MeaningStatus.SELECTED, null);
+            Assert.fail("Terms can't have SELECTED meaning with null meaning");
+        }
+        catch (Exception ex) {
+
+        }
+
+        try {
+            Term.of(0, 1, MeaningStatus.NOT_SURE, null, null);
+            Assert.fail("Terms can't have null meanings");
+        }
+        catch (Exception ex) {
+
+        }
+
+        
+        
+        
+    }
+    
+    @Test
+    public void testProbNormalization(){        
+        Term t = Term.of(0,1,MeaningStatus.NOT_SURE, null,ImmutableList.of(Meaning.of("a", MeaningKind.ENTITY, 0.2)));
+        double prob = t.getMeanings().get(0).getProbability();
+        assertTrue("prob should be near 1.0, found instead: " + prob, 1.0 - SemTexts.TOLERANCE <= prob && prob <= 1.0 + SemTexts.TOLERANCE);        
     }
 
 }

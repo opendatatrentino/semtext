@@ -187,8 +187,6 @@ public final class Term implements Span, Serializable, HasMetadata {
         return true;
     }
 
-   
-
     @Override
     public String toString() {
         return "Term{" + "start=" + start + ", end=" + end + ", meanings=" + meanings + ", meaningStatus=" + meaningStatus + ", selectedMeaning=" + selectedMeaning + ", metadata=" + metadata + '}';
@@ -210,13 +208,14 @@ public final class Term implements Span, Serializable, HasMetadata {
      * probabilities and also the provided selected meaning. Inputs are not
      * changed.
      *
-     * @param meanings won't be changed by the method. When deduplicating, meanings occurring first will be used.
+     * @param meanings won't be changed by the method. When deduplicating,
+     * meanings occurring first will be used.
      * @param selectedMeaning if unknown use null
      */
     private void normalizeMeanings(Iterable<Meaning> meanings, @Nullable Meaning selectedMeaning) {
         checkNotNull(meanings);
 
-        Set<Meaning> dedupMeanings = Sets.newHashSet(meanings);        
+        Set<Meaning> dedupMeanings = Sets.newHashSet(meanings);
 
         float total = 0;
         for (Meaning m : dedupMeanings) {
@@ -244,7 +243,9 @@ public final class Term implements Span, Serializable, HasMetadata {
     /**
      * Returns a new term with the provided meanings. Internally, a new list of
      * normalized and deduplicated meanings will be stored.
-     * @param meanings won't be changed by the method. When deduplicating, meanings occurring first will be used.
+     *
+     * @param meanings won't be changed by the method. When deduplicating,
+     * meanings occurring first will be used.
      */
     public Term with(Iterable<Meaning> meanings) {
         Term ret = new Term(this);
@@ -265,7 +266,7 @@ public final class Term implements Span, Serializable, HasMetadata {
         ret.normalizeMeanings(ret.meanings, selectedMeaning);
         return ret;
     }
-    
+
     /**
      * Returns a copy of this object with the provided metadata set under the
      * given namespace.
@@ -273,10 +274,10 @@ public final class Term implements Span, Serializable, HasMetadata {
      * @param metadata Must be an immutable object.
      */
     public Term withMetadata(String namespace, Object metadata) {
-        Term ret = new Term(this);        
+        Term ret = new Term(this);
         ret.metadata = SemTexts.replaceMetadata(this.metadata, namespace, metadata);
         return ret;
-    }      
+    }
 
     /**
      * Factory for a Term with only one meaning. Meaning probabilities are
@@ -297,9 +298,7 @@ public final class Term implements Span, Serializable, HasMetadata {
                 end,
                 status,
                 selectedMeaning,
-                selectedMeaning == null
-                        ? ImmutableList.<Meaning>of()
-                        : ImmutableList.<Meaning>of(selectedMeaning),
+                ImmutableList.<Meaning>of(),
                 HasMetadata.EMPTY);
     }
 

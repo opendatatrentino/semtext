@@ -16,7 +16,7 @@
 package eu.trentorise.opendata.semantics.nlp.model;
 
 /**
- * Represents the status of a meaning assigned to an {@link Term}
+ * Represents the status of a meaning assigned to a {@link Term}
  *
  * @author David Leoni <david.leoni@unitn.it>
  *
@@ -25,11 +25,11 @@ public enum MeaningStatus {
 
     /**
      * A meaning has been selected by the system, but the user should still
-     * review it.
+     * review it. Selected meaning must have a valid id.
      */
     SELECTED,
     /**
-     * Entity/concept should be disambiguated by the user.
+     * There is no selected meaning and entity/concept should be disambiguated by the user.
      */
     TO_DISAMBIGUATE,
     /**
@@ -40,7 +40,7 @@ public enum MeaningStatus {
     
     /**
      * The user indicated that the entity/concept has candidates that are too
-     * similar in the knowledge base.
+     * similar in the knowledge base, so there is no selected meaning.
      */
     NOT_SURE        
 

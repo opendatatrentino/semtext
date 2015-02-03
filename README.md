@@ -16,13 +16,14 @@ Java library for semantic text management.
 
 
 **Features**:
-  * dependency handling with Maven
-  * has a liberal Apache 2.0 license
   * provides a simple hierarchy of sentences and terms
   * most datastructures are immutable
   * allows attaching metadata to spans
   * well documented
+  * dependency handling with Maven
+  * has a liberal Apache 2.0 license
   * supports Java 6+
+
 
 **Credits**:
 

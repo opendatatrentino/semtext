@@ -6,7 +6,13 @@ import static com.google.common.base.Preconditions.checkPositionIndex;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Range;
+import com.google.common.collect.RangeMap;
+import com.google.common.collect.RangeSet;
+import com.google.common.collect.TreeRangeMap;
+import com.google.common.collect.TreeRangeSet;
 import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.commons.LocalizedString;
 import eu.trentorise.opendata.commons.NotFoundException;
@@ -139,13 +145,48 @@ public final class SemText implements Serializable, HasMetadata {
     }
 
     /**
-     * @see #merge(java.lang.Iterable) 
+     * Returns a copy of the this SemText without terms intersecting provided
+     * ranges.
+     *
+     * NOTE: Currently the method only works with text of one sentence! If it is
+     * not an IllegalStateException will be thrown!.
+     *
+     */
+    // note: Current version is inefficient, tried RangeMap.remove, but it only removes matching subsegments! 
+    public SemText delete(Iterable<Range<Integer>> deletionRanges) {
+        checkNotNull(deletionRanges);
+
+        ImmutableList.Builder<Term> termsB = ImmutableList.builder();
+
+        if (sentences.size() > 1) {
+            throw new IllegalStateException("The merge method currently only works with text of at most one sentence!");
+        }
+
+        RangeSet<Integer> rangeSet = TreeRangeSet.create();
+        TermIterator termIter = terms();
+
+        for (Range r : deletionRanges) {
+            rangeSet.add(r);
+        }
+
+        while (termIter.hasNext()) {
+            Term term = termIter.next();
+            RangeSet<Integer> intersection = rangeSet.subRangeSet(SemTexts.spanToRange(term));
+            if (intersection.isEmpty()) {
+                termsB.add(term);
+            }
+        }
+
+        return this.withTerms(termsB.build());
+    }
+
+    /**
+     * @see #merge(java.lang.Iterable)
      */
     public SemText merge(Term... terms) {
         return merge(Arrays.asList(terms));
     }
 
-   
     /**
      * Returns a new semantic text having existing terms plus the provided ones.
      * If new terms overlaps with other ones, existing overlapping terms are
@@ -269,8 +310,6 @@ public final class SemText implements Serializable, HasMetadata {
         return true;
     }
 
-   
-
     @Override
     public String toString() {
         return "SemText{" + "text=" + text + ", locale=" + locale + ", sentences=" + sentences + ", metadata=" + metadata + '}';
@@ -279,7 +318,7 @@ public final class SemText implements Serializable, HasMetadata {
     /**
      * Returns a copy of this object with the provided terms set under one
      * sentence spanning the whole text. Terms existing in the current object
-     * will be ignored.
+     * won't be copied.
      */
     public SemText withTerms(Iterable<Term> terms) {
         SemText ret = new SemText(this);
@@ -306,18 +345,11 @@ public final class SemText implements Serializable, HasMetadata {
      * @param metadata Must be an immutable object.
      */
     public SemText withMetadata(String namespace, Object metadata) {
-        SemText ret = new SemText(this);
-        ImmutableMap.Builder<String, Object> mapb = ImmutableMap.builder();
-        for (String ns : this.metadata.keySet()) {
-            if (!ns.equals(namespace)) {
-                mapb.put(ns, this.metadata.get(ns));
-            }
-        }
-        mapb.put(namespace, metadata);
-        ret.metadata = mapb.build();
+        SemText ret = new SemText(this);        
+        ret.metadata = SemTexts.replaceMetadata(this.metadata, namespace, metadata);
         return ret;
     }
-
+    
     /**
      * Returns empty semantic text with unknown locale {@link Locale#ROOT}
      */
@@ -341,9 +373,7 @@ public final class SemText implements Serializable, HasMetadata {
                                 Term.of(0, text.length(),
                                         meaningStatus,
                                         selectedMeaning,
-                                        selectedMeaning == null
-                                                ? ImmutableList.<Meaning>of()
-                                                : ImmutableList.<Meaning>of(selectedMeaning)))),
+                                        ImmutableList.<Meaning>of()))),
                 HasMetadata.EMPTY);
     }
 
@@ -409,10 +439,21 @@ public final class SemText implements Serializable, HasMetadata {
      * @param locale Locale of the whole text. if unknown use
      * {@link Locale#ROOT}
      */
-    public static SemText of(String text, Locale locale, List<Term> terms) {
+    public static SemText ofTerms(String text, Locale locale, Iterable<Term> terms) {
         return new SemText(text,
                 locale,
                 ImmutableList.of(Sentence.of(0, text.length(), terms)),
+                HasMetadata.EMPTY);
+    }
+
+    /**
+     * @param locale Locale of the whole text. if unknown use
+     * {@link Locale#ROOT}
+     */
+    public static SemText ofTerms(String text, Locale locale, Term... terms) {
+        return new SemText(text,
+                locale,
+                ImmutableList.of(Sentence.of(0, text.length(), ImmutableList.copyOf(terms))),
                 HasMetadata.EMPTY);
     }
 
@@ -422,7 +463,7 @@ public final class SemText implements Serializable, HasMetadata {
      *
      * @see eu.trentorise.opendata.commons.Dict#anyString(java.lang.Iterable)
      */
-    public static SemText of(Dict dict, List<Locale> locales) {
+    public static SemText of(Dict dict, Iterable<Locale> locales) {
         return SemText.of(dict.anyString(locales));
     }
 
@@ -432,7 +473,7 @@ public final class SemText implements Serializable, HasMetadata {
      *
      * @see eu.trentorise.opendata.commons.Dict#anyString(java.lang.Iterable)
      */
-    public static SemText of(Dict dict, Iterable<Locale> locales) {
+    public static SemText of(Dict dict, Locale... locales) {
         return SemText.of(dict.anyString(locales));
     }
 

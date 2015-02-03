@@ -18,7 +18,9 @@ package eu.trentorise.opendata.semantics.nlp.model;
 import com.google.common.base.Preconditions;
 import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Range;
 import static eu.trentorise.opendata.commons.OdtUtils.checkNotEmpty;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -161,7 +163,7 @@ public class SemTexts {
 
     /**
      *
-     * Checks spans are all be valid spans (see {@link #checkSpan(int, int) }
+     * Checks spans are all be valid spans (see {@link SemTexts#checkSpan(int, int, String) }
      * and are be non-overlapping (a span getEnd offset may coincide with next
      * span getStart offset). Spans must be contained within startOffset and
      * endOffset (last span getEnd offset may coincide with endOffset).
@@ -200,10 +202,8 @@ public class SemTexts {
         }
 
     }
-    
-    
-    
-   /**
+
+    /**
      * A new term is returned with the provided meanings merged to the existing
      * ones. New meanings will replace equals old meanings.
      */
@@ -214,11 +214,11 @@ public class SemTexts {
         for (Meaning m1 : oldMeanings) {
             dedupMeanings.add(m1);
         }
-                
+
         for (Meaning m2 : newMeanings) {
             dedupMeanings.add(m2);
         }
-        
+
         float total = 0;
         for (Meaning m : dedupMeanings) {
             total += m.getProbability();
@@ -237,5 +237,29 @@ public class SemTexts {
         Collections.sort(mgs, Collections.reverseOrder());
 
         return ImmutableList.copyOf(mgs);
-    }    
+    }
+
+    /**
+     * Converts provided span to a Guava Range of the [start, end) form.
+     */
+    public static Range spanToRange(Span span) {
+        return Range.closedOpen(span.getStart(), span.getEnd());
+    }
+    
+    /**
+     * Returns a copy of provided metadata with the newMetadata set under the
+     * given namespace.
+     *
+     * @param newMetadata Must be an immutable object.
+     */    
+    static ImmutableMap<String, ?> replaceMetadata(ImmutableMap<String, ?> metadata, String namespace, Object newMetadata){
+        ImmutableMap.Builder<String, Object> mapb = ImmutableMap.builder();
+        for (String ns : metadata.keySet()) {
+            if (!ns.equals(namespace)) {
+                mapb.put(ns, metadata.get(ns));
+            }
+        }
+        mapb.put(namespace, newMetadata);
+        return mapb.build();        
+    }
 }

@@ -248,5 +248,15 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
         return "Meaning{" + "id=" + id + ", kind=" + kind + ", probability=" + probability + ", status=" + status + ", name=" + name + ", metadata=" + metadata + '}';
     }
     
-    
+    /**
+     * Returns a copy of this object with the provided metadata set under the
+     * given namespace.
+     *
+     * @param metadata Must be an immutable object.
+     */
+    public Meaning withMetadata(String namespace, Object metadata) {
+        Meaning ret = new Meaning(this);        
+        ret.metadata = SemTexts.replaceMetadata(this.metadata, namespace, metadata);
+        return ret;
+    }    
 }

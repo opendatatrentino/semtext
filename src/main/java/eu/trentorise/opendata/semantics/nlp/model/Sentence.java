@@ -30,9 +30,16 @@ public final class Sentence implements Span, Serializable, HasMetadata {
 
     private Sentence() {
         this.start = 0;
-        this.start = 0;
+        this.end = 0;
         this.terms = ImmutableList.of();
         this.metadata = ImmutableMap.of();
+    }
+    
+    private Sentence(Sentence sentence) {
+        this.start = sentence.getStart();
+        this.end = sentence.getEnd();
+        this.terms = sentence.getTerms();
+        this.metadata = sentence.getMetadata();        
     }
 
     private Sentence(int start, int end, Iterable<Term> terms, Map<String, ?> metadata) {
@@ -147,4 +154,17 @@ public final class Sentence implements Span, Serializable, HasMetadata {
         return new Sentence(startOffset, endOffset, ImmutableList.<Term>of(), HasMetadata.EMPTY);
     }
 
+    
+    /**
+     * Returns a copy of this object with the provided metadata set under the
+     * given namespace.
+     *
+     * @param metadata Must be an immutable object.
+     */
+    public Sentence withMetadata(String namespace, Object metadata) {
+        Sentence ret = new Sentence(this);        
+        ret.metadata = SemTexts.replaceMetadata(this.metadata, namespace, metadata);
+        return ret;
+    }    
+    
 }

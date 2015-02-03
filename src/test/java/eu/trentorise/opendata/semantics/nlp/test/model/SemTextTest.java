@@ -1,7 +1,9 @@
 package eu.trentorise.opendata.semantics.nlp.test.model;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
+import com.google.common.collect.Range;
 import eu.trentorise.opendata.semantics.nlp.model.MeaningKind;
 
 import eu.trentorise.opendata.semantics.nlp.model.Meaning;
@@ -89,7 +91,7 @@ public class SemTextTest {
 
         Sentence s1 = Sentence.of(0, 5,
                 ImmutableList.of(Term.of(0, 1, MeaningStatus.SELECTED, Meaning.of("a", MeaningKind.CONCEPT, 0.2)),
-                        Term.of(2, 3, MeaningStatus.SELECTED, Meaning.of("b",  MeaningKind.CONCEPT, 0.2))));
+                        Term.of(2, 3, MeaningStatus.SELECTED, Meaning.of("b", MeaningKind.CONCEPT, 0.2))));
 
         Sentence s2 = Sentence.of(6, 10,
                 ImmutableList.of(Term.of(6, 7, MeaningStatus.SELECTED, Meaning.of("c", MeaningKind.CONCEPT, 0.2)),
@@ -121,8 +123,8 @@ public class SemTextTest {
     @Test
     public void testEquality() {
 
-        assertNotEquals(Meaning.of("a", MeaningKind.CONCEPT,  0.1), Meaning.of("a", MeaningKind.ENTITY, 0.1));
-        assertNotEquals(Meaning.of("a", MeaningKind.CONCEPT, 0.1), Meaning.of("b",  MeaningKind.CONCEPT, 0.1));
+        assertNotEquals(Meaning.of("a", MeaningKind.CONCEPT, 0.1), Meaning.of("a", MeaningKind.ENTITY, 0.1));
+        assertNotEquals(Meaning.of("a", MeaningKind.CONCEPT, 0.1), Meaning.of("b", MeaningKind.CONCEPT, 0.1));
         assertEquals(Meaning.of("a", MeaningKind.CONCEPT, 0.1), Meaning.of("a", MeaningKind.CONCEPT, 0.9));
 
         assertEquals(SemText.of(), SemText.of());
@@ -146,17 +148,22 @@ public class SemTextTest {
 
     @Test
     public void testWith() {
-        
+
         assertEquals("a",
                 Term.of(0, 1, MeaningStatus.NOT_SURE, null)
                 .with(MeaningStatus.SELECTED, Meaning.of("a", MeaningKind.CONCEPT, 0.2))
                 .getSelectedMeaning()
                 .getId());
 
-
         assertEquals("b", SemText.of("a").with("b").getText());
         assertEquals(Locale.ITALIAN, SemText.of("a").with(Locale.ITALIAN).getLocale());
-
+        
+        assertEquals("b", SemText.of("").withMetadata("a", "b").getMetadata("a"));
+        
+        assertEquals("c", SemText.of("").withMetadata("a", "b")
+                                         .withMetadata("a", "c").getMetadata("a"));
+        
+        
     }
 
     /**
@@ -180,15 +187,14 @@ public class SemTextTest {
                 ma,
                 ImmutableList.of(ma)));
 
-        
         Meaning mb = Meaning.of("b", MeaningKind.ENTITY, 0.3);
-        
-        Term newTerm = Term.of(0, 1, 
-                                MeaningStatus.SELECTED, 
-                                mb,
-                                ImmutableList.of(Meaning.of("c", MeaningKind.ENTITY, 0.3)));
 
-        SemText semText = SemText.of("t", Locale.ITALIAN, terms);
+        Term newTerm = Term.of(0, 1,
+                MeaningStatus.SELECTED,
+                mb,
+                ImmutableList.of(Meaning.of("c", MeaningKind.ENTITY, 0.3)));
+
+        SemText semText = SemText.ofTerms("t", Locale.ITALIAN, terms);
         SemText updated = semText.merge(newTerm);
         assertEquals(1, Iterators.size(updated.terms()));
         assertEquals(mb, updated.terms().next().getSelectedMeaning());
@@ -216,7 +222,7 @@ public class SemTextTest {
 
         Term newTerm = Term.of(1, 3, MeaningStatus.TO_DISAMBIGUATE, null);
 
-        SemText semText = SemText.of("abcd", Locale.ITALIAN, terms);
+        SemText semText = SemText.ofTerms("abcd", Locale.ITALIAN, terms);
         SemText updatedSemText = semText.merge(newTerm);
         assertEquals(1, Iterators.size(updatedSemText.terms()));
         assertEquals(newTerm, updatedSemText.terms().next());
@@ -240,7 +246,7 @@ public class SemTextTest {
                 Term.of(2, 4, MeaningStatus.SELECTED, Meaning.of("b", MeaningKind.ENTITY, 0.4)));
         Term newTerm = Term.of(0, 1, MeaningStatus.SELECTED, Meaning.of("c", MeaningKind.CONCEPT, 0.4));
 
-        SemText semText = SemText.of("abcd", Locale.ITALIAN, origTerms);
+        SemText semText = SemText.ofTerms("abcd", Locale.ITALIAN, origTerms);
         SemText updatedSemText = semText.merge(newTerm);
         assertEquals(2, Iterators.size(updatedSemText.terms()));
         TermIterator wi = updatedSemText.terms();
@@ -261,16 +267,112 @@ public class SemTextTest {
      */
     @Test
     public void testUpdateSemText_4() {
-        ImmutableList<Term> terms = ImmutableList.of(Term.of(0, 2, MeaningStatus.SELECTED,Meaning.of("a", MeaningKind.CONCEPT, 0.4)),
+        ImmutableList<Term> terms = ImmutableList.of(Term.of(0, 2, MeaningStatus.SELECTED, Meaning.of("a", MeaningKind.CONCEPT, 0.4)),
                 Term.of(2, 4, MeaningStatus.SELECTED, Meaning.of("b", MeaningKind.ENTITY, 0.4)));
         Term newTerm = Term.of(2, 3, MeaningStatus.SELECTED, Meaning.of("c", MeaningKind.CONCEPT, 0.4));
 
-        SemText semText = SemText.of("abcd", Locale.ITALIAN, terms);
+        SemText semText = SemText.ofTerms("abcd", Locale.ITALIAN, terms);
         SemText updatedSemText = semText.merge(newTerm);
         assertEquals(2, Iterators.size(updatedSemText.terms()));
         TermIterator wi = updatedSemText.terms();
         assertEquals("a", wi.next().getSelectedMeaning().getId());
         assertEquals("c", wi.next().getSelectedMeaning().getId());
+    }
+
+    /**
+     * <pre>
+     * ab
+     * [)   t1
+     *  [)  t2
+     * [)   del
+     * </pre>
+     */
+    @Test
+    public void deleteFirstTermSemText_1() {
+        Term t2 = Term.of(1, 2, MeaningStatus.NOT_SURE, null);
+        SemText st = SemText.ofTerms("ab", Locale.FRENCH, ImmutableList.<Term>of(
+                Term.of(0, 1, MeaningStatus.NOT_SURE, null),
+                t2
+        ));
+
+        SemText newText = st.delete(ImmutableList.of(Range.closedOpen(0, 1)));
+        assertEquals(1, Iterators.size(newText.terms()));
+        assertEquals(t2, newText.terms().next());
+    }
+
+    /**
+     * <pre>
+     * ab
+     * [)   t1
+     * [  del Note it is closed on the same point at 0
+     * </pre>
+     */
+    @Test
+    public void deletePartialRangeFromSemText_1() {
+        SemText st = SemText.ofTerms("ab", Locale.FRENCH,
+                Term.of(0, 1, MeaningStatus.NOT_SURE, null));
+
+        assertEquals(1, Iterators.size(st.terms()));
+        SemText newText = st.delete(ImmutableList.of(Range.closed(0, 0)));
+        assertEquals(0, Iterators.size(newText.terms()));
+    }
+
+    /**
+     * This won't delete anything!
+     * <pre>
+     * ab
+     * [)   t1
+     * )  del Note it is closed and open on the same point at 0. Seems like the 'open' side wins!
+     * </pre>
+     */
+    @Test
+    public void deletePartialRangeFromSemText_2() {
+        SemText st = SemText.ofTerms("ab", Locale.FRENCH,
+                Term.of(0, 1, MeaningStatus.NOT_SURE, null));
+
+        assertEquals(1, Iterators.size(st.terms()));
+        SemText newText = st.delete(ImmutableList.of(Range.closedOpen(0, 0)));
+        assertEquals(1, Iterators.size(newText.terms()));
+    }
+
+    /**
+     * <pre>
+     * ab
+     * [)   t1
+     *  [)  t2
+     * [-)  del
+     * </pre>
+     */
+    @Test
+    public void deleteEverythingFromSemText() {
+
+        SemText st = SemText.ofTerms("ab", Locale.FRENCH, ImmutableList.<Term>of(
+                Term.of(0, 1, MeaningStatus.NOT_SURE, null),
+                Term.of(1, 2, MeaningStatus.NOT_SURE, null)
+        ));
+
+        SemText newText = st.delete(ImmutableList.of(Range.closedOpen(0, 2)));
+        assertEquals(0, Iterators.size(newText.terms()));
+    }
+
+    /**
+     * <pre>
+     * ab
+     * [)   t1
+     *  [)  t2
+     * []   del
+     * </pre>
+     */
+    @Test
+    public void deleteEverythingFromSemText_2() {
+
+        SemText st = SemText.ofTerms("ab", Locale.FRENCH, ImmutableList.<Term>of(
+                Term.of(0, 1, MeaningStatus.NOT_SURE, null),
+                Term.of(1, 2, MeaningStatus.NOT_SURE, null)
+        ));
+
+        SemText newText = st.delete(ImmutableList.of(Range.closed(0, 1)));
+        assertEquals(0, Iterators.size(newText.terms()));
     }
 
 }

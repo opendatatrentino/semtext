@@ -16,33 +16,38 @@
 package eu.trentorise.opendata.semantics.nlp.model;
 
 /**
- * A span of absolute offsets.
+ * A span of 0-indexed absolute offsets which must obey 0 ≤ start ≤ end. In
+ * range notation span semantics is expressed as [start, end), that is, start
+ * offset is closed, while end offset is open.
  *
  * @author David Leoni
  */
 public interface Span {
 
     /**
-     * An absolute getStart offset based on the text of the SemText containing
- this span. The offset is positioned at the first character of the span,
- so for span getStart would be 0.
- <pre>
+     * An absolute start offset based on the text of the SemText containing this
+     * span. The offset is positioned at the first character of the span, so for
+     * span getStart would be 0.
+     * <pre>
      * I see
      * 012345
-     * </pre> In the special case of empty span, getStart and getEnd must
- concide.
+     * </pre>
+     *
+     * In the special case of empty span, getStart and getEnd must concide.
      */
     public int getStart();
 
     /**
      * An absolute getEnd offset based on the text of the SemText containing
- this span. The offset is positioned *after* the last character of the
+     * this span. The offset is positioned *after* the last character of the
      * sentence, so for span
      * <pre>
      * I see
      * 012345
-     * </pre> getEnd would be 5. In the special case of empty span,
- getStart and getEnd must concide.
+     * </pre>
+     *
+     * getEnd would be 5. In the special case of empty span, getStart and getEnd
+     * must concide.
      */
     public int getEnd();
 }

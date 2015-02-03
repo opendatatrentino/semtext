@@ -265,6 +265,18 @@ public final class Term implements Span, Serializable, HasMetadata {
         ret.normalizeMeanings(ret.meanings, selectedMeaning);
         return ret;
     }
+    
+    /**
+     * Returns a copy of this object with the provided metadata set under the
+     * given namespace.
+     *
+     * @param metadata Must be an immutable object.
+     */
+    public Term withMetadata(String namespace, Object metadata) {
+        Term ret = new Term(this);        
+        ret.metadata = SemTexts.replaceMetadata(this.metadata, namespace, metadata);
+        return ret;
+    }      
 
     /**
      * Factory for a Term with only one meaning. Meaning probabilities are

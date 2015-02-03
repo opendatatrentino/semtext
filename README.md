@@ -8,7 +8,7 @@ SemText Model
 
 <br/>
 
-Java libraries for semantic text management.
+Java library for semantic text management. 
 
 **Project status**: developing [milestone 0.5](https://github.com/opendatatrentino/semtext-model/issues?milestone=1&state=open) 
 
@@ -18,6 +18,9 @@ Java libraries for semantic text management.
 **Features**:
   * dependency handling with Maven
   * has a liberal Apache 2.0 license
+  * provides a simple hierarchy of sentences and terms
+  * most datastructures are immutable
+  * allows attaching metadata to spans
   * well documented
   * supports Java 6+
 

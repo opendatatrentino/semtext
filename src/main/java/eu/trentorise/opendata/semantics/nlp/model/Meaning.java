@@ -234,6 +234,10 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
         return name;
     }
 
+    /**
+     * Returns a shallow copy of this meaning with provided probability set. 
+     * @param probability must be greater than -{@link SemTexts#TOLERANCE}     
+     */
     public Meaning withProbability(double probability){       
         if (probability < -TOLERANCE) {
             throw new IllegalArgumentException("Probability must be greater or equal than -" +  TOLERANCE + ", found instead: " + probability);

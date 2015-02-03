@@ -272,7 +272,13 @@
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>annotations</artifactId>
             <version>2.0.1</version>
-        </dependency>                      		
+        </dependency>              
+        
+        <dependency>
+            <groupId>com.google.guava</groupId>        
+            <artifactId>guava</artifactId>
+            <version>[14.0, 18.0]</version> <!-- RangeSet was introduced in 14.0 -->
+        </dependency>                                           		
 		       
         <!-- *****************************   STUFF FOR TESTING ********************************  -->
 
@@ -288,8 +294,7 @@
             <artifactId>JUnitParams</artifactId>
             <version>1.0.3</version>
             <scope>test</scope>
-        </dependency>               
-        
+        </dependency>                              
         
     </dependencies>
     

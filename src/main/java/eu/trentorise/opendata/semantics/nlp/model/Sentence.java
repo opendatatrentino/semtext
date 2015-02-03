@@ -6,7 +6,6 @@ import eu.trentorise.opendata.commons.NotFoundException;
 import static eu.trentorise.opendata.semantics.nlp.model.SemTexts.checkSpan;
 import static eu.trentorise.opendata.semantics.nlp.model.SemTexts.checkSpans;
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.concurrent.Immutable;

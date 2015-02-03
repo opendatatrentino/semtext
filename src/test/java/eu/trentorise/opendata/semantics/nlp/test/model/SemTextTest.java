@@ -1,10 +1,9 @@
 package eu.trentorise.opendata.semantics.nlp.test.model;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Range;
-import com.sun.xml.internal.ws.api.model.MEP;
+import eu.trentorise.opendata.commons.OdtConfig;
 import eu.trentorise.opendata.semantics.nlp.model.MeaningKind;
 
 import eu.trentorise.opendata.semantics.nlp.model.Meaning;
@@ -21,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -28,6 +28,11 @@ import org.junit.Test;
  * @author David Leoni
  */
 public class SemTextTest {
+    
+    @BeforeClass
+    public void beforeClass(){
+        OdtConfig.of(this.getClass()).loadLogConfig();        
+    }
 
     @Test
     public void testTermIteratorOneSentenceZeroTerms() {
@@ -345,7 +350,7 @@ public class SemTextTest {
      * </pre>
      */
     @Test
-    public void deleteEverythingFromSemText() {
+    public void deleteEverythingFromSemText_1() {
 
         SemText st = SemText.ofTerms("ab", Locale.FRENCH, ImmutableList.<Term>of(
                 Term.of(0, 1, MeaningStatus.NOT_SURE, null),
@@ -401,9 +406,6 @@ public class SemTextTest {
         catch (Exception ex) {
 
         }
-
-        
-        
         
     }
     

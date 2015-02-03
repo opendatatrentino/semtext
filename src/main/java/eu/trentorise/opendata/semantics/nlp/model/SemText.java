@@ -1,25 +1,17 @@
 package eu.trentorise.opendata.semantics.nlp.model;
 
-import com.google.common.base.Optional;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkPositionIndex;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
-import com.google.common.collect.RangeMap;
 import com.google.common.collect.RangeSet;
-import com.google.common.collect.TreeRangeMap;
 import com.google.common.collect.TreeRangeSet;
 import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.commons.LocalizedString;
 import eu.trentorise.opendata.commons.NotFoundException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -477,6 +469,9 @@ public final class SemText implements Serializable, HasMetadata {
         return SemText.of(dict.anyString(locales));
     }
 
+    /**
+     * Converts provided localized string into a SemText.
+     */
     public static SemText of(LocalizedString string) {
         return SemText.of(string.getString(), string.getLocale());
     }

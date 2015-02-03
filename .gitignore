@@ -9,7 +9,7 @@
 
 
 /conf/*
-!/conf/README.txt
+!/conf/README.md
 
 ##### INTELLIJ
 .idea/workspace.xml

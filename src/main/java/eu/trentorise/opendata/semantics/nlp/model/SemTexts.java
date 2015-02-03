@@ -52,18 +52,21 @@ public class SemTexts {
      * Determines the best meaning among the given ones according to their
      * probabilities. If no best meaning is found null is returned.
      *
-     * @param meanings a sorted list of meanings
+     * @param meanings a sorted list of meanings, with the first ones being the
+     * most important.
      * @return the disambiguated meaning or null if no meaning can be clearly
      * identified.
      */
     @Nullable
-    public static Meaning disambiguate(List<Meaning> meanings) {
-
-        if (meanings.isEmpty()) {
+    public static Meaning disambiguate(Iterable<Meaning> meanings) {
+        
+        if (Iterables.isEmpty(meanings)) {
             return null;
         }
 
-        if (meanings.size() == 1) {
+        int size = Iterables.size(meanings);
+        
+        if (size == 1) {
             Meaning m = meanings.iterator().next();
             if (m.getId() == null) {
                 return null;
@@ -72,9 +75,11 @@ public class SemTexts {
             }
         }
 
-        if (meanings.get(0).getProbability() > DISAMBIGUATION_FACTOR / meanings.size()
-                && meanings.get(0).getId() != null) {
-            return meanings.get(0);
+        Meaning first = Iterables.getFirst(meanings, null);
+        
+        if (first.getProbability() > DISAMBIGUATION_FACTOR / size
+                && first.getId() != null) {
+            return first;
         } else {
             return null;
         }
@@ -163,7 +168,8 @@ public class SemTexts {
 
     /**
      *
-     * Checks spans are all be valid spans (see {@link SemTexts#checkSpan(int, int, String) }
+     * Checks spans are all be valid spans (see {@link SemTexts#checkSpan(int, int, String)
+     * }
      * and are be non-overlapping (a span getEnd offset may coincide with next
      * span getStart offset). Spans must be contained within startOffset and
      * endOffset (last span getEnd offset may coincide with endOffset).
@@ -207,7 +213,7 @@ public class SemTexts {
      * A new term is returned with the provided meanings merged to the existing
      * ones. New meanings will replace equals old meanings.
      */
-    public List<Meaning> mergeMeanings(List<Meaning> oldMeanings, List<Meaning> newMeanings) {
+    public List<Meaning> mergeMeanings(Iterable<Meaning> oldMeanings, Iterable<Meaning> newMeanings) {
 
         Set<Meaning> dedupMeanings = new HashSet();
 
@@ -245,14 +251,14 @@ public class SemTexts {
     public static Range spanToRange(Span span) {
         return Range.closedOpen(span.getStart(), span.getEnd());
     }
-    
+
     /**
      * Returns a copy of provided metadata with the newMetadata set under the
      * given namespace.
      *
      * @param newMetadata Must be an immutable object.
-     */    
-    static ImmutableMap<String, ?> replaceMetadata(ImmutableMap<String, ?> metadata, String namespace, Object newMetadata){
+     */
+    static ImmutableMap<String, ?> replaceMetadata(ImmutableMap<String, ?> metadata, String namespace, Object newMetadata) {
         ImmutableMap.Builder<String, Object> mapb = ImmutableMap.builder();
         for (String ns : metadata.keySet()) {
             if (!ns.equals(namespace)) {
@@ -260,6 +266,6 @@ public class SemTexts {
             }
         }
         mapb.put(namespace, newMetadata);
-        return mapb.build();        
+        return mapb.build();
     }
 }

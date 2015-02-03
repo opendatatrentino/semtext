@@ -30,8 +30,8 @@ import org.junit.Test;
 public class SemTextTest {
     
     @BeforeClass
-    public void beforeClass(){
-        OdtConfig.of(this.getClass()).loadLogConfig();        
+    public static void beforeClass(){
+        OdtConfig.of(SemTextTest.class).loadLogConfig();        
     }
 
     @Test

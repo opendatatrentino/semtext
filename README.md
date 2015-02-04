@@ -17,8 +17,10 @@ Java library for semantic text management.
 
 **Features**:
   * provides a simple hierarchy of sentences and terms
-  * most datastructures are immutable
+  * has immutable data structures
   * allows attaching metadata to spans
+  * has separate [JSON serialization module](https://github.com/opendatatrentino/semtext-jackson)
+  * has separate [NLText/SemanticString converters module](https://github.com/opendatatrentino/semtext-nltext)
   * well documented
   * dependency handling with Maven
   * has a liberal Apache 2.0 license

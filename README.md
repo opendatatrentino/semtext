@@ -1,4 +1,4 @@
-SemText Model
+SemText
 ===
 <!--
 <p align="center">
@@ -10,9 +10,9 @@ SemText Model
 
 Java library for semantic text management. 
 
-**Project status**: developing [milestone 0.5](https://github.com/opendatatrentino/semtext-model/issues?milestone=1&state=open) 
+**Project status**: developing [milestone 0.5](https://github.com/opendatatrentino/semtext/issues?milestone=1&state=open) 
 
-**Usage**: see [the wiki](https://github.com/opendatatrentino/semtext-model/wiki)
+**Usage**: see [the wiki](https://github.com/opendatatrentino/semtext/wiki)
 
 
 **Features**:

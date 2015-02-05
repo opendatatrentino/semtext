@@ -415,15 +415,15 @@ public final class SemText implements Serializable, HasMetadata, Span {
     /**
      * @param locale if unknown use {@link Locale#ROOT}
      */
-    public static SemText of(String text, Locale locale, Sentence sentence) {
-        return new SemText(text, locale, ImmutableList.of(sentence), HasMetadata.EMPTY);
+    public static SemText of(String text, Locale locale, Sentence... sentences) {
+        return ofSentences(text, locale, ImmutableList.copyOf(sentences));
     }
 
     /**
      * @param locale Locale of the whole text. if unknown use
      * {@link Locale#ROOT}
      */
-    public static SemText ofSentences(String text, Locale locale, List<Sentence> sentences) {
+    public static SemText ofSentences(String text, Locale locale, Iterable<Sentence> sentences) {
         return new SemText(text, locale, sentences, HasMetadata.EMPTY);
     }
 
@@ -443,10 +443,7 @@ public final class SemText implements Serializable, HasMetadata, Span {
      * {@link Locale#ROOT}
      */
     public static SemText ofTerms(String text, Locale locale, Term... terms) {
-        return new SemText(text,
-                locale,
-                ImmutableList.of(Sentence.of(0, text.length(), ImmutableList.copyOf(terms))),
-                HasMetadata.EMPTY);
+        return ofTerms(text, locale, ImmutableList.copyOf(terms));
     }
 
     /**

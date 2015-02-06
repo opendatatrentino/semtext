@@ -30,8 +30,10 @@ import javax.annotation.concurrent.Immutable;
  */
 @Immutable
 @ParametersAreNonnullByDefault
-public final class SemText implements Serializable, HasMetadata, Span {
+public final class SemText implements Serializable, HasMetadata {
 
+    private static final long serialVersionUID = 1L;
+    
     private static final SemText INSTANCE = new SemText();
 
     private String text;
@@ -471,16 +473,6 @@ public final class SemText implements Serializable, HasMetadata, Span {
      */
     public static SemText of(LocalizedString string) {
         return SemText.of(string.getString(), string.getLocale());
-    }
-
-    @Override
-    public int getStart() {
-        return 0;
-    }
-
-    @Override
-    public int getEnd() {
-        return text.length();
     }
 
 }

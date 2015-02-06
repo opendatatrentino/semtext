@@ -21,6 +21,8 @@ import javax.annotation.concurrent.Immutable;
 @ParametersAreNonnullByDefault
 public final class Sentence implements Span, Serializable, HasMetadata {
 
+    private static final long serialVersionUID = 1L;
+    
     private int start;
     private int end;
 

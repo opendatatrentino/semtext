@@ -22,6 +22,8 @@ import javax.annotation.concurrent.Immutable;
 @ParametersAreNonnullByDefault
 public final class Meaning implements Comparable<Meaning>, Serializable, HasMetadata {
 
+    private static final long serialVersionUID = 1L;
+    
     private static final Meaning INSTANCE = new Meaning();
 
     private String id;    

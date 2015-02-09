@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.trentorise.opendata.semantics.nlp.model;
+package eu.trentorise.opendata.semtext;
 
 /**
  * A span of 0-indexed absolute offsets which must obey 0 ≤ start ≤ end. In

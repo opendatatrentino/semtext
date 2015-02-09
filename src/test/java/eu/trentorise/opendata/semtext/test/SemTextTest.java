@@ -1,18 +1,17 @@
-package eu.trentorise.opendata.semantics.nlp.test.model;
+package eu.trentorise.opendata.semtext.test;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Range;
 import eu.trentorise.opendata.commons.OdtConfig;
-import eu.trentorise.opendata.semantics.nlp.model.MeaningKind;
-
-import eu.trentorise.opendata.semantics.nlp.model.Meaning;
-import eu.trentorise.opendata.semantics.nlp.model.MeaningStatus;
-import eu.trentorise.opendata.semantics.nlp.model.SemText;
-import eu.trentorise.opendata.semantics.nlp.model.SemTexts;
-import eu.trentorise.opendata.semantics.nlp.model.Sentence;
-import eu.trentorise.opendata.semantics.nlp.model.Term;
-import eu.trentorise.opendata.semantics.nlp.model.TermIterator;
+import eu.trentorise.opendata.semtext.MeaningKind;
+import eu.trentorise.opendata.semtext.Meaning;
+import eu.trentorise.opendata.semtext.MeaningStatus;
+import eu.trentorise.opendata.semtext.SemText;
+import eu.trentorise.opendata.semtext.SemTexts;
+import eu.trentorise.opendata.semtext.Sentence;
+import eu.trentorise.opendata.semtext.Term;
+import eu.trentorise.opendata.semtext.TermIterator;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import org.junit.Assert;

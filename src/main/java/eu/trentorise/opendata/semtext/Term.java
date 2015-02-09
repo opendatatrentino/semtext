@@ -1,12 +1,12 @@
-package eu.trentorise.opendata.semantics.nlp.model;
+package eu.trentorise.opendata.semtext;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import eu.trentorise.opendata.commons.NotFoundException;
-import static eu.trentorise.opendata.semantics.nlp.model.SemTexts.checkMeaningStatus;
-import static eu.trentorise.opendata.semantics.nlp.model.SemTexts.checkSpan;
+import static eu.trentorise.opendata.semtext.SemTexts.checkMeaningStatus;
+import static eu.trentorise.opendata.semtext.SemTexts.checkSpan;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;

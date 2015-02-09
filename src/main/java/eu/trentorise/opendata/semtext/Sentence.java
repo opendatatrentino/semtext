@@ -1,10 +1,10 @@
-package eu.trentorise.opendata.semantics.nlp.model;
+package eu.trentorise.opendata.semtext;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import eu.trentorise.opendata.commons.NotFoundException;
-import static eu.trentorise.opendata.semantics.nlp.model.SemTexts.checkSpan;
-import static eu.trentorise.opendata.semantics.nlp.model.SemTexts.checkSpans;
+import static eu.trentorise.opendata.semtext.SemTexts.checkSpan;
+import static eu.trentorise.opendata.semtext.SemTexts.checkSpans;
 import java.io.Serializable;
 import java.util.Map;
 import javax.annotation.ParametersAreNonnullByDefault;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.trentorise.opendata.semantics.nlp.model;
+package eu.trentorise.opendata.semtext;
 
 /**
  * Represents the status of a meaning assigned to a {@link Term}

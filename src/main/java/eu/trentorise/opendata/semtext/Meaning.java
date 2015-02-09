@@ -1,11 +1,11 @@
-package eu.trentorise.opendata.semantics.nlp.model;
+package eu.trentorise.opendata.semtext;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.ImmutableMap;
 import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.commons.NotFoundException;
-import static eu.trentorise.opendata.semantics.nlp.model.SemTexts.TOLERANCE;
-import static eu.trentorise.opendata.semantics.nlp.model.SemTexts.checkPositiveScore;
+import static eu.trentorise.opendata.semtext.SemTexts.TOLERANCE;
+import static eu.trentorise.opendata.semtext.SemTexts.checkPositiveScore;
 import java.io.Serializable;
 import java.util.Map;
 import javax.annotation.ParametersAreNonnullByDefault;

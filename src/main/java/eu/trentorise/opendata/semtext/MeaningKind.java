@@ -1,4 +1,4 @@
-package eu.trentorise.opendata.semantics.nlp.model;
+package eu.trentorise.opendata.semtext;
 
 /**
  * The kind of a meaning. 

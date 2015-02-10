@@ -135,24 +135,29 @@ public final class Sentence implements Span, Serializable, HasMetadata {
     /**
      * Creates a sentence of one term.
      */
-    public static Sentence of(int startOffset, int endOffset, Term term) {
-        
-        
-        return new Sentence(startOffset, endOffset, ImmutableList.of(term), HasMetadata.EMPTY);
+    public static Sentence of(int start, int end, Term term) {                
+        return of(start, end, ImmutableList.of(term), HasMetadata.EMPTY);
     }
 
     /**
      * Creates a sentence.
      */
-    public static Sentence of(int startOffset, int endOffset, Iterable<Term> terms) {
-        return new Sentence(startOffset, endOffset, terms, HasMetadata.EMPTY);
+    public static Sentence of(int start, int end, Iterable<Term> terms) {
+        return of(start, end, terms, HasMetadata.EMPTY);
     }
+    
+    /**
+     * Creates a sentence.
+     */
+    public static Sentence of(int start, int end, Iterable<Term> terms, Map<String, ?> metadata) {
+        return new Sentence(start, end, terms, metadata);
+    }    
 
     /**
      * Creates a sentence of zero terms.
      */
-    public static Sentence of(int startOffset, int endOffset) {
-        return new Sentence(startOffset, endOffset, ImmutableList.<Term>of(), HasMetadata.EMPTY);
+    public static Sentence of(int start, int end) {
+        return of(start, end, ImmutableList.<Term>of(), HasMetadata.EMPTY);
     }
 
     

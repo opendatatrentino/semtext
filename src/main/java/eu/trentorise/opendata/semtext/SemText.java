@@ -360,7 +360,7 @@ public final class SemText implements Serializable, HasMetadata {
             Locale locale,
             MeaningStatus meaningStatus,
             @Nullable Meaning selectedMeaning) {
-        return new SemText(text,
+        return ofSentences(text,
                 locale,
                 ImmutableList.of(Sentence.of(0,
                                 text.length(),
@@ -386,20 +386,22 @@ public final class SemText implements Serializable, HasMetadata {
             MeaningStatus meaningStatus,
             @Nullable Meaning selectedMeaning,
             List<Meaning> meanings) {
-        return new SemText(text,
+        return ofSentences(text,
                 locale,
                 ImmutableList.of(Sentence.of(0,
                                 text.length(),
                                 Term.of(0, text.length(), meaningStatus, selectedMeaning, meanings))),
                 HasMetadata.EMPTY);
     }
+    
+    
 
     /**
      * Creates SemText with the provided string. Locale is set to
      * {@link Locale#ROOT}
      */
     public static SemText of(String text) {
-        return new SemText(text, Locale.ROOT, ImmutableList.<Sentence>of(), HasMetadata.EMPTY);
+        return ofSentences(text, Locale.ROOT, ImmutableList.<Sentence>of(), HasMetadata.EMPTY);
     }
 
     /**
@@ -411,7 +413,7 @@ public final class SemText implements Serializable, HasMetadata {
      * {@link Locale#ROOT}.
      */
     public static SemText of(String text, Locale locale) {
-        return new SemText(text, locale, ImmutableList.<Sentence>of(), HasMetadata.EMPTY);
+        return ofSentences(text, locale, ImmutableList.<Sentence>of(), HasMetadata.EMPTY);
     }
 
     /**
@@ -426,7 +428,15 @@ public final class SemText implements Serializable, HasMetadata {
      * {@link Locale#ROOT}
      */
     public static SemText ofSentences(String text, Locale locale, Iterable<Sentence> sentences) {
-        return new SemText(text, locale, sentences, HasMetadata.EMPTY);
+        return ofSentences(text, locale, sentences, HasMetadata.EMPTY);
+    }
+    
+    /**
+     * @param locale Locale of the whole text. if unknown use
+     * {@link Locale#ROOT}
+     */
+    public static SemText ofSentences(String text, Locale locale, Iterable<Sentence> sentences, Map<String, ?> metadata) {
+        return new SemText(text, locale, sentences, metadata);
     }
 
     /**

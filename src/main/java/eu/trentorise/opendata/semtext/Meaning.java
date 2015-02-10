@@ -23,13 +23,13 @@ import javax.annotation.concurrent.Immutable;
 public final class Meaning implements Comparable<Meaning>, Serializable, HasMetadata {
 
     private static final long serialVersionUID = 1L;
-    
+
     private static final Meaning INSTANCE = new Meaning();
 
-    private String id;    
+    private String id;
     private MeaningKind kind;
-    private double probability;    
-    private Dict name;    
+    private double probability;
+    private Dict name;
     private ImmutableMap<String, ?> metadata;
 
     private Meaning() {
@@ -39,16 +39,17 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
         this.name = Dict.of();
         this.metadata = ImmutableMap.of();
     }
-    
-    /** shallow copy constructor */
+
+    /**
+     * shallow copy constructor
+     */
     private Meaning(Meaning m) {
         this.id = m.getId();
         this.kind = m.getKind();
         this.probability = m.getProbability();
         this.name = m.getName();
-        this.metadata = m.getMetadata();        
+        this.metadata = m.getMetadata();
     }
-        
 
     @Override
     public boolean hasMetadata(String namespace) {
@@ -60,8 +61,6 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
         return metadata;
     }
 
-    
-    
     @Override
     public Object getMetadata(String namespace) {
         Object ret = metadata.get(namespace);
@@ -71,8 +70,7 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
             return ret;
         }
     }
-    
-    
+
     /**
      * Equality must only check the id and kind
      */
@@ -110,67 +108,73 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
      * @param id the id of the entity or concept this meaning represents,
      * <a href="http://www.w3.org/TR/json-ld/#node-identifiers" target="_blank">
      * as specified in JSON-LD </a>. If unknown use an empty string.
+     * @param kind The kind can be either an entity or a concept.
      * @param probability Must be greater or equal than 0
-     * @param meaningKind The kind can be either an entity or a concept.
-     * @param name the name of the entity or concept this meaning represents. If unknwon, use {@link Dict#of()}
+     * @param name the name of the entity or concept this meaning represents. If
+     * unknwon, use {@link Dict#of()}
      * @param metadata metadata will be stored in an immutable map.
      */
-    private Meaning(String id, double probability, MeaningKind meaningKind, Dict name, Map<String, ?> metadata) {
+    private Meaning(String id, MeaningKind kind, double probability, Dict name, Map<String, ?> metadata) {
         checkNotNull(id);
         checkNotNull(name);
-        checkNotNull(meaningKind);
+        checkNotNull(kind);
         checkNotNull(metadata);
-        
+
         checkPositiveScore(probability, "Invalid probability for meaning!");
-        
+
         this.id = id;
+        this.kind = kind;
         this.probability = probability;
-        this.kind = meaningKind;
         this.name = name;
         this.metadata = ImmutableMap.copyOf(metadata);
     }
-
-    /**
+    
+   /**
      * Meaning factory method.
      *
      * @param id the id of the entity or concept this meaning represents,
      * <a href="http://www.w3.org/TR/json-ld/#node-identifiers" target="_blank">
      * as specified in JSON-LD </a>. If unknown, use the empty string.
-     * @param meaningKind The kind can be either an entity or a concept.
+     * @param kind The kind can be either an entity or a concept.
      * @param probability Must be greater or equal than 0
     
      */
-    public static Meaning of(String id, MeaningKind meaningKind, double probability) {
-        return new Meaning(id, probability, meaningKind, Dict.of(), HasMetadata.EMPTY);
-    }
-
-    /**
-     * Meaning factory method.
-     *
-     * @param id the id of the entity or concept this meaning represents,
-     * <a href="http://www.w3.org/TR/json-ld/#node-identifiers" target="_blank">
-     * as specified in JSON-LD </a>. If unknown, use the empty string.
-     * @param meaningKind The kind can be either an entity or a concept.
-     * @param probability Must be greater or equal than 0
-     * @param name the name of the entity or concept this meaning represents. If unknwon, use {@link Dict#of()}
-     */
-    public static Meaning of(String id, MeaningKind meaningKind, double probability, Dict name) {
-        return new Meaning(id, probability, meaningKind, name, HasMetadata.EMPTY);
-    }
-
-    /**
-     * Meaning factory method. Probability will be set to 1.0
-     *
-     * @param id the id of the entity or concept this meaning represents,
-     * <a href="http://www.w3.org/TR/json-ld/#node-identifiers" target="_blank">
-     * as specified in JSON-LD </a>. If unknown, use the empty string.
-     * @param meaningKind The kind can be either an entity or a concept.     
-     * @param name the name of the entity or concept this meaning represents. If unknwon, use {@link Dict#of()}
-     */
-    public static Meaning of(String id, MeaningKind meaningKind, Dict name) {
-        return new Meaning(id, 1.0, meaningKind, name, HasMetadata.EMPTY);
+    public static Meaning of(String id, MeaningKind kind, double probability) {
+        return of(id, kind, probability, Dict.of(), HasMetadata.EMPTY);
     }    
-    
+
+    /**
+     * Meaning factory method.
+     *
+     * @param id the id of the entity or concept this meaning represents,
+     * <a href="http://www.w3.org/TR/json-ld/#node-identifiers" target="_blank">
+     * as specified in JSON-LD </a>. If unknown, use the empty string.
+     * @param kind The kind can be either an entity or a concept.
+     * @param probability Must be greater or equal than 0
+     * @param name the name of the entity or concept this meaning represents. If
+     * unknwon, use {@link Dict#of()}
+     */
+    public static Meaning of(String id, MeaningKind kind, double probability, Dict name) {
+        return of(id, kind, probability, name, HasMetadata.EMPTY);
+    }
+
+    /**
+     * Meaning factory method.
+     *
+     * @param id the id of the entity or concept this meaning represents,
+     * <a href="http://www.w3.org/TR/json-ld/#node-identifiers" target="_blank">
+     * as specified in JSON-LD </a>. If unknown, use the empty string.
+     * @param kind The kind can be either an entity or a concept.
+     * @param probability Must be greater or equal than 0
+     * @param name the name of the entity or concept this meaning represents. If
+     * unknwon, use {@link Dict#of()}
+     * @param metadata the metadata to associate to the meaning. Objects
+     * contained in the map must be immutable.
+     */
+    public static Meaning of(String id, MeaningKind kind, double probability, Dict name, Map<String, ?> metadata) {
+        return new Meaning(id, kind, probability, name, metadata);
+    }
+
     /**
      * Returns a meaning with empty id and {@link MeaningKind#UNKNOWN}
      */
@@ -191,8 +195,6 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
         }
     }
 
-
-
     /**
      * @return the probability of this meaning
      */
@@ -204,7 +206,7 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
      * @return the id of the entity or the concept represented by this meaning,
      * <a href="http://www.w3.org/TR/json-ld/#node-identifiers" target="_blank">
      * as specified in JSON-LD </a>. If no id was assigned to meaning, returns
- the empty string.
+     * the empty string.
      */
     public String getId() {
         return id;
@@ -231,23 +233,24 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
     }
 
     /**
-     * Returns a shallow copy of this meaning with provided probability set. 
-     * @param probability must be greater than -{@link SemTexts#TOLERANCE}     
+     * Returns a shallow copy of this meaning with provided probability set.
+     *
+     * @param probability must be greater than -{@link SemTexts#TOLERANCE}
      */
-    public Meaning withProbability(double probability){       
+    public Meaning withProbability(double probability) {
         if (probability < -TOLERANCE) {
-            throw new IllegalArgumentException("Probability must be greater or equal than -" +  TOLERANCE + ", found instead: " + probability);
+            throw new IllegalArgumentException("Probability must be greater or equal than -" + TOLERANCE + ", found instead: " + probability);
         }
         Meaning ret = new Meaning(this);
         ret.probability = probability;
-        return ret;        
+        return ret;
     }
 
     @Override
     public String toString() {
-        return "Meaning{" + "id=" + id + ", kind=" + kind + ", probability=" + probability  + ", name=" + name + ", metadata=" + metadata + '}';
+        return "Meaning{" + "id=" + id + ", kind=" + kind + ", probability=" + probability + ", name=" + name + ", metadata=" + metadata + '}';
     }
-    
+
     /**
      * Returns a copy of this object with the provided metadata set under the
      * given namespace.
@@ -255,8 +258,8 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
      * @param metadata Must be an immutable object.
      */
     public Meaning withMetadata(String namespace, Object metadata) {
-        Meaning ret = new Meaning(this);        
+        Meaning ret = new Meaning(this);
         ret.metadata = SemTexts.replaceMetadata(this.metadata, namespace, metadata);
         return ret;
-    }    
+    }
 }

@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableMap;
  */
 public interface HasMetadata {
 
+    /** Convenience instance for empty metadata */
     ImmutableMap<String,?> EMPTY  =  ImmutableMap.<String,Object>of();
     
     /**

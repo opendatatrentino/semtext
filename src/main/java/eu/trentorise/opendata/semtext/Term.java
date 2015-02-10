@@ -28,7 +28,7 @@ import javax.annotation.concurrent.Immutable;
 public final class Term implements Span, Serializable, HasMetadata {
 
     private static final long serialVersionUID = 1L;
-    
+
     private int start;
     private int end;
     private ImmutableList<Meaning> meanings;
@@ -294,7 +294,7 @@ public final class Term implements Span, Serializable, HasMetadata {
             MeaningStatus status,
             Meaning selectedMeaning) {
 
-        return new Term(start,
+        return of(start,
                 end,
                 status,
                 selectedMeaning,
@@ -314,8 +314,7 @@ public final class Term implements Span, Serializable, HasMetadata {
      * @param meaningStatus
      * @param selectedMeaning if unknown use null
      * @param meanings a new collection is created internally to store the
-     * deduplicated meanings. If the selectedMeaning is present it is merged in
-     * the stored meanings with top score.
+     * deduplicated meanings.
      */
     public static Term of(int start,
             int end,
@@ -323,12 +322,42 @@ public final class Term implements Span, Serializable, HasMetadata {
             @Nullable Meaning selectedMeaning,
             Iterable<Meaning> meanings) {
 
-        return new Term(start,
+        return of(start,
                 end,
                 meaningStatus,
                 selectedMeaning,
                 meanings,
                 HasMetadata.EMPTY);
+    }
+
+    /**
+     * Factory for a Term. Meaning probabilities are stored deduplicated and
+     * normalized so total sum is 1.0 . The selected meaning if not null is also
+     * merged in the meanings.
+     *
+     * @param start 0-indexed position of the span
+     * @param end the position of the character immediately *after* the term
+     * itself. Position is absolute with respect to the text stored in the
+     * SemText container.
+     * @param meaningStatus
+     * @param selectedMeaning if unknown use null
+     * @param meanings a new collection is created internally to store the
+     * deduplicated meanings.
+     * @param metadata a map of metadata. Provided metadata objects must be
+     * immutable.
+     */
+    public static Term of(int start,
+            int end,
+            MeaningStatus meaningStatus,
+            @Nullable Meaning selectedMeaning,
+            Iterable<Meaning> meanings,
+            Map<String, ?> metadata) {
+        return new Term(start,
+                end,
+                meaningStatus,
+                selectedMeaning,
+                meanings,
+                metadata);
     }
 
 }

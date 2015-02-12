@@ -20,10 +20,11 @@ import com.google.common.collect.UnmodifiableIterator;
 import java.util.NoSuchElementException;
 
 /**
- * Iterator for all the terms in the text (regardless of the sentences).
+ * Iterator for all the terms in the text (regardless of the sentences). Does
+ * not support remove operation.
  */
 public class TermIterator extends UnmodifiableIterator<Term> {
-        
+
     private UnmodifiableIterator<Sentence> sentenceIter;
     private UnmodifiableIterator<Term> termIter;
 
@@ -91,12 +92,9 @@ public class TermIterator extends UnmodifiableIterator<Term> {
         return true;
     }
 
-    
-
     @Override
     public String toString() {
         return "TermIterator{" + "sentenceIter=" + sentenceIter + ", termIter=" + termIter + '}';
     }
 
-        
 }

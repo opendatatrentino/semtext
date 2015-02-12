@@ -21,11 +21,13 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Range;
+import eu.trentorise.opendata.commons.Dict;
 import static eu.trentorise.opendata.commons.OdtUtils.checkNotEmpty;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import javax.annotation.Nullable;
 
@@ -210,10 +212,36 @@ public class SemTexts {
     }
 
     /**
+     * Creates a Dict out of the provided semantic texts. 
+     */
+    public static Dict semTextsToDict(Iterable<SemText> semTexts) {
+        Dict.Builder dictb = Dict.builder();
+        for (SemText st : semTexts) {
+            dictb.put(st.getLocale(), st.getText());
+        }
+        return dictb.build();
+    }
+
+    /**
+     * Returns the provided dictionary as a list of semantic texts
+     */
+    public static ImmutableList<SemText> dictToSemTexts(Dict dict) {
+        ImmutableList.Builder<SemText> retb = ImmutableList.builder();
+
+        for (Locale locale : dict.locales()) {
+            for (String s : dict.strings(locale)) {
+                retb.add(SemText.of(locale, s));
+            }
+        }
+        return retb.build();
+    }    
+
+
+    /**
      * A new term is returned with the provided meanings merged to the existing
      * ones. New meanings will replace equals old meanings.
      */
-    public List<Meaning> mergeMeanings(Iterable<Meaning> oldMeanings, Iterable<Meaning> newMeanings) {
+    public static List<Meaning> mergeMeanings(Iterable<Meaning> oldMeanings, Iterable<Meaning> newMeanings) {
 
         Set<Meaning> dedupMeanings = new HashSet();
 

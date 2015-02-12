@@ -396,6 +396,20 @@ public final class SemText implements Serializable, HasMetadata {
     }
 
     /**
+     * Returns the sem text as a localized string
+     */
+    public LocalizedString asLocalizedString() {
+        return LocalizedString.of(locale, text);
+    }
+
+    /**
+     * Returns the sem text as a dictionary with one entry. 
+     */    
+    public Dict asDict() {
+        return Dict.of(locale, text);
+    }
+
+    /**
      * Creates SemText with the provided string. Locale is set to
      * {@link Locale#ROOT}
      */

@@ -36,10 +36,10 @@ public class SemTextTest {
     @Test
     public void testTermIteratorOneSentenceZeroTerms() {
 
-        assertFalse(SemText.of("abcde", Locale.FRENCH, Sentence.of(0, 1))
+        assertFalse(SemText.of(Locale.FRENCH, "abcde",  Sentence.of(0, 1))
                 .terms().hasNext());
         try {
-            SemText.of("abcde", Locale.FRENCH, Sentence.of(0, 1))
+            SemText.of(Locale.FRENCH, "abcde", Sentence.of(0, 1))
                     .terms().next();
             Assert.fail("Should have found no term!");
         }
@@ -50,10 +50,10 @@ public class SemTextTest {
 
     @Test
     public void testTermIteratorOneSentenceOneTerm() {
-        assertTrue(SemText.of("abcde", Locale.FRENCH, MeaningStatus.REVIEWED, Meaning.of("a", MeaningKind.ENTITY, 0.2))
+        assertTrue(SemText.of(Locale.FRENCH, "abcde", MeaningStatus.REVIEWED, Meaning.of("a", MeaningKind.ENTITY, 0.2))
                 .terms().hasNext());
 
-        TermIterator wi = SemText.of("abcde", Locale.FRENCH, MeaningStatus.REVIEWED, Meaning.of("a", MeaningKind.ENTITY, 0.2))
+        TermIterator wi = SemText.of( Locale.FRENCH, "abcde", MeaningStatus.REVIEWED, Meaning.of("a", MeaningKind.ENTITY, 0.2))
                 .terms();
         Term w = wi.next();
         assertEquals("a", w.getSelectedMeaning().getId());
@@ -70,8 +70,7 @@ public class SemTextTest {
     @Test
     public void testTermIteratorOneSentenceTwoTerms() {
 
-        SemText st = SemText.of("abcde", Locale.FRENCH,
-                Sentence.of(0, 7,
+        SemText st = SemText.of(Locale.FRENCH, "abcde",                 Sentence.of(0, 7,
                         ImmutableList.of(Term.of(0, 1, MeaningStatus.SELECTED, Meaning.of("a", MeaningKind.CONCEPT, 0.2)),
                                 Term.of(2, 3, MeaningStatus.SELECTED, Meaning.of("b", MeaningKind.CONCEPT, 0.2)))));
 
@@ -103,7 +102,7 @@ public class SemTextTest {
                 ImmutableList.of(Term.of(6, 7, MeaningStatus.SELECTED, Meaning.of("c", MeaningKind.CONCEPT, 0.2)),
                         Term.of(8, 9, MeaningStatus.SELECTED, Meaning.of("d", MeaningKind.CONCEPT, 0.2))));
 
-        SemText st = SemText.ofSentences("abcdefghilmnopqrs", Locale.FRENCH, ImmutableList.of(s1, s2));
+        SemText st = SemText.ofSentences(Locale.FRENCH, "abcdefghilmnopqrs", ImmutableList.of(s1, s2));
 
         TermIterator wi
                 = st.terms();
@@ -137,13 +136,13 @@ public class SemTextTest {
         assertEquals(SemText.of("a"), SemText.of("a"));
 
         assertNotEquals(SemText.of("a"), SemText.of("b"));
-        assertEquals(SemText.of("a", Locale.ITALY), SemText.of("a", Locale.ITALY));
+        assertEquals(SemText.of(Locale.ITALIAN, "a"), SemText.of(Locale.ITALIAN, "a"));
 
         Sentence s1 = Sentence.of(0, 2);
         Sentence s2 = Sentence.of(0, 2);
 
-        assertEquals(SemText.of("ab", Locale.ITALY, s1), SemText.of("ab", Locale.ITALY, s2));
-        assertNotEquals(SemText.of("ab", Locale.ITALY, s1), SemText.of("ab", Locale.ITALY));
+        assertEquals(SemText.of(Locale.ITALIAN, "ab",  s1), SemText.of(Locale.ITALIAN, "ab",  s2));
+        assertNotEquals(SemText.of(Locale.ITALIAN, "ab", s1), SemText.of(Locale.ITALIAN, "ab"));
 
         assertEquals(Term.of(0, 2, MeaningStatus.NOT_SURE, null, ImmutableList.<Meaning>of()),
                 Term.of(0, 2, MeaningStatus.NOT_SURE, null, ImmutableList.<Meaning>of()));
@@ -199,7 +198,7 @@ public class SemTextTest {
                 mb,
                 ImmutableList.of(Meaning.of("c", MeaningKind.ENTITY, 0.3)));
 
-        SemText semText = SemText.ofTerms("t", Locale.ITALIAN, terms);
+        SemText semText = SemText.ofTerms(Locale.ITALIAN, "t",  terms);
         SemText updated = semText.merge(newTerm);
         assertEquals(1, Iterators.size(updated.terms()));
         assertEquals(mb, updated.terms().next().getSelectedMeaning());
@@ -227,7 +226,7 @@ public class SemTextTest {
 
         Term newTerm = Term.of(1, 3, MeaningStatus.TO_DISAMBIGUATE, null);
 
-        SemText semText = SemText.ofTerms("abcd", Locale.ITALIAN, terms);
+        SemText semText = SemText.ofTerms(Locale.ITALIAN, "abcd", terms);
         SemText updatedSemText = semText.merge(newTerm);
         assertEquals(1, Iterators.size(updatedSemText.terms()));
         assertEquals(newTerm, updatedSemText.terms().next());
@@ -251,7 +250,7 @@ public class SemTextTest {
                 Term.of(2, 4, MeaningStatus.SELECTED, Meaning.of("b", MeaningKind.ENTITY, 0.4)));
         Term newTerm = Term.of(0, 1, MeaningStatus.SELECTED, Meaning.of("c", MeaningKind.CONCEPT, 0.4));
 
-        SemText semText = SemText.ofTerms("abcd", Locale.ITALIAN, origTerms);
+        SemText semText = SemText.ofTerms(Locale.ITALIAN, "abcd",  origTerms);
         SemText updatedSemText = semText.merge(newTerm);
         assertEquals(2, Iterators.size(updatedSemText.terms()));
         TermIterator wi = updatedSemText.terms();
@@ -276,7 +275,7 @@ public class SemTextTest {
                 Term.of(2, 4, MeaningStatus.SELECTED, Meaning.of("b", MeaningKind.ENTITY, 0.4)));
         Term newTerm = Term.of(2, 3, MeaningStatus.SELECTED, Meaning.of("c", MeaningKind.CONCEPT, 0.4));
 
-        SemText semText = SemText.ofTerms("abcd", Locale.ITALIAN, terms);
+        SemText semText = SemText.ofTerms(Locale.ITALIAN, "abcd",  terms);
         SemText updatedSemText = semText.merge(newTerm);
         assertEquals(2, Iterators.size(updatedSemText.terms()));
         TermIterator wi = updatedSemText.terms();
@@ -295,7 +294,7 @@ public class SemTextTest {
     @Test
     public void deleteFirstTermSemText_1() {
         Term t2 = Term.of(1, 2, MeaningStatus.NOT_SURE, null);
-        SemText st = SemText.ofTerms("ab", Locale.FRENCH, ImmutableList.<Term>of(
+        SemText st = SemText.ofTerms(Locale.FRENCH, "ab", ImmutableList.<Term>of(
                 Term.of(0, 1, MeaningStatus.NOT_SURE, null),
                 t2
         ));
@@ -314,7 +313,7 @@ public class SemTextTest {
      */
     @Test
     public void deletePartialRangeFromSemText_1() {
-        SemText st = SemText.ofTerms("ab", Locale.FRENCH,
+        SemText st = SemText.ofTerms(Locale.FRENCH, "ab", 
                 Term.of(0, 1, MeaningStatus.NOT_SURE, null));
 
         assertEquals(1, Iterators.size(st.terms()));
@@ -332,7 +331,7 @@ public class SemTextTest {
      */
     @Test
     public void deletePartialRangeFromSemText_2() {
-        SemText st = SemText.ofTerms("ab", Locale.FRENCH,
+        SemText st = SemText.ofTerms(Locale.FRENCH, "ab", 
                 Term.of(0, 1, MeaningStatus.NOT_SURE, null));
 
         assertEquals(1, Iterators.size(st.terms()));
@@ -351,7 +350,7 @@ public class SemTextTest {
     @Test
     public void deleteEverythingFromSemText_1() {
 
-        SemText st = SemText.ofTerms("ab", Locale.FRENCH, ImmutableList.<Term>of(
+        SemText st = SemText.ofTerms(Locale.FRENCH, "ab",  ImmutableList.<Term>of(
                 Term.of(0, 1, MeaningStatus.NOT_SURE, null),
                 Term.of(1, 2, MeaningStatus.NOT_SURE, null)
         ));
@@ -371,7 +370,7 @@ public class SemTextTest {
     @Test
     public void deleteEverythingFromSemText_2() {
 
-        SemText st = SemText.ofTerms("ab", Locale.FRENCH, ImmutableList.<Term>of(
+        SemText st = SemText.ofTerms(Locale.FRENCH, "ab",  ImmutableList.<Term>of(
                 Term.of(0, 1, MeaningStatus.NOT_SURE, null),
                 Term.of(1, 2, MeaningStatus.NOT_SURE, null)
         ));

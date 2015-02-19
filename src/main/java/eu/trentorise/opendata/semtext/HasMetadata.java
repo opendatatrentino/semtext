@@ -43,7 +43,7 @@ public interface HasMetadata {
      * Safe way to get metadata associated with the sentence for a given
      * namespace.
      *
-     * @throws NotFoundException if no getMetadata is available for the given
+     * @throws eu.trentorise.opendata.commons.NotFoundException if no getMetadata is available for the given
      * namespace.
      * @see #hasMetadata(java.lang.String)
      */

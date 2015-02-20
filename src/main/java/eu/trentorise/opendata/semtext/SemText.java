@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Logger;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.concurrent.Immutable;
@@ -33,7 +34,7 @@ import javax.annotation.concurrent.Immutable;
 public final class SemText implements Serializable, HasMetadata {
 
     private static final long serialVersionUID = 1L;
-
+    
     private static final SemText INSTANCE = new SemText();
 
     private String text;
@@ -53,17 +54,21 @@ public final class SemText implements Serializable, HasMetadata {
     }
 
     /**
-     * @param locale if unknown use {@link Locale#ROOT}
+     * @param locale if unknown use {@link Locale#ROOT}. If null is passed it
+     * will be automatically converted to Locale.ROOT.
      */
-    private SemText(Locale locale, String text, Iterable<Sentence> sentences, Map<String, ?> metadata) {
+    private SemText(@Nullable Locale locale, String text, Iterable<Sentence> sentences, Map<String, ?> metadata) {
         this();
-        checkNotNull(text);
-        checkNotNull(locale);
+        checkNotNull(text);        
         checkNotNull(sentences);
         checkNotNull(metadata);
+        if (locale == null) { // little remedy for nasty deserializers that cast "" into null.
+            this.locale = Locale.ROOT;
+        } else {
+            this.locale = locale;
+        }
+
         this.text = text;
-        this.locale = locale;
-        this.sentences = ImmutableList.copyOf(sentences);
         this.sentences = ImmutableList.copyOf(sentences);
         this.metadata = ImmutableMap.copyOf(metadata);
     }
@@ -107,7 +112,7 @@ public final class SemText implements Serializable, HasMetadata {
     /**
      * Gets the language of the whole text
      *
-     * @return the getLocale of the whole text. If getLocale is unknown,
+     * @return the locale of the whole text. If locale is unknown,
      * {@link Locale#ROOT} is returned.
      */
     public Locale getLocale() {
@@ -403,8 +408,8 @@ public final class SemText implements Serializable, HasMetadata {
     }
 
     /**
-     * Returns the sem text as a dictionary with one entry. 
-     */    
+     * Returns the sem text as a dictionary with one entry.
+     */
     public Dict asDict() {
         return Dict.of(locale, text);
     }

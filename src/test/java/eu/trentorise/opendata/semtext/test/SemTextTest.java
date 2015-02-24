@@ -1,7 +1,6 @@
 package eu.trentorise.opendata.semtext.test;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Range;
 import eu.trentorise.opendata.commons.OdtConfig;
 import eu.trentorise.opendata.semtext.MeaningKind;
@@ -37,10 +36,10 @@ public class SemTextTest {
     public void testTermIteratorOneSentenceZeroTerms() {
 
         assertFalse(SemText.of(Locale.FRENCH, "abcde",  Sentence.of(0, 1))
-                .terms().hasNext());
+                .terms().iterator().hasNext());
         try {
             SemText.of(Locale.FRENCH, "abcde", Sentence.of(0, 1))
-                    .terms().next();
+                    .terms().iterator().next();
             Assert.fail("Should have found no term!");
         }
         catch (NoSuchElementException ex) {
@@ -51,10 +50,10 @@ public class SemTextTest {
     @Test
     public void testTermIteratorOneSentenceOneTerm() {
         assertTrue(SemText.of(Locale.FRENCH, "abcde", MeaningStatus.REVIEWED, Meaning.of("a", MeaningKind.ENTITY, 0.2))
-                .terms().hasNext());
+                .terms().iterator().hasNext());
 
         TermIterator wi = SemText.of( Locale.FRENCH, "abcde", MeaningStatus.REVIEWED, Meaning.of("a", MeaningKind.ENTITY, 0.2))
-                .terms();
+                .terms().iterator();
         Term w = wi.next();
         assertEquals("a", w.getSelectedMeaning().getId());
         try {
@@ -75,7 +74,7 @@ public class SemTextTest {
                                 Term.of(2, 3, MeaningStatus.SELECTED, Meaning.of("b", MeaningKind.CONCEPT, 0.2)))));
 
         TermIterator wi
-                = st.terms();
+                = st.terms().iterator();
         Term w1 = wi.next();
         assertEquals("a", w1.getSelectedMeaning().getId());
         Term w2 = wi.next();
@@ -105,7 +104,7 @@ public class SemTextTest {
         SemText st = SemText.ofSentences(Locale.FRENCH, "abcdefghilmnopqrs", ImmutableList.of(s1, s2));
 
         TermIterator wi
-                = st.terms();
+                = st.terms().iterator();
         Term w1 = wi.next();
         assertEquals("a", w1.getSelectedMeaning().getId());
         Term w2 = wi.next();
@@ -119,10 +118,31 @@ public class SemTextTest {
             assertFalse(wi.hasNext());
             wi.next();
             Assert.fail("Should have found no term!");
-        }
-        catch (NoSuchElementException ex) {
+        } catch (NoSuchElementException ex) {
 
         }
+        
+        assertEquals("a", st.terms().get(0).getSelectedMeaning().getId());
+        
+        assertEquals("b", st.terms().get(1).getSelectedMeaning().getId());        
+        assertEquals("c", st.terms().get(2).getSelectedMeaning().getId());        
+        assertEquals("d", st.terms().get(3).getSelectedMeaning().getId());
+        
+        try {
+            st.terms().get(4);            
+            Assert.fail("Should had exceeded bounds!");
+        } catch (IndexOutOfBoundsException ex){
+            
+        }
+        
+        try {
+            st.terms().get(-1);
+            Assert.fail("Should have exceeded bounds!");
+        } catch (IndexOutOfBoundsException ex){
+            
+        }
+        
+        
     }
 
     @Test
@@ -200,11 +220,11 @@ public class SemTextTest {
 
         SemText semText = SemText.ofTerms(Locale.ITALIAN, "t",  terms);
         SemText updated = semText.merge(newTerm);
-        assertEquals(1, Iterators.size(updated.terms()));
-        assertEquals(mb, updated.terms().next().getSelectedMeaning());
+        assertEquals(1, updated.terms().size());
+        assertEquals(mb, updated.terms().get(0).getSelectedMeaning());
 
         // meanings should be merged
-        assertEquals(2, updated.terms().next().getMeanings().size());
+        assertEquals(2, updated.terms().get(0).getMeanings().size());
     }
 
     /**
@@ -228,8 +248,8 @@ public class SemTextTest {
 
         SemText semText = SemText.ofTerms(Locale.ITALIAN, "abcd", terms);
         SemText updatedSemText = semText.merge(newTerm);
-        assertEquals(1, Iterators.size(updatedSemText.terms()));
-        assertEquals(newTerm, updatedSemText.terms().next());
+        assertEquals(1, updatedSemText.terms().size());
+        assertEquals(newTerm, updatedSemText.terms().get(0));
 
     }
 
@@ -252,8 +272,8 @@ public class SemTextTest {
 
         SemText semText = SemText.ofTerms(Locale.ITALIAN, "abcd",  origTerms);
         SemText updatedSemText = semText.merge(newTerm);
-        assertEquals(2, Iterators.size(updatedSemText.terms()));
-        TermIterator wi = updatedSemText.terms();
+        assertEquals(2, updatedSemText.terms().size());
+        TermIterator wi = updatedSemText.terms().iterator();
         assertEquals(newTerm, wi.next());
         assertEquals(origTerms.get(1), wi.next());
     }
@@ -277,8 +297,8 @@ public class SemTextTest {
 
         SemText semText = SemText.ofTerms(Locale.ITALIAN, "abcd",  terms);
         SemText updatedSemText = semText.merge(newTerm);
-        assertEquals(2, Iterators.size(updatedSemText.terms()));
-        TermIterator wi = updatedSemText.terms();
+        assertEquals(2, updatedSemText.terms().size());
+        TermIterator wi = updatedSemText.terms().iterator();
         assertEquals("a", wi.next().getSelectedMeaning().getId());
         assertEquals("c", wi.next().getSelectedMeaning().getId());
     }
@@ -300,8 +320,8 @@ public class SemTextTest {
         ));
 
         SemText newText = st.delete(ImmutableList.of(Range.closedOpen(0, 1)));
-        assertEquals(1, Iterators.size(newText.terms()));
-        assertEquals(t2, newText.terms().next());
+        assertEquals(1, newText.terms().size());
+        assertEquals(t2, newText.terms().get(0));
     }
 
     /**
@@ -316,9 +336,9 @@ public class SemTextTest {
         SemText st = SemText.ofTerms(Locale.FRENCH, "ab", 
                 Term.of(0, 1, MeaningStatus.NOT_SURE, null));
 
-        assertEquals(1, Iterators.size(st.terms()));
+        assertEquals(1, st.terms().size());
         SemText newText = st.delete(ImmutableList.of(Range.closed(0, 0)));
-        assertEquals(0, Iterators.size(newText.terms()));
+        assertEquals(0, newText.terms().size());
     }
 
     /**
@@ -334,9 +354,9 @@ public class SemTextTest {
         SemText st = SemText.ofTerms(Locale.FRENCH, "ab", 
                 Term.of(0, 1, MeaningStatus.NOT_SURE, null));
 
-        assertEquals(1, Iterators.size(st.terms()));
+        assertEquals(1, st.terms().size());
         SemText newText = st.delete(ImmutableList.of(Range.closedOpen(0, 0)));
-        assertEquals(1, Iterators.size(newText.terms()));
+        assertEquals(1, newText.terms().size());
     }
 
     /**
@@ -356,7 +376,7 @@ public class SemTextTest {
         ));
 
         SemText newText = st.delete(ImmutableList.of(Range.closedOpen(0, 2)));
-        assertEquals(0, Iterators.size(newText.terms()));
+        assertEquals(0, newText.terms().size());
     }
 
     /**
@@ -376,7 +396,7 @@ public class SemTextTest {
         ));
 
         SemText newText = st.delete(ImmutableList.of(Range.closed(0, 1)));
-        assertEquals(0, Iterators.size(newText.terms()));
+        assertEquals(0, newText.terms().size());
     }
 
     @Test

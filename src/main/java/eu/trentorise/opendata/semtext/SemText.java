@@ -139,8 +139,8 @@ public final class SemText implements Serializable, HasMetadata {
      * Returns an terms that walks through all the terms, regardless of the
      * sentences.
      */
-    public TermIterator terms() {
-        return new TermIterator(this);
+    public TermsView terms() {
+        return TermsView.of(this);
     }
 
     /**
@@ -161,21 +161,19 @@ public final class SemText implements Serializable, HasMetadata {
             throw new IllegalStateException("The merge method currently only works with text of at most one sentence!");
         }
 
-        RangeSet<Integer> rangeSet = TreeRangeSet.create();
-        TermIterator termIter = terms();
+        RangeSet<Integer> rangeSet = TreeRangeSet.create();        
 
         for (Range r : deletionRanges) {
             rangeSet.add(r);
         }
 
-        while (termIter.hasNext()) {
-            Term term = termIter.next();
+        for (Term term : terms()){
             RangeSet<Integer> intersection = rangeSet.subRangeSet(SemTexts.spanToRange(term));
             if (intersection.isEmpty()) {
                 termsB.add(term);
             }
         }
-
+        
         return this.withTerms(termsB.build());
     }
 
@@ -205,7 +203,7 @@ public final class SemText implements Serializable, HasMetadata {
         }
 
         ImmutableList.Builder<Term> newTermsB = ImmutableList.builder();
-        TermIterator origTermIter = terms();
+        TermIterator origTermIter = new TermIterator(this);
         @Nullable
         Term curOrigTerm = origTermIter.hasNext() ? origTermIter.next() : null;
 

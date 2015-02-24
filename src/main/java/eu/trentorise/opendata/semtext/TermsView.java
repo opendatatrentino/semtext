@@ -15,9 +15,12 @@
  */
 package eu.trentorise.opendata.semtext;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
+import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Immutable view for terms in a SemText. For now it only supports iterator(),
@@ -28,6 +31,8 @@ import java.util.ListIterator;
  *
  * @author David Leoni
  */
+@Immutable
+@ParametersAreNonnullByDefault
 public class TermsView implements List<Term> {
 
     private SemText semText;
@@ -37,6 +42,7 @@ public class TermsView implements List<Term> {
     }
 
     private TermsView(SemText semText) {
+        checkNotNull(semText);
         this.semText = semText;
     }
 

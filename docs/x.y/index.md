@@ -40,7 +40,7 @@ In case updates are available, version numbers follows [semantic versioning](htt
 
 #### Examples
 
-Crude examples usages can be found [in the tests](../../src/test/java/eu/trentorise/opendata/semantics/nlp/test/model/SemTextTest.java
+Crude examples usages can be found [in the tests](../../src/test/java/eu/trentorise/opendata/semtext/test/SemTextTest.java
 )
 
 ```

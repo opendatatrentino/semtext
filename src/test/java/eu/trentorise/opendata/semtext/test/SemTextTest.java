@@ -10,7 +10,7 @@ import eu.trentorise.opendata.semtext.SemText;
 import eu.trentorise.opendata.semtext.SemTexts;
 import eu.trentorise.opendata.semtext.Sentence;
 import eu.trentorise.opendata.semtext.Term;
-import eu.trentorise.opendata.semtext.TermIterator;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import org.junit.Assert;
@@ -52,7 +52,7 @@ public class SemTextTest {
         assertTrue(SemText.of(Locale.FRENCH, "abcde", MeaningStatus.REVIEWED, Meaning.of("a", MeaningKind.ENTITY, 0.2))
                 .terms().iterator().hasNext());
 
-        TermIterator wi = SemText.of( Locale.FRENCH, "abcde", MeaningStatus.REVIEWED, Meaning.of("a", MeaningKind.ENTITY, 0.2))
+        Iterator<Term> wi = SemText.of( Locale.FRENCH, "abcde", MeaningStatus.REVIEWED, Meaning.of("a", MeaningKind.ENTITY, 0.2))
                 .terms().iterator();
         Term w = wi.next();
         assertEquals("a", w.getSelectedMeaning().getId());
@@ -73,7 +73,7 @@ public class SemTextTest {
                         ImmutableList.of(Term.of(0, 1, MeaningStatus.SELECTED, Meaning.of("a", MeaningKind.CONCEPT, 0.2)),
                                 Term.of(2, 3, MeaningStatus.SELECTED, Meaning.of("b", MeaningKind.CONCEPT, 0.2)))));
 
-        TermIterator wi
+        Iterator<Term> wi
                 = st.terms().iterator();
         Term w1 = wi.next();
         assertEquals("a", w1.getSelectedMeaning().getId());
@@ -103,7 +103,7 @@ public class SemTextTest {
 
         SemText st = SemText.ofSentences(Locale.FRENCH, "abcdefghilmnopqrs", ImmutableList.of(s1, s2));
 
-        TermIterator wi
+        Iterator<Term> wi
                 = st.terms().iterator();
         Term w1 = wi.next();
         assertEquals("a", w1.getSelectedMeaning().getId());
@@ -273,7 +273,7 @@ public class SemTextTest {
         SemText semText = SemText.ofTerms(Locale.ITALIAN, "abcd",  origTerms);
         SemText updatedSemText = semText.merge(newTerm);
         assertEquals(2, updatedSemText.terms().size());
-        TermIterator wi = updatedSemText.terms().iterator();
+        Iterator<Term> wi = updatedSemText.terms().iterator();
         assertEquals(newTerm, wi.next());
         assertEquals(origTerms.get(1), wi.next());
     }
@@ -298,7 +298,7 @@ public class SemTextTest {
         SemText semText = SemText.ofTerms(Locale.ITALIAN, "abcd",  terms);
         SemText updatedSemText = semText.merge(newTerm);
         assertEquals(2, updatedSemText.terms().size());
-        TermIterator wi = updatedSemText.terms().iterator();
+        Iterator<Term> wi = updatedSemText.terms().iterator();
         assertEquals("a", wi.next().getSelectedMeaning().getId());
         assertEquals("c", wi.next().getSelectedMeaning().getId());
     }

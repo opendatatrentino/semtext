@@ -26,8 +26,8 @@ import javax.annotation.concurrent.Immutable;
  * Immutable view for terms in a SemText. For now it only supports iterator(),
  * get(), isEmpty and size() methods.
  *
- * NOTE: this is just a view to ease traversal, if you need a list of
- * terms please build a proper one by yourself.
+ * NOTE: this is just a view to ease traversal, if you need a proper list of
+ * terms please build one by yourself.
  *
  * @author David Leoni
  */

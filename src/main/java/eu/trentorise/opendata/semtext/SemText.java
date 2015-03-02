@@ -139,7 +139,7 @@ public final class SemText implements Serializable, HasMetadata {
      * Returns an terms that walks through all the terms, regardless of the
      * sentences.
      */
-    public TermsView terms() {
+    public List<Term> terms() {
         return TermsView.of(this);
     }
 

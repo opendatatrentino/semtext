@@ -1,12 +1,11 @@
-<p class="jadoc-to-strip">
+<p class="jedoc-to-strip">
 WARNING: WORK IN PROGRESS - THIS IS ONLY A TEMPLATE FOR THE DOCUMENTATION. <br/>
-RELEASE DOCS ARE ON THE PROJECT WEBSITE
+RELEASE DOCS ARE ON THE <a href="http://opendatatrentino.github.io/semtext/" target="_blank">PROJECT WEBSITE</a>
 </p>
 
 
-### Introduction
+The purpose of this release is to provide a first model sufficiently stable to be reusable  in different projects.
 
-SemText is a lightweight model for semantically annotated text, designed for reliable exchange among applications rather than for efficiency. 
 
 ### UML diagram
 
@@ -25,7 +24,7 @@ SemText is a lightweight model for semantically annotated text, designed for rel
 
 #### Maven dependency
 
-SemText Jackson is available on Maven Central. To use it, put this in the dependencies section of your _pom.xml_: 
+SemText is available on Maven Central. To use it, put this in the dependencies section of your _pom.xml_: 
 
 
 ```
@@ -40,7 +39,7 @@ In case updates are available, version numbers follows [semantic versioning](htt
 
 #### Examples
 
-Crude examples usages can be found [in the tests](../../src/test/java/eu/trentorise/opendata/semtext/test/SemTextTest.java
+Crude examples usages can be found [in the tests](../src/test/java/eu/trentorise/opendata/semtext/test/SemTextTest.java
 )
 
 ```

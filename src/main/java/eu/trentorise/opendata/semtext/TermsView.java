@@ -16,6 +16,7 @@
 package eu.trentorise.opendata.semtext;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import com.google.common.collect.Iterators;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
@@ -23,8 +24,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * Immutable view for terms in a SemText. For now it only supports iterator(),
- * get(), isEmpty and size() methods.
+ * Immutable view for terms in a SemText. Officially supported methods are only iterator(),
+ * get(), isEmpty(), size(), contains() and containsAll().
  *
  * NOTE: this is just a view to ease traversal, if you need a proper list of
  * terms please build one by yourself.
@@ -65,11 +66,6 @@ public class TermsView implements List<Term> {
     }
 
     @Override
-    public ListIterator listIterator(int i) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public boolean isEmpty() {
         return size() == 0;
     }
@@ -84,56 +80,17 @@ public class TermsView implements List<Term> {
         }
         return false;
     }
-
-    @Override
-    public Object[] toArray() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public <T> T[] toArray(T[] ts) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean add(Term e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
+    
     @Override
     public boolean containsAll(Collection<?> clctn) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for (Object obj : clctn) {
+            if (!(contains(obj))) {
+                return false;
+            }
+        }
+        return true;
     }
-
-    @Override
-    public boolean addAll(Collection<? extends Term> clctn) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean addAll(int i, Collection<? extends Term> clctn) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean removeAll(Collection<?> clctn) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean retainAll(Collection<?> clctn) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void clear() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    
 
     @Override
     public Term get(int i) {
@@ -152,39 +109,136 @@ public class TermsView implements List<Term> {
         throw new IndexOutOfBoundsException("Tried to get term at index " + i + " , but semText has only " + semText.terms().size() + " terms");
     }
 
+   @Override
+    public Object[] toArray() {
+        return Iterators.toArray(iterator(), Term.class);
+    }
+
+    @Override
+    public <T> T[] toArray(T[] ts) {
+        return (T[]) toArray();
+    }    
+    
+    /**
+     * @deprecated not supported.
+     */
+    @Override
+    public ListIterator listIterator(int i) {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+ 
+    /**
+     * @deprecated not supported.
+     */
+    @Override
+    public boolean add(Term e) {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    /**
+     * @deprecated not supported.
+     */
+    @Override
+    public boolean remove(Object o) {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+
+    /**
+     * @deprecated not supported.
+     */
+    @Override
+    public boolean addAll(Collection<? extends Term> clctn) {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    /**
+     * @deprecated not supported.
+     */
+    @Override
+    public boolean addAll(int i, Collection<? extends Term> clctn) {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    /**
+     * @deprecated not supported.
+     */
+    @Override
+    public boolean removeAll(Collection<?> clctn) {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    /**
+     * @deprecated not supported.
+     */
+    @Override
+    public boolean retainAll(Collection<?> clctn) {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    /**
+     * @deprecated not supported.
+     */
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    /**
+     * @deprecated not supported.
+     */
     @Override
     public Term set(int i, Term e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported.");
     }
 
+    /**
+     * @deprecated not supported.
+     */
     @Override
     public void add(int i, Term e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported.");
     }
 
+    /**
+     * @deprecated not supported.
+     */
     @Override
     public Term remove(int i) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported.");
     }
 
+    /**
+     * @deprecated not supported.
+     */
     @Override
     public int indexOf(Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported.");
     }
 
+    /**
+     * @deprecated not supported.
+     */
     @Override
     public int lastIndexOf(Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported.");
     }
 
+    /**
+     * @deprecated not supported.
+     */
     @Override
     public ListIterator<Term> listIterator() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported.");
     }
 
+    /**
+     * @deprecated not supported.
+     */
     @Override
     public List<Term> subList(int i, int i1) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported.");
     }
 
 }

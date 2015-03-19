@@ -28,7 +28,12 @@ public class TermIterator extends UnmodifiableIterator<Term> {
     private UnmodifiableIterator<Sentence> sentenceIter;
     private UnmodifiableIterator<Term> termIter;
 
+    private TermIterator(){
+        super();
+    }
+    
     public TermIterator(SemText semtext) {
+        this();
         checkNotNull(semtext);
         this.sentenceIter = semtext.getSentences().iterator();
         if (sentenceIter.hasNext()) {

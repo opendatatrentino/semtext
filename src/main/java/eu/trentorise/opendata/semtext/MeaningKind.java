@@ -1,8 +1,8 @@
 package eu.trentorise.opendata.semtext;
 
 /**
- * The kind of a meaning. 
- * 
+ * The kind of a meaning.
+ *
  * @author David Leoni <david.leoni@unitn.it>
  */
 public enum MeaningKind {
@@ -17,6 +17,9 @@ public enum MeaningKind {
      * 'city', 'person', 'organization'.
      */
     CONCEPT,
-    
+    /**
+     * It is not known whether the meaning represents an entity or a
+     * concept.
+     */
     UNKNOWN;
 }

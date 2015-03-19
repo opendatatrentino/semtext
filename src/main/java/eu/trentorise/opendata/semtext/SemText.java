@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Logger;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.concurrent.Immutable;
@@ -384,8 +383,8 @@ public final class SemText implements Serializable, HasMetadata {
      * probable. Meaning propabilities will be normalized.
      *
      */
-    public static SemText of(String text,
-            Locale locale,
+    public static SemText of(Locale locale,
+            String text,            
             MeaningStatus meaningStatus,
             @Nullable Meaning selectedMeaning,
             List<Meaning> meanings) {

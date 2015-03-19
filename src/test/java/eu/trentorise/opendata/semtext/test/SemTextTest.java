@@ -13,6 +13,8 @@ import eu.trentorise.opendata.semtext.Term;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -26,6 +28,8 @@ import org.junit.Test;
  * @author David Leoni
  */
 public class SemTextTest {
+    private static final Logger LOG = Logger.getLogger(SemTextTest.class.getName());
+
     
     @BeforeClass
     public static void beforeClass(){
@@ -47,18 +51,20 @@ public class SemTextTest {
         }
     }
 
+    
+    
     @Test
     public void testTermIteratorOneSentenceOneTerm() {
         assertTrue(SemText.of(Locale.FRENCH, "abcde", MeaningStatus.REVIEWED, Meaning.of("a", MeaningKind.ENTITY, 0.2))
                 .terms().iterator().hasNext());
 
-        Iterator<Term> wi = SemText.of( Locale.FRENCH, "abcde", MeaningStatus.REVIEWED, Meaning.of("a", MeaningKind.ENTITY, 0.2))
+        Iterator<Term> termIter = SemText.of( Locale.FRENCH, "abcde", MeaningStatus.REVIEWED, Meaning.of("a", MeaningKind.ENTITY, 0.2))
                 .terms().iterator();
-        Term w = wi.next();
-        assertEquals("a", w.getSelectedMeaning().getId());
+        Term term = termIter.next();
+        assertEquals("a", term.getSelectedMeaning().getId());
         try {
-            assertFalse(wi.hasNext());
-            wi.next();
+            assertFalse(termIter.hasNext());
+            termIter.next();
             Assert.fail("Should have found no term!");
         }
         catch (NoSuchElementException ex) {
@@ -73,16 +79,16 @@ public class SemTextTest {
                         ImmutableList.of(Term.of(0, 1, MeaningStatus.SELECTED, Meaning.of("a", MeaningKind.CONCEPT, 0.2)),
                                 Term.of(2, 3, MeaningStatus.SELECTED, Meaning.of("b", MeaningKind.CONCEPT, 0.2)))));
 
-        Iterator<Term> wi
+        Iterator<Term> termIter
                 = st.terms().iterator();
-        Term w1 = wi.next();
-        assertEquals("a", w1.getSelectedMeaning().getId());
-        Term w2 = wi.next();
-        assertEquals("b", w2.getSelectedMeaning().getId());
+        Term term1 = termIter.next();
+        assertEquals("a", term1.getSelectedMeaning().getId());
+        Term term2 = termIter.next();
+        assertEquals("b", term2.getSelectedMeaning().getId());
 
         try {
-            assertFalse(wi.hasNext());
-            wi.next();
+            assertFalse(termIter.hasNext());
+            termIter.next();
             Assert.fail("Should have found no term!");
         }
         catch (NoSuchElementException ex) {
@@ -93,6 +99,8 @@ public class SemTextTest {
     @Test
     public void testTermIteratorTwoSentencesFourTerms() {
 
+        assertTrue(SemText.of().terms().isEmpty());
+        
         Sentence s1 = Sentence.of(0, 5,
                 ImmutableList.of(Term.of(0, 1, MeaningStatus.SELECTED, Meaning.of("a", MeaningKind.CONCEPT, 0.2)),
                         Term.of(2, 3, MeaningStatus.SELECTED, Meaning.of("b", MeaningKind.CONCEPT, 0.2))));
@@ -103,20 +111,20 @@ public class SemTextTest {
 
         SemText st = SemText.ofSentences(Locale.FRENCH, "abcdefghilmnopqrs", ImmutableList.of(s1, s2));
 
-        Iterator<Term> wi
+        Iterator<Term> termIter
                 = st.terms().iterator();
-        Term w1 = wi.next();
-        assertEquals("a", w1.getSelectedMeaning().getId());
-        Term w2 = wi.next();
-        assertEquals("b", w2.getSelectedMeaning().getId());
-        Term w3 = wi.next();
-        assertEquals("c", w3.getSelectedMeaning().getId());
-        Term w4 = wi.next();
-        assertEquals("d", w4.getSelectedMeaning().getId());
+        Term term1 = termIter.next();
+        assertEquals("a", term1.getSelectedMeaning().getId());
+        Term term2 = termIter.next();
+        assertEquals("b", term2.getSelectedMeaning().getId());
+        Term term3 = termIter.next();
+        assertEquals("c", term3.getSelectedMeaning().getId());
+        Term term4 = termIter.next();
+        assertEquals("d", term4.getSelectedMeaning().getId());
 
         try {
-            assertFalse(wi.hasNext());
-            wi.next();
+            assertFalse(termIter.hasNext());
+            termIter.next();
             Assert.fail("Should have found no term!");
         } catch (NoSuchElementException ex) {
 
@@ -127,6 +135,16 @@ public class SemTextTest {
         assertEquals("b", st.terms().get(1).getSelectedMeaning().getId());        
         assertEquals("c", st.terms().get(2).getSelectedMeaning().getId());        
         assertEquals("d", st.terms().get(3).getSelectedMeaning().getId());
+        
+        assertTrue(st.terms().contains(term3));
+        Term outsideTerm = Term.of(55,66,MeaningStatus.NOT_SURE, null);
+        assertFalse(st.terms().contains(outsideTerm));
+        
+        assertTrue(st.terms().containsAll(ImmutableList.of(term2, term3)));
+        assertFalse(st.terms().containsAll(ImmutableList.of(outsideTerm)));
+        
+        assertEquals(4, st.terms().size());        
+        
         
         try {
             st.terms().get(4);            
@@ -434,4 +452,27 @@ public class SemTextTest {
         assertTrue("prob should be near 1.0, found instead: " + prob, 1.0 - SemTexts.TOLERANCE <= prob && prob <= 1.0 + SemTexts.TOLERANCE);        
     }
 
+    @Test
+    public void example(){
+                
+        // Objects only support factory methods starting with 'of':
+        SemText.of(Locale.ITALIAN, "ciao");
+        
+        String text = "Welcome to Garda lake.";
+        
+        
+        Meaning meaning = Meaning.of("http://someknowledgebase.org/entities/garda-lake", MeaningKind.ENTITY, 0.7);
+        
+        // we indicate the span where 'Garda lake' occurs
+        Term term = Term.of(11, 21, MeaningStatus.SELECTED, meaning);
+
+        SemText semText = SemText.of( Locale.FRENCH, 
+                    text, 
+                    Sentence.of(0, 26, term)); // sentence spans the whole text
+        
+        LOG.log(Level.FINE, "lake is ..:{0}", semText.getText(term));
+        // only semText actually contains the text
+        assert "Garda lake".equals(semText.getText(term));
+    }
+    
 }

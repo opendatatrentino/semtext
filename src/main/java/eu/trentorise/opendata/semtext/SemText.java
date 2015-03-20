@@ -10,11 +10,15 @@ import com.google.common.collect.TreeRangeSet;
 import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.commons.LocalizedString;
 import eu.trentorise.opendata.commons.NotFoundException;
+import static eu.trentorise.opendata.commons.OdtUtils.checkNotEmpty;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.concurrent.Immutable;
@@ -141,7 +145,25 @@ public final class SemText implements Serializable, HasMetadata {
     public List<Term> terms() {
         return TermsView.of(this);
     }
-
+    
+    /**
+     * Returns a new SemText with all the terms matching the provided regex text deleted.
+     * 
+     * NOTE: Currently the method only works with text of one sentence! If it is
+     * not an IllegalStateException will be thrown!.
+     */
+    public SemText deleteTerms(Pattern pattern) {
+        checkNotNull(pattern);
+        checkNotEmpty(pattern.pattern(), "Pattern can't be empty!!");
+        
+        Matcher m = pattern.matcher(text);
+        List ranges = new ArrayList();
+        while (m.find()){
+            ranges.add(Range.closedOpen(m.start(), m.end()));            
+        }
+        return deleteTerms(ranges);
+    }
+    
     /**
      * Returns a copy of the this SemText without terms intersecting provided
      * ranges.
@@ -151,13 +173,13 @@ public final class SemText implements Serializable, HasMetadata {
      *
      */
     // note: Current version is inefficient, tried RangeMap.remove, but it only removes matching subsegments! 
-    public SemText delete(Iterable<Range<Integer>> deletionRanges) {
+    public SemText deleteTerms(Iterable<Range<Integer>> deletionRanges) {
         checkNotNull(deletionRanges);
 
         ImmutableList.Builder<Term> termsB = ImmutableList.builder();
 
         if (sentences.size() > 1) {
-            throw new IllegalStateException("The merge method currently only works with text of at most one sentence!");
+            throw new IllegalStateException("The delete terms method currently only works with text of at most one sentence!");
         }
 
         RangeSet<Integer> rangeSet = TreeRangeSet.create();        
@@ -175,7 +197,7 @@ public final class SemText implements Serializable, HasMetadata {
         
         return this.withTerms(termsB.build());
     }
-
+        
     /**
      * @see #merge(java.lang.Iterable)
      */
@@ -198,7 +220,7 @@ public final class SemText implements Serializable, HasMetadata {
         checkNotNull(termsToMerge);
 
         if (sentences.size() > 1) {
-            throw new IllegalStateException("The merge method currently only works with text of at most one sentence!");
+            throw new IllegalStateException("The merge terms method currently only works with text of at most one sentence!");
         }
 
         ImmutableList.Builder<Term> newTermsB = ImmutableList.builder();
@@ -370,7 +392,7 @@ public final class SemText implements Serializable, HasMetadata {
                                         meaningStatus,
                                         selectedMeaning,
                                         ImmutableList.<Meaning>of()))),
-                HasMetadata.EMPTY);
+                SemTexts.EMPTY_METADATA);
     }
 
     /**
@@ -394,7 +416,7 @@ public final class SemText implements Serializable, HasMetadata {
                 ImmutableList.of(Sentence.of(0,
                                 text.length(),
                                 Term.of(0, text.length(), meaningStatus, selectedMeaning, meanings))),
-                HasMetadata.EMPTY);
+                SemTexts.EMPTY_METADATA);
     }
 
     /**
@@ -416,7 +438,7 @@ public final class SemText implements Serializable, HasMetadata {
      * {@link Locale#ROOT}
      */
     public static SemText of(String text) {
-        return ofSentences(Locale.ROOT, text, ImmutableList.<Sentence>of(), HasMetadata.EMPTY);
+        return ofSentences(Locale.ROOT, text, ImmutableList.<Sentence>of(), SemTexts.EMPTY_METADATA);
     }
 
     /**
@@ -428,7 +450,7 @@ public final class SemText implements Serializable, HasMetadata {
      * {@link Locale#ROOT}.
      */
     public static SemText of(Locale locale, String text) {
-        return ofSentences(locale, text, ImmutableList.<Sentence>of(), HasMetadata.EMPTY);
+        return ofSentences(locale, text, ImmutableList.<Sentence>of(), SemTexts.EMPTY_METADATA);
     }
 
     /**
@@ -443,7 +465,7 @@ public final class SemText implements Serializable, HasMetadata {
      * {@link Locale#ROOT}
      */
     public static SemText ofSentences(Locale locale, String text, Iterable<Sentence> sentences) {
-        return ofSentences(locale, text, sentences, HasMetadata.EMPTY);
+        return ofSentences(locale, text, sentences, SemTexts.EMPTY_METADATA);
     }
 
     /**
@@ -462,7 +484,7 @@ public final class SemText implements Serializable, HasMetadata {
         return new SemText(locale,
                 text,
                 ImmutableList.of(Sentence.of(0, text.length(), terms)),
-                HasMetadata.EMPTY);
+                SemTexts.EMPTY_METADATA);
     }
 
     /**

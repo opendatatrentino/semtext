@@ -11,7 +11,7 @@ RELEASE DOCS ARE ON THE <a href="http://opendatatrentino.github.io/semtext/" tar
 
 **About**
 
-SemText is a lightweight model for semantically annotated text, designed for reliable exchange among applications rather than for efficiency. 
+SemText is a lightweight model for semantically annotated text, designed for reliable exchange among applications rather than for efficiency.
 
   * provides a simple hierarchy of sentences and terms
   * has immutable data structures

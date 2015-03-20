@@ -14,9 +14,9 @@ The purpose of this release is to provide a first model sufficiently stable to b
 
 ### UML diagram
 
-SemText contains sentences, which in turn can contain terms. Each term has a meaning status, and possibly a selected meaning and a list of alternative meanings suggested for disambiguation.  Both sentences and terms are spans, and actual text is only stored in root SemText object. Span offsets are always absolute and calculated with respects to it. Spans can't overlap. All of semantic text items (sentences, terms, meaning, semtext itself) can hold metadata.
+A `SemText` object contains a list of `Sentence`, which in turn can contain a list of `Term`. Each `Term` has a `MeaningStatus`, and possibly a selected meaning and a list of alternative meanings suggested for disambiguation.  Both sentences and terms are spans, and actual text is only stored in root `SemText` object. `Span` offsets are always absolute and calculated with respects to it. Spans can't overlap. All of semantic text items (sentences, terms, meaning, semtext itself) can hold metadata.
 
-Utility functions are held in `SemTexts` class and to iterate through terms a list view and an iterator are provided.
+Utility functions are held in `SemTexts` class and to iterate through semtext terms a `TermsView` and a `TermIterator` are provided.
 
 <p align="center">
 <img alt="semtext uml diagram" src="img/semtext-uml.png">
@@ -43,7 +43,7 @@ SemText is available on Maven Central. To use it, put this in the dependencies s
 <dependency>
   <groupId>eu.trentorise.opendata.semtext</groupId>
   <artifactId>semtext</artifactId>
-  <version>#{version}</version>            
+  <version>#{version}</version>
 </dependency>
 ```
 
@@ -51,9 +51,53 @@ In case updates are available, version numbers follows [semantic versioning](htt
 
 #### Examples
 
-Crude examples usages can be found [in the tests](../src/test/java/eu/trentorise/opendata/semtext/test/SemTextTest.java
-)
+Objects have no public constructor. To make them use factory methods starting with `of`:
 
 ```
-todo put better examples
+	SemText.of(Locale.ITALIAN, "ciao");
 ```
+
+Let's construct a SemText of one sentence and one term with SELECTED meaning.
+
+```
+        String text = "Welcome to Garda lake.";
+
+        Meaning meaning = Meaning.of("http://someknowledgebase.org/entities/garda-lake",
+        							 MeaningKind.ENTITY,
+                                     0.7);
+```
+
+We indicate the span where 'Garda lake' occurs (terms can span many words):
+
+```
+	Term term = Term.of(11, 21, MeaningStatus.SELECTED, meaning);
+```
+
+Language can be set only for the whole `SemText`:
+
+```
+SemText semText = SemText.of(
+                Locale.ENGLISH,
+                text,
+                Sentence.of(0, 26, term)); // sentence spans the whole text
+```
+
+Only `SemText` actually contains the text:
+
+```
+	assert "Garda lake".equals(semText.getText(term));
+```
+
+`SemTexts` class contains utilities, like converters and checkers:
+
+```
+    ImmutableList<SemText> semtexts = SemTexts.dictToSemTexts(Dict.of(Locale.ITALIAN, "Ciao"));
+    try {
+        SemTexts.checkScore(1.7, "Invalid score!");
+    } catch(IllegalArgumentException ex){
+
+    }
+```
+
+Other examples usages can be found [in the tests](../src/test/java/eu/trentorise/opendata/semtext/test/SemTextTest.java
+)

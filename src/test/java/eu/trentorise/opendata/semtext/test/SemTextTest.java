@@ -1,3 +1,18 @@
+/* 
+ * Copyright 2015 TrentoRISE  (trentorise.eu) .
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package eu.trentorise.opendata.semtext.test;
 
 import com.google.common.collect.ImmutableList;
@@ -12,11 +27,10 @@ import eu.trentorise.opendata.semtext.SemTexts;
 import eu.trentorise.opendata.semtext.Sentence;
 import eu.trentorise.opendata.semtext.Term;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -183,15 +197,13 @@ public class SemTextTest {
         assertEquals(SemText.of(Locale.ITALIAN, "ab", s1), SemText.of(Locale.ITALIAN, "ab", s2));
         assertNotEquals(SemText.of(Locale.ITALIAN, "ab", s1), SemText.of(Locale.ITALIAN, "ab"));
 
-        assertEquals(Term.of(0, 2, MeaningStatus.NOT_SURE, null, ImmutableList.<Meaning>of()),
-                Term.of(0, 2, MeaningStatus.NOT_SURE, null, ImmutableList.<Meaning>of()));
-        assertNotEquals(Term.of(0, 2, MeaningStatus.NOT_SURE, null, ImmutableList.<Meaning>of()),
-                Term.of(0, 3, MeaningStatus.NOT_SURE, null, ImmutableList.<Meaning>of()));
 
     }
 
+    
+
     @Test
-    public void testWith() {
+    public void testSemText() {
 
         assertEquals("a",
                 Term.of(0, 1, MeaningStatus.NOT_SURE, null)
@@ -202,7 +214,9 @@ public class SemTextTest {
         assertEquals("b", SemText.of("a").with("b").getText());
         assertEquals(Locale.ITALIAN, SemText.of("a").with(Locale.ITALIAN).getLocale());
 
+        assertFalse(SemText.of().hasMetadata("a"));
         assertEquals("b", SemText.of("").withMetadata("a", "b").getMetadata("a"));
+        assertTrue("b", SemText.of("").withMetadata("a", "b").hasMetadata("a"));
 
         assertEquals("c", SemText.of("").withMetadata("a", "b")
                 .withMetadata("a", "c").getMetadata("a"));
@@ -324,6 +338,7 @@ public class SemTextTest {
 
     /**
      * <pre>
+     * 012
      * ab
      * [)   t1
      *  [)  t2
@@ -332,19 +347,24 @@ public class SemTextTest {
      */
     @Test
     public void deleteFirstTermSemText_1() {
+        String text = "ab";
+
         Term t2 = Term.of(1, 2, MeaningStatus.NOT_SURE, null);
         SemText st = SemText.ofTerms(Locale.FRENCH, "ab", ImmutableList.<Term>of(
                 Term.of(0, 1, MeaningStatus.NOT_SURE, null),
                 t2
         ));
 
-        SemText newText = st.delete(ImmutableList.of(Range.closedOpen(0, 1)));
+        SemText newText = st.deleteTerms(ImmutableList.of(Range.closedOpen(0, 1)));
         assertEquals(1, newText.terms().size());
         assertEquals(t2, newText.terms().get(0));
+
+        assertEquals(newText, st.deleteTerms(Pattern.compile("a")));
     }
 
     /**
      * <pre>
+     * 012
      * ab
      * [)   t1
      * [  del Note it is closed on the same point at 0
@@ -356,13 +376,15 @@ public class SemTextTest {
                 Term.of(0, 1, MeaningStatus.NOT_SURE, null));
 
         assertEquals(1, st.terms().size());
-        SemText newText = st.delete(ImmutableList.of(Range.closed(0, 0)));
+        SemText newText = st.deleteTerms(ImmutableList.of(Range.closed(0, 0)));
         assertEquals(0, newText.terms().size());
+
     }
 
     /**
-     * This won't delete anything!
+     * This won't deleteTerms anything!
      * <pre>
+     * 012
      * ab
      * [)   t1
      * )  del Note it is closed and open on the same point at 0. Seems like the 'open' side wins!
@@ -374,12 +396,22 @@ public class SemTextTest {
                 Term.of(0, 1, MeaningStatus.NOT_SURE, null));
 
         assertEquals(1, st.terms().size());
-        SemText newText = st.delete(ImmutableList.of(Range.closedOpen(0, 0)));
+        SemText newText = st.deleteTerms(ImmutableList.of(Range.closedOpen(0, 0)));
         assertEquals(1, newText.terms().size());
+
+        Pattern emptyPattern = Pattern.compile("");
+        try {
+            st.deleteTerms(emptyPattern);
+        }
+        catch (IllegalArgumentException ex) {
+
+        }
+
     }
 
     /**
      * <pre>
+     * 012
      * ab
      * [)   t1
      *  [)  t2
@@ -394,12 +426,15 @@ public class SemTextTest {
                 Term.of(1, 2, MeaningStatus.NOT_SURE, null)
         ));
 
-        SemText newText = st.delete(ImmutableList.of(Range.closedOpen(0, 2)));
+        SemText newText = st.deleteTerms(ImmutableList.of(Range.closedOpen(0, 2)));
         assertEquals(0, newText.terms().size());
+
+        assertEquals(newText, st.deleteTerms(Pattern.compile("ab")));
     }
 
     /**
      * <pre>
+     * 012
      * ab
      * [)   t1
      *  [)  t2
@@ -414,43 +449,31 @@ public class SemTextTest {
                 Term.of(1, 2, MeaningStatus.NOT_SURE, null)
         ));
 
-        SemText newText = st.delete(ImmutableList.of(Range.closed(0, 1)));
+        SemText newText = st.deleteTerms(ImmutableList.of(Range.closed(0, 1)));
         assertEquals(0, newText.terms().size());
     }
 
+    /**
+     * Will delete pattern 'a', so term 3 should remain
+     * <pre>
+     * 012345
+     * abaad
+     * [)     t1
+     *   [)   t2
+     *     [) t3
+     * </pre>
+     */
     @Test
-    public void testTerms() {
-        try {
-            Term.of(-1, 1, MeaningStatus.NOT_SURE, null);
-            Assert.fail("Terms can't have negative start");
-        }
-        catch (Exception ex) {
-
-        }
-
-        try {
-            Term.of(0, 1, MeaningStatus.SELECTED, null);
-            Assert.fail("Terms can't have SELECTED meaning with null meaning");
-        }
-        catch (Exception ex) {
-
-        }
-
-        try {
-            Term.of(0, 1, MeaningStatus.NOT_SURE, null, null);
-            Assert.fail("Terms can't have null meanings");
-        }
-        catch (Exception ex) {
-
-        }
-
-    }
-
-    @Test
-    public void testProbNormalization() {
-        Term t = Term.of(0, 1, MeaningStatus.NOT_SURE, null, ImmutableList.of(Meaning.of("a", MeaningKind.ENTITY, 0.2)));
-        double prob = t.getMeanings().get(0).getProbability();
-        assertTrue("prob should be near 1.0, found instead: " + prob, 1.0 - SemTexts.TOLERANCE <= prob && prob <= 1.0 + SemTexts.TOLERANCE);
+    public void testDeletePattern() {
+        Term t3 = Term.of(4, 5, MeaningStatus.NOT_SURE, null);
+        SemText st = SemText.ofTerms(Locale.FRENCH, "abaad", ImmutableList.<Term>of(
+                Term.of(0, 1, MeaningStatus.NOT_SURE, null),
+                Term.of(2, 3, MeaningStatus.NOT_SURE, null),
+                t3
+        ));
+        SemText newST = st.deleteTerms(Pattern.compile("a"));
+        assertEquals(1, newST.terms().size());
+        assertEquals(t3, newST.terms().get(0));
     }
 
     /**
@@ -460,7 +483,14 @@ public class SemTextTest {
     public void example() {
 
         // Objects only support factory methods starting with 'of':
-        SemText.of(Locale.ITALIAN, "ciao");
+        SemText semText1 = SemText.of(Locale.ITALIAN, "ciao");
+        
+        // New objects can be created using 'with' methods: 
+        SemText semText2 = semText1.with("buongiorno");
+        
+        assert semText1.getText().equals("ciao");
+        assert semText2.getText().equals("buongiorno");
+        
 
         // Let's construct a SemText of one sentence and one term with SELECTED meaning.
         String text = "Welcome to Garda lake.";
@@ -475,16 +505,17 @@ public class SemTextTest {
                 Locale.ENGLISH,
                 text,
                 Sentence.of(0, 26, term)); // sentence spans the whole text
-        
+
         // only semText actually contains the text and terms can span many words
         assert "Garda lake".equals(semText.getText(term));
-        
+
         // SemTexts class contains utilities like converters and checkers:
         ImmutableList<SemText> semtexts = SemTexts.dictToSemTexts(Dict.of(Locale.ITALIAN, "Ciao"));
         try {
             SemTexts.checkScore(1.7, "Invalid score!");
-        } catch(IllegalArgumentException ex){
-            
+        }
+        catch (IllegalArgumentException ex) {
+
         }
     }
 

@@ -1,5 +1,5 @@
-/*
- * Copyright 2015 Trento Rise.
+/* 
+ * Copyright 2015 TrentoRISE  (trentorise.eu) .
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,14 @@ package eu.trentorise.opendata.semtext;
 import com.google.common.collect.ImmutableMap;
 
 /**
- *
- * @author David Leoni
+ * Classes imlpementing this interface can hold metadata.
+ * 
+ * @author David Leoni <david.leoni@unitn.it>
  */
-public interface HasMetadata {
-
-    /** Convenience instance for empty metadata */
-    ImmutableMap<String,?> EMPTY  =  ImmutableMap.<String,Object>of();
+public interface HasMetadata {   
     
     /**
-     * Returns whether or not the sentence has getMetadata under the given
+     * Returns whether or not the sentence has metadata under the given
      * namespace.
      *
      * @see #getMetadata(java.lang.String)

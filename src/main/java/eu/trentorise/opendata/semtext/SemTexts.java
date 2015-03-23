@@ -1,5 +1,5 @@
-/*
- * Copyright 2015 Trento Rise.
+/* 
+ * Copyright 2015 TrentoRISE  (trentorise.eu) .
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,14 +39,19 @@ import javax.annotation.Nullable;
 public class SemTexts {
 
     /**
+     * Convenience instance for empty metadata
+     */
+    public static final ImmutableMap<String, ?> EMPTY_METADATA = ImmutableMap.<String, Object>of();
+
+    /**
      * Tolerance for probabilities
      */
     public static final double TOLERANCE = 0.001;
 
     /**
-     * A meaning score must be DISAMBIGUATION_FACTOR times greater than any
-     * other meaning to be automatically considered as SELECTED. This factor can
-     * be used during automated conversions.
+     * A meaning score must be {@code DISAMBIGUATION_FACTOR} times greater than
+     * any other meaning to be automatically considered as SELECTED. This factor
+     * can be used during automated conversions.
      */
     final static double DISAMBIGUATION_FACTOR = 1.5;
 
@@ -90,7 +95,9 @@ public class SemTexts {
 
     /**
      * Checks that the provided couple meaning status / selected meaning is
-     * valid.
+     * valid. For {@code SELECTED} and {@code REVIEWED} statuses there must be a
+     * {@code selectedMeaning} with valid id, while {@code TO_DISAMBIGUATE} and
+     * {@code NOT_SURE} statuses must have a null {@code selectedMeaning}.
      *
      * @param prependedErrorMessage the exception message to use if the check
      * fails; will be converted to a string using String.valueOf(Object) and
@@ -111,7 +118,7 @@ public class SemTexts {
     }
 
     /**
-     * Checks that the provided meaning is valid.
+     * Checks the provided meaning is valid.
      *
      * @param prependedErrorMessage the exception message to use if the check
      * fails; will be converted to a string using String.valueOf(Object) and
@@ -144,14 +151,14 @@ public class SemTexts {
 
     /**
      * Checks the provided score is within valid bounds.
-     * 
+     *
      * @param score must be between -{@link #TOLERANCE} ≤ score ≤ 1 + {@link
-     * #TOLERANCE} 
-     * 
+     * #TOLERANCE}
+     *
      * @param prependedErrorMessage the exception message to use if the check
      * fails; will be converted to a string using String.valueOf(Object) and
      * prepended to more specific error messages.
-     * 
+     *
      * @throws IllegalArgumentException on invalid score
      */
     public static void checkScore(double score, @Nullable Object prependedErrorMessage) {
@@ -163,8 +170,10 @@ public class SemTexts {
     }
 
     /**
-     * getStart must be less or equal than endoffset and they must be both
-     * greater or equal than 0
+     * Checks provided offsets represent a valid span.
+     *
+     * {@code startOffset} must be less or equal than {@code endOffset} and they
+     * must be both greater or equal than 0
      *
      * @param prependedErrorMessage the exception message to use if the check
      * fails; will be converted to a string using String.valueOf(Object) and
@@ -180,30 +189,31 @@ public class SemTexts {
 
     /**
      *
-     * Checks spans are all be valid spans (see {@link SemTexts#checkSpan(int, int, String)
+     * Checks spans are all be valid spans (see {@link SemTexts#checkSpan(int, int, Object)
      * }
-     * and are be non-overlapping (a span getEnd offset may coincide with next
-     * span getStart offset). Spans must be contained within startOffset and
-     * endOffset (last span getEnd offset may coincide with endOffset).
+     * and are non-overlapping (a span end offset may coincide with next span
+     * start offset). Spans must be contained within {@code leftOffset} and
+     * {@code rightOffset} (last span end offset may coincide with
+     * {@code rightOffset}).
      *
      * @param prependedErrorMessage the exception message to use if the check
      * fails; will be converted to a string using String.valueOf(Object) and
      * prepended to more specific error messages.
      *
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException on invalid spans
      */
-    public static void checkSpans(Iterable<? extends Span> spans, int startOffset, int endOffset, @Nullable Object prependedErrorMessage) {
+    public static void checkSpans(Iterable<? extends Span> spans, int leftOffset, int rightOffset, @Nullable Object prependedErrorMessage) {
 
         checkNotNull(spans, prependedErrorMessage);
-        checkSpan(startOffset, endOffset, prependedErrorMessage);
+        checkSpan(leftOffset, rightOffset, prependedErrorMessage);
 
         // check containment        
         if (!Iterables.isEmpty(spans)) {
             int lowerBound = Iterables.getFirst(spans, null).getStart();
             int upperBound = Iterables.getLast(spans).getEnd();
-            if (lowerBound < startOffset
-                    || upperBound > endOffset) {
-                throw new IllegalArgumentException(String.valueOf(prependedErrorMessage) + " -- Reason: Provided spans exceed container span! Expected: [" + startOffset + "," + endOffset + "] - Found: [" + lowerBound + "," + upperBound + "]");
+            if (lowerBound < leftOffset
+                    || upperBound > rightOffset) {
+                throw new IllegalArgumentException(String.valueOf(prependedErrorMessage) + " -- Reason: Provided spans exceed container span! Expected: [" + leftOffset + "," + rightOffset + "] - Found: [" + lowerBound + "," + upperBound + "]");
             }
         }
 
@@ -248,8 +258,9 @@ public class SemTexts {
     }
 
     /**
-     * A new immutable list of meanings is returned with the provided meanings merged to the existing
-     * ones. New meanings will replace equals old meanings.
+     * A new immutable list of meanings is returned with the provided meanings
+     * merged to the existing ones. New meanings will replace equals old
+     * meanings.
      */
     public static ImmutableList<Meaning> mergeMeanings(Iterable<Meaning> oldMeanings, Iterable<Meaning> newMeanings) {
 
@@ -288,6 +299,16 @@ public class SemTexts {
      */
     public static Range spanToRange(Span span) {
         return Range.closedOpen(span.getStart(), span.getEnd());
+    }
+
+    /**
+     * Returns whether the two provided spans have equal boundaries.
+     */
+    public static boolean spanEqual(@Nullable Span span1, @Nullable Span span2) {        
+        if (span1 == null ){
+            return span2 == null;
+        }
+        return span1.getStart() == span2.getStart() && span1.getEnd() == span2.getEnd();
     }
 
     /**

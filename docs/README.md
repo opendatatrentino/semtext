@@ -3,6 +3,7 @@ WARNING: WORK IN PROGRESS - THIS IS ONLY A TEMPLATE FOR THE DOCUMENTATION. <br/>
 RELEASE DOCS ARE ON THE <a href="http://opendatatrentino.github.io/semtext/" target="_blank">PROJECT WEBSITE</a>
 </p>
 
+### About
 
 SemText is a lightweight model for semantically annotated text, designed for reliable exchange among applications rather than for efficiency.
 
@@ -14,21 +15,27 @@ The purpose of this release is to provide a first model sufficiently stable to b
 
 ### UML diagram
 
-A `SemText` object contains a list of `Sentence`, which in turn can contain a list of `Term`. Each `Term` has a `MeaningStatus`, and possibly a selected meaning and a list of alternative meanings suggested for disambiguation.  Both sentences and terms are spans, and actual text is only stored in root `SemText` object. `Span` offsets are always absolute and calculated with respects to it. Spans can't overlap. All of semantic text items (sentences, terms, meaning, semtext itself) can hold metadata.
+A `SemText` object contains a list of `Sentence` objects, which in turn can contain a list of `Term` objects.
+
+Each `Term` has a `MeaningStatus`, and possibly a selected meaning and a list of alternative meanings suggested for disambiguation.
+
+Both sentences and terms are spans, and actual text is only stored in root `SemText` object. Span` offsets are always absolute and calculated with respects to it. Spans can't overlap.
+
+All of semantic text items (sentences, terms, meaning, semtext itself) can hold metadata.
 
 Utility functions are held in `SemTexts` class and to iterate through semtext terms a `TermsView` and a `TermIterator` are provided.
 
 <p align="center">
-<img alt="semtext uml diagram" src="img/semtext-uml.png">
+<img width="650px" alt="semtext uml diagram" src="img/semtext-uml.png">
 </p>
 
 ### Meaning state machine
 
-SemText data model supports a four state simple interaction cycle with the user where some nlp service enriches the text with tags and then a human user validates the tags.
+SemText data model supports a simple interaction cycle with the user, where some nlp service enriches the text with tags and then a human user validates the tags. There are four possible  `MeaningStatus` associated to a `Term`:
 
 
 <p align="center">
-<img width="700px" alt="semtext meaning state machine" src="img/semtext-state-machine.png">
+<img width="650px" alt="semtext meaning state machine" src="img/semtext-state-machine.png">
 </p>
 
 
@@ -54,26 +61,41 @@ In case updates are available, version numbers follows [semantic versioning](htt
 Objects have no public constructor. To make them use factory methods starting with `of`:
 
 ```
-	SemText.of(Locale.ITALIAN, "ciao");
+	SemText semText1 = SemText.of(Locale.ITALIAN, "ciao");
 ```
 
-Let's construct a SemText of one sentence and one term with SELECTED meaning.
+To obtain a modified version of an object, use 'with' methods:
 
+```
+    SemText semText2 = semText1.with("buongiorno");
+
+    assert semText1.getText().equals("ciao");
+    assert semText2.getText().equals("buongiorno");
+```
+
+Let's go through the steps to construct a SemText of one sentence and one term with SELECTED meaning.
+
+We will pick this text:
 ```
         String text = "Welcome to Garda lake.";
+```
+
+This builds the`Meaning`:
+
+```
 
         Meaning meaning = Meaning.of("http://someknowledgebase.org/entities/garda-lake",
         							 MeaningKind.ENTITY,
                                      0.7);
 ```
 
-We indicate the span where 'Garda lake' occurs (terms can span many words):
+We indicate the span where _Garda lake_ occurs (a `Term` can span many words):
 
 ```
 	Term term = Term.of(11, 21, MeaningStatus.SELECTED, meaning);
 ```
 
-Language can be set only for the whole `SemText`:
+We finally construct the immutable `SemText`. Notice language can be set only for the whole `SemText`:
 
 ```
 SemText semText = SemText.of(
@@ -82,7 +104,7 @@ SemText semText = SemText.of(
                 Sentence.of(0, 26, term)); // sentence spans the whole text
 ```
 
-Only `SemText` actually contains the text:
+Only `SemText` actually contains the text. To retrieve it from a span use `getText`:
 
 ```
 	assert "Garda lake".equals(semText.getText(term));
@@ -99,5 +121,5 @@ Only `SemText` actually contains the text:
     }
 ```
 
-Other examples usages can be found [in the tests](../src/test/java/eu/trentorise/opendata/semtext/test/SemTextTest.java
+Other examples usages can be found [in the tests](../src/test/java/eu/trentorise/opendata/semtext/test
 )

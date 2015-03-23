@@ -197,10 +197,7 @@ public class SemTextTest {
         assertEquals(SemText.of(Locale.ITALIAN, "ab", s1), SemText.of(Locale.ITALIAN, "ab", s2));
         assertNotEquals(SemText.of(Locale.ITALIAN, "ab", s1), SemText.of(Locale.ITALIAN, "ab"));
 
-
     }
-
-    
 
     @Test
     public void testSemText() {
@@ -336,6 +333,37 @@ public class SemTextTest {
         assertEquals("c", wi.next().getSelectedMeaning().getId());
     }
 
+    
+    /**
+     * <pre>
+     *
+     * two sentences, no existing term, two new terms. first term exceeds sentence thus is discarded
+     *
+     * S1  S2
+     * N1N1N2
+     * --------
+     * 0 1 2 3  
+     *
+     * </pre>
+     */
+    @Test
+    public void testUpdateSemTextTwoSentences() {
+        Term newTerm1 = Term.of(0, 2, MeaningStatus.SELECTED, Meaning.of("a", MeaningKind.CONCEPT, 0.4));
+        Term newTerm2 = Term.of(2, 3, MeaningStatus.SELECTED, Meaning.of("a", MeaningKind.CONCEPT, 0.4));
+
+        Sentence sentence1 = Sentence.of(0, 1);
+        Sentence sentence2 = Sentence.of(2, 3);
+        
+        SemText semText = SemText.of(Locale.ITALIAN, "abcd", sentence1, sentence2);
+        SemText updatedSemText = semText.merge(newTerm1, newTerm2);
+        assertEquals(1, updatedSemText.terms().size());
+        assertEquals(sentence1, updatedSemText.getSentences().get(0));
+        ImmutableList<Term> termsSen2 = updatedSemText.getSentences().get(1).getTerms();
+        assertEquals(1, termsSen2.size());
+        assertEquals(newTerm2, termsSen2.get(0));
+    }
+    
+    
     /**
      * <pre>
      * 012
@@ -454,6 +482,35 @@ public class SemTextTest {
     }
 
     /**
+     * Two sentences with one term per sentence. Deletes first term from first sentence
+     * 
+     * <pre>
+     * 0123
+     * abc
+     * [)    t1
+     *   [)  t2
+     * [)    s1 
+     *  [ )  s2
+     * []   del
+     * </pre>
+     */
+    @Test
+    public void testDeleteWith2Sentences() {
+        Term t1 = Term.of(0, 1, MeaningStatus.NOT_SURE, null);
+        Term t2 = Term.of(2, 3, MeaningStatus.NOT_SURE, null);
+        
+        Sentence s1 = Sentence.of(0, 1, t1);
+        Sentence s2 = Sentence.of(1, 3, t2);
+        
+        SemText st = SemText.of(Locale.FRENCH, "abc", s1, s2);
+        SemText newText = st.deleteTerms(ImmutableList.of(Range.closed(0, 1)));
+        assertEquals(2, newText.getSentences().size());        
+        Sentence newSentence1 = newText.getSentences().get(0);
+        assertEquals(0, newSentence1.getTerms().size());
+        assertEquals(s2, newText.getSentences().get(1));                
+    }
+
+    /**
      * Will delete pattern 'a', so term 3 should remain
      * <pre>
      * 012345
@@ -484,13 +541,12 @@ public class SemTextTest {
 
         // Objects only support factory methods starting with 'of':
         SemText semText1 = SemText.of(Locale.ITALIAN, "ciao");
-        
+
         // New objects can be created using 'with' methods: 
         SemText semText2 = semText1.with("buongiorno");
-        
+
         assert semText1.getText().equals("ciao");
         assert semText2.getText().equals("buongiorno");
-        
 
         // Let's construct a SemText of one sentence and one term with SELECTED meaning.
         String text = "Welcome to Garda lake.";

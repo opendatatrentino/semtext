@@ -1,5 +1,5 @@
-/*
- * Copyright 2015 Trento Rise.
+/* 
+ * Copyright 2015 TrentoRISE  (trentorise.eu) .
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 package eu.trentorise.opendata.semtext;
 
 /**
- * A span of 0-indexed absolute offsets which must obey 0 ≤ start ≤ end. In
+ * A span of absolute offsets pairs obeying the constraint 0 ≤ start ≤ end. In
  * range notation span semantics is expressed as [start, end), that is, start
  * offset is closed, while end offset is open.
  *

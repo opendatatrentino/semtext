@@ -1,3 +1,18 @@
+/* 
+ * Copyright 2015 TrentoRISE  (trentorise.eu) .
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package eu.trentorise.opendata.semtext;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -5,18 +20,26 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Range;
+import com.google.common.collect.RangeMap;
 import com.google.common.collect.RangeSet;
+import com.google.common.collect.TreeRangeMap;
 import com.google.common.collect.TreeRangeSet;
 import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.commons.LocalizedString;
 import eu.trentorise.opendata.commons.NotFoundException;
 import static eu.trentorise.opendata.commons.OdtUtils.checkNotEmpty;
+import static eu.trentorise.opendata.semtext.SemTexts.spanEqual;
+import static eu.trentorise.opendata.semtext.SemTexts.spanToRange;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
@@ -36,8 +59,10 @@ import javax.annotation.concurrent.Immutable;
 @ParametersAreNonnullByDefault
 public final class SemText implements Serializable, HasMetadata {
 
+    private static final Logger LOG = Logger.getLogger(SemText.class.getName());
+
     private static final long serialVersionUID = 1L;
-    
+
     private static final SemText INSTANCE = new SemText();
 
     private String text;
@@ -62,7 +87,7 @@ public final class SemText implements Serializable, HasMetadata {
      */
     private SemText(@Nullable Locale locale, String text, Iterable<Sentence> sentences, Map<String, ?> metadata) {
         this();
-        checkNotNull(text);        
+        checkNotNull(text);
         checkNotNull(sentences);
         checkNotNull(metadata);
         if (locale == null) { // little remedy for nasty deserializers that cast "" into null.
@@ -145,64 +170,79 @@ public final class SemText implements Serializable, HasMetadata {
     public List<Term> terms() {
         return TermsView.of(this);
     }
-    
+
     /**
-     * Returns a new SemText with all the terms matching the provided regex text deleted.
-     * 
-     * NOTE: Currently the method only works with text of one sentence! If it is
-     * not an IllegalStateException will be thrown!.
-     */
+     * Returns a new SemText with all the terms matching the provided regex text
+     * deleted.
+     *
+     */    
     public SemText deleteTerms(Pattern pattern) {
         checkNotNull(pattern);
         checkNotEmpty(pattern.pattern(), "Pattern can't be empty!!");
-        
+
         Matcher m = pattern.matcher(text);
         List ranges = new ArrayList();
-        while (m.find()){
-            ranges.add(Range.closedOpen(m.start(), m.end()));            
+        while (m.find()) {
+            ranges.add(Range.closedOpen(m.start(), m.end()));
         }
         return deleteTerms(ranges);
     }
-    
+
     /**
      * Returns a copy of the this SemText without terms intersecting provided
      * ranges.
-     *
-     * NOTE: Currently the method only works with text of one sentence! If it is
-     * not an IllegalStateException will be thrown!.
      *
      */
     // note: Current version is inefficient, tried RangeMap.remove, but it only removes matching subsegments! 
     public SemText deleteTerms(Iterable<Range<Integer>> deletionRanges) {
         checkNotNull(deletionRanges);
 
-        ImmutableList.Builder<Term> termsB = ImmutableList.builder();
+        ImmutableList.Builder<Sentence> sentencesB = ImmutableList.builder();
 
-        if (sentences.size() > 1) {
-            throw new IllegalStateException("The delete terms method currently only works with text of at most one sentence!");
-        }
-
-        RangeSet<Integer> rangeSet = TreeRangeSet.create();        
+        RangeSet<Integer> rangeSet = TreeRangeSet.create();
 
         for (Range r : deletionRanges) {
             rangeSet.add(r);
         }
 
-        for (Term term : terms()){
-            RangeSet<Integer> intersection = rangeSet.subRangeSet(SemTexts.spanToRange(term));
-            if (intersection.isEmpty()) {
-                termsB.add(term);
+        for (Sentence sentence : sentences) {
+            ImmutableList.Builder<Term> termsB = ImmutableList.builder();
+            for (Term term : sentence.getTerms()) {
+                RangeSet<Integer> intersection = rangeSet.subRangeSet(SemTexts.spanToRange(term));
+                if (intersection.isEmpty()) {
+                    termsB.add(term);
+                }
+                sentencesB.add(sentence.withTerms(termsB.build()));
             }
         }
-        
-        return this.withTerms(termsB.build());
+
+        return this.withSentences(sentencesB.build());
     }
-        
+
     /**
      * @see #merge(java.lang.Iterable)
      */
     public SemText merge(Term... terms) {
         return merge(Arrays.asList(terms));
+    }
+
+    /**
+     * Returns the terms enclosed by enclosingSpan as a new TreeRangeMap.
+     */
+    private static TreeRangeMap<Integer, Term> enclosingNewTerms(Span enclosingSpan, RangeMap<Integer, Term> termRanges) {
+        TreeRangeMap<Integer, Term> ret = TreeRangeMap.create();
+
+        Range enclosingRange = spanToRange(enclosingSpan);
+
+        RangeMap<Integer, Term> subRangeMap = termRanges.subRangeMap(enclosingRange);
+
+        for (Map.Entry<Range<Integer>, Term> termEntry : subRangeMap.asMapOfRanges().entrySet()) {
+            if (enclosingRange.encloses(spanToRange(termEntry.getValue()))) {
+                ret.put(termEntry.getKey(), termEntry.getValue());
+            }
+        }
+
+        return ret;
     }
 
     /**
@@ -213,56 +253,49 @@ public final class SemText implements Serializable, HasMetadata {
      * term and the list of meanings will be a merge of the meanings found in
      * the provided term plus the meanings of the existing term.
      *
-     * NOTE: Currently the method only works with text of one sentence! If it is
-     * not an IllegalStateException will be thrown!.
+     * Terms to merge which are outside of existing sentences will be ignored.
      */
+    // note: Current version is based on RangeMaps thus quite inefficient
     public SemText merge(Iterable<Term> termsToMerge) {
-        checkNotNull(termsToMerge);
+
+        SemTexts.checkSpans(termsToMerge, 0, text.length(), "Invalid spans for terms to merge!");
 
         if (sentences.size() > 1) {
-            throw new IllegalStateException("The merge terms method currently only works with text of at most one sentence!");
+            LOG.log(Level.WARNING, "Found more than one sentence while mergin terms into SemText {0}, output semtext will have only one sentence covering the whole text.", this.text);
         }
 
-        ImmutableList.Builder<Term> newTermsB = ImmutableList.builder();
-        TermIterator origTermIter = new TermIterator(this);
-        @Nullable
-        Term curOrigTerm = origTermIter.hasNext() ? origTermIter.next() : null;
+        ImmutableList.Builder<Sentence> newSentenceB = ImmutableList.builder();
 
-        Term lastTerm = null;
+        RangeMap<Integer, Term> termToMergeRanges = TreeRangeMap.create();
 
-        for (Term termToAdd : termsToMerge) {
-            while (curOrigTerm != null
-                    && curOrigTerm.getEnd() <= termToAdd.getStart()) {
-                newTermsB.add(curOrigTerm);
-                curOrigTerm = origTermIter.hasNext() ? origTermIter.next() : null;
-            }
-            if (curOrigTerm != null // terms coincide, we merge
-                    && termToAdd.getStart() == curOrigTerm.getStart()
-                    && termToAdd.getEnd() == curOrigTerm.getEnd()) {
-
-                newTermsB.add(termToAdd.with(Iterables.concat(termToAdd.getMeanings(), curOrigTerm.getMeanings())));
-
-            } else { // terms don't coincide
-                newTermsB.add(termToAdd);
-            }
-            while (curOrigTerm != null
-                    && curOrigTerm.getStart() < termToAdd.getEnd()) {
-                curOrigTerm = origTermIter.hasNext() ? origTermIter.next() : null;
-            }
-            lastTerm = termToAdd;
+        for (Term termToMerge : termsToMerge) {
+            termToMergeRanges.put(spanToRange(termToMerge), termToMerge);
         }
 
-        if (lastTerm == null) {
-            return this;
-        } else {
-            while (curOrigTerm != null
-                    && curOrigTerm.getStart() >= lastTerm.getEnd()) {
-                newTermsB.add(curOrigTerm);
-                curOrigTerm = origTermIter.hasNext() ? origTermIter.next() : null;
-            }
-            return this.withTerms(newTermsB.build());
-        }
+        for (Sentence sentence : sentences) {            
 
+            RangeMap<Integer, Term> mergeRanges = enclosingNewTerms(sentence, termToMergeRanges);
+            Map<Range<Integer>,Term> mergeRangesMap = mergeRanges.asMapOfRanges();           
+
+            for (Term origTerm : sentence.getTerms()) {
+                Term newTerm = mergeRangesMap.get(spanToRange(origTerm));
+
+                if (newTerm == null) { // orig term doesn't coincide with new term
+                    if (mergeRanges.subRangeMap(spanToRange(origTerm)).asMapOfRanges().isEmpty()) {
+                        // origTerm does not overlap with new terms, add it                                                    
+                        mergeRanges.put(spanToRange(origTerm), origTerm);
+                    }                    
+                } else { // orig term coincides with new term, merge it
+                    mergeRanges.put(spanToRange(newTerm),
+                            newTerm.with(Iterables.concat(newTerm.getMeanings(), origTerm.getMeanings())));
+                }
+
+            }
+
+            newSentenceB.add(sentence.withTerms(mergeRangesMap.values()));
+
+        }
+        return withSentences(newSentenceB.build());
     }
 
     /**
@@ -286,11 +319,14 @@ public final class SemText implements Serializable, HasMetadata {
 
         SemText ret = new SemText(this);
         ret.text = text;
-        for (Sentence s : sentences) {
-            if (s.getEnd() > text.length()) {
-                throw new IllegalArgumentException("Tried to change text of semantic text, but there is a sentence longer thean the provided text! Semtext is\n:" + this + " new text to set is: " + text);
+
+        if (!sentences.isEmpty()) {
+            int lastSentenceEnd = Iterables.getLast(sentences).getEnd();
+            if (lastSentenceEnd > text.length()) {
+                throw new IllegalArgumentException("Tried to change text of semantic text, but last sentence end " + lastSentenceEnd + " exceeds provided text length! Semtext is\n:" + this + " \n new text to set is: " + text);
             }
         }
+
         return ret;
     }
 
@@ -379,6 +415,14 @@ public final class SemText implements Serializable, HasMetadata {
      * Creates a semantic text of one term with only one meaning.
      *
      * @param locale if unknown use {@link Locale#ROOT}
+     * @param meaningStatus Must have a corresponding correct
+     * {@code selectedMeaning}. See
+     * {@link SemTexts#checkMeaningStatus(eu.trentorise.opendata.semtext.MeaningStatus, eu.trentorise.opendata.semtext.Meaning, java.lang.Object) SemTexts.checkMeaningStatus}
+     * method.
+     * @param selectedMeaning Must have a corresponding correct
+     * {@code meaningStatus}. See
+     * {@link SemTexts#checkMeaningStatus(eu.trentorise.opendata.semtext.MeaningStatus, eu.trentorise.opendata.semtext.Meaning, java.lang.Object) SemTexts.checkMeaningStatus}
+     * method.
      */
     public static SemText of(Locale locale,
             String text,
@@ -400,13 +444,21 @@ public final class SemText implements Serializable, HasMetadata {
      * whole text.
      *
      * @param locale if unknown use {@link Locale#ROOT}
-     * @param selectedMeaning if unknown use null
+     * @param meaningStatus Must have a corresponding correct
+     * {@code selectedMeaning}. See
+     * {@link SemTexts#checkMeaningStatus(eu.trentorise.opendata.semtext.MeaningStatus, eu.trentorise.opendata.semtext.Meaning, java.lang.Object) SemTexts.checkMeaningStatus}
+     * method.
+     * @param selectedMeaning Must have a corresponding correct
+     * {@code meaningStatus}. See
+     * {@link SemTexts#checkMeaningStatus(eu.trentorise.opendata.semtext.MeaningStatus, eu.trentorise.opendata.semtext.Meaning, java.lang.Object) SemTexts.checkMeaningStatus}
+     * method.
      * @param meanings a list of suggested meanings. First one is the most
-     * probable. Meaning propabilities will be normalized.
+     * probable. Internally a new copy of meaning probabilities will be created
+     * and normalized.
      *
      */
     public static SemText of(Locale locale,
-            String text,            
+            String text,
             MeaningStatus meaningStatus,
             @Nullable Meaning selectedMeaning,
             List<Meaning> meanings) {

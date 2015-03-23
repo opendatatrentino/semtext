@@ -1,5 +1,5 @@
-/*
- * Copyright 2015 Trento Rise.
+/* 
+ * Copyright 2015 TrentoRISE  (trentorise.eu) .
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,26 +18,77 @@ package eu.trentorise.opendata.semtext;
 import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.UnmodifiableIterator;
 import java.util.NoSuchElementException;
+import javax.annotation.Nullable;
 
 /**
- * Iterator for all the terms in the text (regardless of the sentences). Does
- * not support remove operation.
+ * Iterator for all the terms in the text (regardless of the sentences). Allows
+ * also getting the current term/sentence without moving the iterator. Does not
+ * support remove operation.
  */
 public class TermIterator extends UnmodifiableIterator<Term> {
 
     private UnmodifiableIterator<Sentence> sentenceIter;
     private UnmodifiableIterator<Term> termIter;
 
-    private TermIterator(){
+    @Nullable
+    private Sentence currentSentence;
+    @Nullable
+    private Term currentTerm;
+
+    private TermIterator() {
         super();
+        currentTerm = null;
+        currentSentence = null;
     }
-    
+
     public TermIterator(SemText semtext) {
         this();
+
         checkNotNull(semtext);
         this.sentenceIter = semtext.getSentences().iterator();
         if (sentenceIter.hasNext()) {
-            this.termIter = sentenceIter.next().getTerms().iterator();
+            currentSentence = sentenceIter.next();
+            this.termIter = currentSentence.getTerms().iterator();
+        }
+    }
+
+    public boolean hasCurrentTerm() {
+        return currentTerm != null;
+    }
+
+    public boolean hasCurrentSentence() {
+        return currentSentence != null;
+    }
+
+    /**
+     * Returns the term currently pointed by the iterator. Call to this method
+     * doesn't moves the iterator.
+     *
+     * @throws NoSuchElementException if there is no current term in the
+     * iterator
+     * @see #hasCurrentTerm()
+     */
+    public Term term() {
+        if (currentTerm == null) {
+            throw new NoSuchElementException("There is no current term in the iterator!");
+        } else {
+            return currentTerm;
+        }
+    }
+
+    /**
+     * Returns the sentence currently pointed by the iterator. Call to this
+     * method doesn't moves the iterator.
+     *
+     * @throws NoSuchElementException if there is no current sentence in the
+     * iterator
+     * @see #hasCurrentSentence()
+     */
+    public Sentence sentence() {
+        if (currentSentence == null) {
+            throw new NoSuchElementException("There is no current sentence in the iterator!");
+        } else {
+            return currentSentence;
         }
     }
 
@@ -59,12 +110,15 @@ public class TermIterator extends UnmodifiableIterator<Term> {
     @Override
     public Term next() {
         if (termIter != null && termIter.hasNext()) {
-            return termIter.next();
+            currentTerm = termIter.next();
+            return currentTerm;
         } else {
             while (sentenceIter.hasNext()) {
-                termIter = sentenceIter.next().getTerms().iterator();
+                currentSentence = sentenceIter.next();
+                termIter = currentSentence.getTerms().iterator();
                 if (termIter.hasNext()) {
-                    return termIter.next();
+                    currentTerm = termIter.next();
+                    return currentTerm;
                 }
             }
         }
@@ -73,9 +127,7 @@ public class TermIterator extends UnmodifiableIterator<Term> {
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 29 * hash + (this.sentenceIter != null ? this.sentenceIter.hashCode() : 0);
-        hash = 29 * hash + (this.termIter != null ? this.termIter.hashCode() : 0);
+        int hash = 7;
         return hash;
     }
 
@@ -92,6 +144,12 @@ public class TermIterator extends UnmodifiableIterator<Term> {
             return false;
         }
         if (this.termIter != other.termIter && (this.termIter == null || !this.termIter.equals(other.termIter))) {
+            return false;
+        }
+        if (this.currentSentence != other.currentSentence && (this.currentSentence == null || !this.currentSentence.equals(other.currentSentence))) {
+            return false;
+        }
+        if (this.currentTerm != other.currentTerm && (this.currentTerm == null || !this.currentTerm.equals(other.currentTerm))) {
             return false;
         }
         return true;

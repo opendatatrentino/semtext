@@ -1,3 +1,18 @@
+/* 
+ * Copyright 2015 TrentoRISE  (trentorise.eu) .
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package eu.trentorise.opendata.semtext;
 
 import com.google.common.collect.ImmutableList;
@@ -6,23 +21,22 @@ import eu.trentorise.opendata.commons.NotFoundException;
 import static eu.trentorise.opendata.semtext.SemTexts.checkSpan;
 import static eu.trentorise.opendata.semtext.SemTexts.checkSpans;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Map;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.concurrent.Immutable;
 
-
-
 /**
  * A sentence which can contain terms.
  *
- * @author David Leoni <david.leoni@unitn.it>
+ * @author David Leoni
  */
 @Immutable
 @ParametersAreNonnullByDefault
 public final class Sentence implements Span, Serializable, HasMetadata {
 
     private static final long serialVersionUID = 1L;
-    
+
     private int start;
     private int end;
 
@@ -35,14 +49,26 @@ public final class Sentence implements Span, Serializable, HasMetadata {
         this.terms = ImmutableList.of();
         this.metadata = ImmutableMap.of();
     }
-    
+
     private Sentence(Sentence sentence) {
         this.start = sentence.getStart();
         this.end = sentence.getEnd();
         this.terms = sentence.getTerms();
-        this.metadata = sentence.getMetadata();        
+        this.metadata = sentence.getMetadata();
     }
 
+    /**
+     * Constructs a Sentence.
+     *
+     * @param start 0-indexed span offset start. Position is absolute with
+     * respect to the text stored in the {@code SemText} container.
+     * @param end the position of the character immediately *after* the sentence
+     * itself. Position is absolute with respect to the text stored in the
+     * {@code SemText} container.
+     * @param terms Terms within the sentence.
+     * @param metadata a map of metadata. Provided metadata objects must be
+     * immutable.
+     */
     private Sentence(int start, int end, Iterable<Term> terms, Map<String, ?> metadata) {
         this();
 
@@ -123,44 +149,68 @@ public final class Sentence implements Span, Serializable, HasMetadata {
         return true;
     }
 
-    
-
     @Override
     public String toString() {
         return "Sentence{" + "start=" + start + ", end=" + end + ", terms=" + terms + ", metadata=" + metadata + '}';
     }
 
-  
-
     /**
      * Creates a sentence of one term.
+     *
+     * @param start 0-indexed span offset start. Position is absolute with
+     * respect to the text stored in the {@code SemText} container.
+     * @param end the position of the character immediately *after* the sentence
+     * itself. Position is absolute with respect to the text stored in the
+     * {@code SemText} container.
+     * @param term the term within the sentence.
      */
-    public static Sentence of(int start, int end, Term term) {                
-        return of(start, end, ImmutableList.of(term), HasMetadata.EMPTY);
+    public static Sentence of(int start, int end, Term term) {
+        return of(start, end, ImmutableList.of(term), SemTexts.EMPTY_METADATA);
     }
 
     /**
      * Creates a sentence.
+     *
+     * @param start 0-indexed span offset start. Position is absolute with
+     * respect to the text stored in the {@code SemText} container.
+     * @param end the position of the character immediately *after* the sentence
+     * itself. Position is absolute with respect to the text stored in the
+     * {@code SemText} container.
+     * @param terms Terms within the sentence.
      */
     public static Sentence of(int start, int end, Iterable<Term> terms) {
-        return of(start, end, terms, HasMetadata.EMPTY);
+        return of(start, end, terms, SemTexts.EMPTY_METADATA);
     }
-    
+
     /**
      * Creates a sentence.
+     *
+     * @param start 0-indexed span offset start. Position is absolute with
+     * respect to the text stored in the {@code SemText} container.
+     * @param end the position of the character immediately *after* the sentence
+     * itself. Position is absolute with respect to the text stored in the
+     * {@code SemText} container.
+     * @param terms Terms within the sentence.
+     * @param metadata a map of metadata. Provided metadata objects must be
+     * immutable.
      */
     public static Sentence of(int start, int end, Iterable<Term> terms, Map<String, ?> metadata) {
         return new Sentence(start, end, terms, metadata);
-    }    
+    }
 
     /**
      * Creates a sentence of zero terms.
+     *
+     * @param start 0-indexed span offset start. Position is absolute with
+     * respect to the text stored in the {@code SemText} container.
+     * @param end the position of the character immediately *after* the sentence
+     * itself. Position is absolute with respect to the text stored in the
+     * {@code SemText} container.
      */
     public static Sentence of(int start, int end) {
-        return of(start, end, ImmutableList.<Term>of(), HasMetadata.EMPTY);
+        return of(start, end, ImmutableList.<Term>of(), SemTexts.EMPTY_METADATA);
     }
 
-    
     /**
      * Returns a copy of this object with the provided metadata set under the
      * given namespace.
@@ -168,9 +218,29 @@ public final class Sentence implements Span, Serializable, HasMetadata {
      * @param metadata Must be an immutable object.
      */
     public Sentence withMetadata(String namespace, Object metadata) {
-        Sentence ret = new Sentence(this);        
+        Sentence ret = new Sentence(this);
         ret.metadata = SemTexts.replaceMetadata(this.metadata, namespace, metadata);
         return ret;
-    }    
+    }
+
+    /**
+     * Returns a copy of this object with the provided terms set. New terms will
+     * replace all the existing ones.
+     */
+    public Sentence withTerms(Iterable<Term> terms) {
+        Sentence ret = new Sentence(this);
+        checkSpans(terms, start, end, "Invalid terms!");
+        ret.terms = ImmutableList.copyOf(terms);
+        return ret;
+    }
     
+    /**
+     * Returns a copy of this object with the provided terms set. New terms will
+     * replace all the existing ones.
+     */
+    public Sentence withTerms(Term... terms) {
+        return this.withTerms(ImmutableList.copyOf(terms));
+    }
+    
+
 }

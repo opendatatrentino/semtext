@@ -34,7 +34,7 @@ import javax.annotation.concurrent.Immutable;
  */
 @Immutable
 @ParametersAreNonnullByDefault
-public class TermsView implements List<Term> {
+public final class TermsView implements List<Term> {
 
     private SemText semText;
 

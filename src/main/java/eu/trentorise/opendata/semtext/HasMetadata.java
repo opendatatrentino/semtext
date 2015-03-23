@@ -30,12 +30,12 @@ public interface HasMetadata {
      *
      * @see #getMetadata(java.lang.String)
      */
-    public boolean hasMetadata(String namespace);
+    boolean hasMetadata(String namespace);
 
     /**
      * Returns metadata as immutable map.
      */
-    public ImmutableMap<String, ?> getMetadata();        
+    ImmutableMap<String, ?> getMetadata();        
     
     /**
      * Safe way to get metadata associated with the sentence for a given
@@ -45,6 +45,6 @@ public interface HasMetadata {
      * namespace.
      * @see #hasMetadata(java.lang.String)
      */
-    public Object getMetadata(String namespace);    
+    Object getMetadata(String namespace);    
     
 }

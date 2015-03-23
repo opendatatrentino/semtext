@@ -38,6 +38,10 @@ import javax.annotation.Nullable;
  */
 public class SemTexts {
 
+    private SemTexts() {
+
+    }
+
     /**
      * Convenience instance for empty metadata
      */
@@ -53,7 +57,7 @@ public class SemTexts {
      * any other meaning to be automatically considered as SELECTED. This factor
      * can be used during automated conversions.
      */
-    final static double DISAMBIGUATION_FACTOR = 1.5;
+    static final double DISAMBIGUATION_FACTOR = 1.5;
 
     /**
      * Determines the best meaning among the given ones according to their
@@ -304,8 +308,8 @@ public class SemTexts {
     /**
      * Returns whether the two provided spans have equal boundaries.
      */
-    public static boolean spanEqual(@Nullable Span span1, @Nullable Span span2) {        
-        if (span1 == null ){
+    public static boolean spanEqual(@Nullable Span span1, @Nullable Span span2) {
+        if (span1 == null) {
             return span2 == null;
         }
         return span1.getStart() == span2.getStart() && span1.getEnd() == span2.getEnd();

@@ -35,7 +35,7 @@ public interface Span {
      *
      * In the special case of empty span, getStart and getEnd must concide.
      */
-    public int getStart();
+    int getStart();
 
     /**
      * An absolute getEnd offset based on the text of the SemText containing
@@ -49,5 +49,5 @@ public interface Span {
      * getEnd would be 5. In the special case of empty span, getStart and getEnd
      * must concide.
      */
-    public int getEnd();
+    int getEnd();
 }

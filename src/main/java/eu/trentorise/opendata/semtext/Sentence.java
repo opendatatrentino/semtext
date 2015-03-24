@@ -100,6 +100,9 @@ public final class Sentence implements Span, Serializable, HasMetadata {
         }
     }
 
+    /**
+     * Returns the terms contained in the sentence.
+     */
     public ImmutableList<Term> getTerms() {
         return terms;
     }

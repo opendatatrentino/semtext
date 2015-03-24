@@ -83,6 +83,7 @@ public final class TermsView implements List<Term> {
     }
     
     @Override
+    @SuppressWarnings("element-type-mismatch")
     public boolean containsAll(Collection<?> clctn) {
         for (Object obj : clctn) {
             if (!(contains(obj))) {

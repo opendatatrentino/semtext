@@ -15,12 +15,17 @@
  */
 package eu.trentorise.opendata.semtext.test;
 
+import eu.trentorise.opendata.commons.Dict;
+import eu.trentorise.opendata.commons.NotFoundException;
 import eu.trentorise.opendata.commons.OdtConfig;
 import eu.trentorise.opendata.semtext.Meaning;
 import eu.trentorise.opendata.semtext.MeaningKind;
+import eu.trentorise.opendata.semtext.SemText;
 import eu.trentorise.opendata.semtext.SemTexts;
 import java.util.logging.Logger;
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,11 +45,39 @@ public class MeaningTest {
 
     @Test
     public void testMeaning() {
-        assertEquals("b", Meaning.of("a", MeaningKind.ENTITY, 0.3).withMetadata("a", "b").getMetadata("a"));
 
         double prob = 0.2;
         double p = Meaning.of("a", MeaningKind.ENTITY, 0.1).withProbability(prob).getProbability();
         assertTrue(Math.abs(p - prob) < SemTexts.TOLERANCE);
 
+        
+        assertEquals("b", Meaning.of("a", MeaningKind.ENTITY, 0.3).withMetadata("a", "b").getMetadata("a"));        
+        assertFalse(Meaning.of().hasMetadata("a"));
+        assertTrue(Meaning.of().withMetadata("a", "b").hasMetadata("a"));
+        
+        assertEquals(Meaning.of("a", MeaningKind.ENTITY, 0.3, Dict.of()),
+                     Meaning.of("a", MeaningKind.ENTITY, 0.3, Dict.of(), SemTexts.EMPTY_METADATA));
+        
+        assertTrue(Meaning.of("a", MeaningKind.ENTITY, 0.3).compareTo(Meaning.of("b", MeaningKind.CONCEPT, 0.2)) > 0);
+        
+        assertTrue(Meaning.of().toString().length() > 0);
+        
+        assertTrue(Math.abs(Meaning.of().withProbability(0.2).getProbability() - 0.2) < SemTexts.TOLERANCE);
+        
+        try {
+            Meaning.of().withProbability(-2 * SemTexts.TOLERANCE);
+            Assert.fail();
+        } catch (IllegalArgumentException ex){
+            
+        }
+        
+       try {
+            Meaning.of().getMetadata("blabla");
+            Assert.fail();
+        }
+        catch (NotFoundException ex) {
+
+        }        
+        
     }
 }

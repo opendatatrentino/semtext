@@ -36,7 +36,7 @@ import javax.annotation.Nullable;
  *
  * @author David Leoni
  */
-public class SemTexts {
+public final class SemTexts {
 
     private SemTexts() {
 

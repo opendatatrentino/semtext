@@ -43,6 +43,7 @@ public final class TermsView implements List<Term> {
     }
 
     private TermsView(SemText semText) {
+        this();
         checkNotNull(semText);
         this.semText = semText;
     }

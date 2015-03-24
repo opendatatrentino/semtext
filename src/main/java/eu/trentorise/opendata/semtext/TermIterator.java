@@ -41,6 +41,9 @@ public class TermIterator extends UnmodifiableIterator<Term> {
         currentSentence = null;
     }
 
+    /**
+     * Creates an iterator to iterate through the given {@code semtext}
+    */
     public TermIterator(SemText semtext) {
         this();
 
@@ -52,10 +55,18 @@ public class TermIterator extends UnmodifiableIterator<Term> {
         }
     }
 
+    /**
+     * Returns true if the iterator is pointing to a term.
+     * @see #term() 
+     */
     public boolean hasCurrentTerm() {
         return currentTerm != null;
     }
 
+    /**
+     * Returns true if the iterator is pointing to a term within a sentence.
+     * @see #sentence() 
+     */    
     public boolean hasCurrentSentence() {
         return currentSentence != null;
     }

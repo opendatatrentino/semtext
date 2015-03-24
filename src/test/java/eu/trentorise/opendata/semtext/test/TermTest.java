@@ -16,11 +16,13 @@
 package eu.trentorise.opendata.semtext.test;
 
 import com.google.common.collect.ImmutableList;
+import eu.trentorise.opendata.commons.NotFoundException;
 import eu.trentorise.opendata.commons.OdtConfig;
 import eu.trentorise.opendata.semtext.Meaning;
 import eu.trentorise.opendata.semtext.MeaningKind;
 import eu.trentorise.opendata.semtext.MeaningStatus;
 import eu.trentorise.opendata.semtext.SemTexts;
+import eu.trentorise.opendata.semtext.Sentence;
 import eu.trentorise.opendata.semtext.Term;
 import java.util.logging.Logger;
 import org.junit.Assert;
@@ -57,6 +59,14 @@ public class TermTest {
         assertTrue(Term.of(1, 2, MeaningStatus.NOT_SURE, null).withMetadata("a", "b").hasMetadata("a"));
         assertEquals("b", Term.of(1, 2, MeaningStatus.NOT_SURE, null).withMetadata("a", "b").getMetadata("a"));
 
+        try {
+            Term.of(0, 1, MeaningStatus.NOT_SURE, null).getMetadata("blabla");
+            Assert.fail();
+        }
+        catch (NotFoundException ex) {
+
+        }
+
     }
 
     @Test
@@ -64,9 +74,9 @@ public class TermTest {
         assertEquals(Term.of(0, 2, MeaningStatus.NOT_SURE, null, ImmutableList.<Meaning>of()),
                 Term.of(0, 2, MeaningStatus.NOT_SURE, null, ImmutableList.<Meaning>of()));
         assertNotEquals(Term.of(0, 2, MeaningStatus.NOT_SURE, null, ImmutableList.<Meaning>of()),
-                Term.of(0, 3, MeaningStatus.NOT_SURE, null, ImmutableList.<Meaning>of()));        
-    }    
-    
+                Term.of(0, 3, MeaningStatus.NOT_SURE, null, ImmutableList.<Meaning>of()));
+    }
+
     @Test
     public void testWrongMeaningStatus() {
         try {

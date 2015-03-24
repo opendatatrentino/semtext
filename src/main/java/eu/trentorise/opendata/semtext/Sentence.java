@@ -21,7 +21,6 @@ import eu.trentorise.opendata.commons.NotFoundException;
 import static eu.trentorise.opendata.semtext.SemTexts.checkSpan;
 import static eu.trentorise.opendata.semtext.SemTexts.checkSpans;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Map;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.concurrent.Immutable;

@@ -16,6 +16,7 @@
 package eu.trentorise.opendata.semtext.test;
 
 import com.google.common.collect.ImmutableList;
+import eu.trentorise.opendata.commons.NotFoundException;
 import eu.trentorise.opendata.commons.OdtConfig;
 import eu.trentorise.opendata.semtext.MeaningStatus;
 import eu.trentorise.opendata.semtext.SemText;
@@ -24,6 +25,7 @@ import eu.trentorise.opendata.semtext.Term;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -56,7 +58,17 @@ public class SentenceTest {
         List<Term> terms = Sentence.of(0, 3, Term.of(0, 1, MeaningStatus.NOT_SURE, null)).withTerms(myTerm).getTerms();
         assertEquals(1, terms.size());
         assertEquals(myTerm, terms.get(0));
-
+        assertEquals(MeaningStatus.TO_DISAMBIGUATE, myTerm.getMeaningStatus());
+        
+        assertTrue(Sentence.of(0,1).toString().length() > 0);
+        
+        try {
+            Sentence.of(0, 1).getMetadata("blabla");
+            Assert.fail();
+        } catch(NotFoundException ex){
+            
+        }
+        
     }
 
     @Test
@@ -67,6 +79,6 @@ public class SentenceTest {
         
         
         assertEquals(s1,s2);
-        assertNotEquals(s1,s3);        
+        assertNotEquals(s1,s3);  
     }
 }

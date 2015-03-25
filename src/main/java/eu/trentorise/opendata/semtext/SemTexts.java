@@ -17,7 +17,6 @@ package eu.trentorise.opendata.semtext;
 
 import com.google.common.base.Preconditions;
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
@@ -215,11 +214,8 @@ public final class SemTexts {
         Span lastSpan = null;
         for (Span span : spans) {
             checkSpan(span.getStart(), span.getEnd(), prependedErrorMessage);
-            if (lastSpan != null) {
-                if (lastSpan.getEnd() > span.getStart()) {
-                    throw new IllegalArgumentException(String.valueOf(prependedErrorMessage) + " -- Found overlapping span! Span " + lastSpan + " overlaps with span " + span);
-                }
-
+            if (lastSpan != null && lastSpan.getEnd() > span.getStart()) {
+                throw new IllegalArgumentException(String.valueOf(prependedErrorMessage) + " -- Found overlapping span! Span " + lastSpan + " overlaps with span " + span);
             }
             lastSpan = span;
         }
@@ -310,8 +306,8 @@ public final class SemTexts {
     }
 
     /**
-     * Returns a copy of provided metadata with {@code newMetadata} set under the
-     * given namespace.
+     * Returns a copy of provided metadata with {@code newMetadata} set under
+     * the given namespace.
      *
      * @param newMetadata Must be an immutable object.
      */

@@ -91,29 +91,34 @@ public class TermIteratorTest {
     @Test
     public void testTermIteratorOneSentenceTwoTerms() {
 
-        assertFalse(((TermIterator) (SemText.of().terms().iterator())).hasCurrentTerm());
-        assertFalse(((TermIterator) (SemText.of().terms().iterator())).hasCurrentSentence());
+        
+        TermIterator titer1 = ((TermIterator)(SemText.of().terms().iterator()));
+        assertFalse(titer1.hasCurrentTerm());
+        assertFalse(titer1.hasCurrentSentence());
+        try {
+            titer1.term();
+            Assert.fail();
+        }
+        catch (NoSuchElementException ex) {
+
+        }
+
+        try {
+            titer1.sentence();
+            Assert.fail();
+        }
+        catch (NoSuchElementException ex) {
+
+        }
+        
+        assertEquals(Sentence.of(1,2), 
+                     ((TermIterator) SemText.of(Locale.ITALIAN, "abcd", Sentence.of(1,2)).terms().iterator()).sentence());
+        
         
         SemText st = SemText.of(Locale.FRENCH, "abcde", Sentence.of(0, 7,
                 ImmutableList.of(Term.of(0, 1, MeaningStatus.SELECTED, Meaning.of("a", MeaningKind.CONCEPT, 0.2)),
                         Term.of(2, 3, MeaningStatus.SELECTED, Meaning.of("b", MeaningKind.CONCEPT, 0.2)))));
-
-        try {
-            ((TermIterator)(SemText.of().terms())).term();
-            Assert.fail();
-        }
-        catch (Exception ex) {
-
-        }
-
-        try {
-            ((TermIterator)(SemText.of().terms())).sentence();
-            Assert.fail();
-        }
-        catch (Exception ex) {
-
-        }
-
+                                    
         TermIterator termIter
                 = (TermIterator) st.terms().iterator();
 

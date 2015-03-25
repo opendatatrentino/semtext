@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -79,5 +80,23 @@ public class MeaningTest {
 
         }        
         
+    }
+    
+    @Test
+    @SuppressWarnings({"IncompatibleEquals", "ObjectEqualsNull"})    
+    public void testEquality(){
+        Meaning maEntity01 = Meaning.of("a", MeaningKind.ENTITY, 0.1);
+        Meaning maConcept01 = Meaning.of("a", MeaningKind.CONCEPT, 0.1);
+        Meaning mbConcept01 = Meaning.of("b", MeaningKind.CONCEPT, 0.1);
+        Meaning maConcept09 = Meaning.of("a", MeaningKind.CONCEPT, 0.9);
+        
+        assertNotEquals(maEntity01, maConcept01);
+        assertNotEquals(maConcept01, mbConcept01);
+        
+        assertEquals(maConcept01, maConcept09);
+        assertEquals(maConcept01.hashCode(),maConcept09.hashCode());        
+       
+        assertFalse(maConcept01.equals(null));
+        assertFalse(maConcept01.equals(""));        
     }
 }

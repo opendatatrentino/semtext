@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
  * also getting the current term/sentence without moving the iterator. Does not
  * support remove operation.
  */
-public class TermIterator extends UnmodifiableIterator<Term> {
+class TermIterator extends UnmodifiableIterator<Term> {
 
     private UnmodifiableIterator<Sentence> sentenceIter;
     private UnmodifiableIterator<Term> termIter;
@@ -135,36 +135,7 @@ public class TermIterator extends UnmodifiableIterator<Term> {
         }
         throw new NoSuchElementException();
     }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final TermIterator other = (TermIterator) obj;
-        if (this.sentenceIter != other.sentenceIter && (this.sentenceIter == null || !this.sentenceIter.equals(other.sentenceIter))) {
-            return false;
-        }
-        if (this.termIter != other.termIter && (this.termIter == null || !this.termIter.equals(other.termIter))) {
-            return false;
-        }
-        if (this.currentSentence != other.currentSentence && (this.currentSentence == null || !this.currentSentence.equals(other.currentSentence))) {
-            return false;
-        }
-        if (this.currentTerm != other.currentTerm && (this.currentTerm == null || !this.currentTerm.equals(other.currentTerm))) {
-            return false;
-        }
-        return true;
-    }
+  
 
     @Override
     public String toString() {

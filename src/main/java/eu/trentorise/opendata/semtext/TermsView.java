@@ -34,7 +34,7 @@ import javax.annotation.concurrent.Immutable;
  */
 @Immutable
 @ParametersAreNonnullByDefault
-public final class TermsView implements List<Term> {
+final class TermsView implements List<Term> {
 
     private SemText semText;
 
@@ -243,4 +243,28 @@ public final class TermsView implements List<Term> {
         throw new UnsupportedOperationException("Not supported.");
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 97 * hash + (this.semText != null ? this.semText.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TermsView other = (TermsView) obj;
+        if (this.semText != other.semText && (this.semText == null || !this.semText.equals(other.semText))) {
+            return false;
+        }
+        return true;
+    }
+
+    
+    
 }

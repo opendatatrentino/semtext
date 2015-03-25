@@ -19,11 +19,9 @@ import com.google.common.collect.ImmutableList;
 import eu.trentorise.opendata.commons.NotFoundException;
 import eu.trentorise.opendata.commons.OdtConfig;
 import eu.trentorise.opendata.semtext.MeaningStatus;
-import eu.trentorise.opendata.semtext.SemText;
 import eu.trentorise.opendata.semtext.Sentence;
 import eu.trentorise.opendata.semtext.Term;
 import java.util.List;
-import java.util.Locale;
 import java.util.logging.Logger;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
@@ -59,26 +57,31 @@ public class SentenceTest {
         assertEquals(1, terms.size());
         assertEquals(myTerm, terms.get(0));
         assertEquals(MeaningStatus.TO_DISAMBIGUATE, myTerm.getMeaningStatus());
-        
-        assertTrue(Sentence.of(0,1).toString().length() > 0);
-        
+
+        assertTrue(Sentence.of(0, 1).toString().length() > 0);
+
         try {
             Sentence.of(0, 1).getMetadata("blabla");
             Assert.fail();
-        } catch(NotFoundException ex){
-            
         }
-        
+        catch (NotFoundException ex) {
+
+        }
+
     }
 
     @Test
+    @SuppressWarnings({"IncompatibleEquals", "ObjectEqualsNull"})
     public void testEquality() {
         Sentence s1 = Sentence.of(0, 5, ImmutableList.of(Term.of(1, 3, MeaningStatus.NOT_SURE, null))).withMetadata("a", 2);
         Sentence s2 = Sentence.of(0, 5, ImmutableList.of(Term.of(1, 3, MeaningStatus.NOT_SURE, null))).withMetadata("a", 2);
         Sentence s3 = Sentence.of(0, 5);
-        
-        
-        assertEquals(s1,s2);
-        assertNotEquals(s1,s3);  
+
+        assertEquals(s1, s2);
+        assertEquals(s1.hashCode(),s2.hashCode());
+        assertNotEquals(s1, s3);
+
+        assertFalse(s1.equals(null));
+        assertFalse(s2.equals(""));
     }
 }

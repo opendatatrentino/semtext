@@ -16,6 +16,7 @@
 package eu.trentorise.opendata.semtext;
 
 import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -107,32 +108,20 @@ public final class SemTexts {
      * fails; will be converted to a string using String.valueOf(Object) and
      * prepended to more specific error messages.
      *
-     * @throws InvalidArgumentException on invalid meaning status
+     * @throws InvalidArgumentException on invalid meaning status /
+     * selectedMeaning couple
      */
-    public static void checkMeaningStatus(MeaningStatus meaningStatus, @Nullable Meaning selectedMeaning, @Nullable Object prependedErrorMessage) {
+    public static void checkMeaningStatus(@Nullable MeaningStatus meaningStatus, @Nullable Meaning selectedMeaning, @Nullable Object prependedErrorMessage) {
+        checkArgument(meaningStatus != null, "%s -- meaningStatus is null!", prependedErrorMessage);
         if (MeaningStatus.SELECTED.equals(meaningStatus)
                 || MeaningStatus.REVIEWED.equals(meaningStatus)) {
-            checkNotNull(selectedMeaning, String.valueOf(prependedErrorMessage) + " -- Reason: Selected meaning can't be null when status is " + meaningStatus);
+            checkArgument(selectedMeaning != null, String.valueOf(prependedErrorMessage) + " -- Reason: Selected meaning can't be null when status is " + meaningStatus);
             checkNotEmpty(selectedMeaning.getId(), String.valueOf(prependedErrorMessage) + " -- Reason: Selected meaning must have a valid id when status is " + meaningStatus);
         } else {
             if (selectedMeaning != null) {
                 throw new IllegalArgumentException(String.valueOf(prependedErrorMessage) + " -- Reason: Selected meaning must be null when meaning status is " + meaningStatus + ". Found instead meaning " + selectedMeaning);
             }
         }
-    }
-
-    /**
-     * Checks the provided meaning is valid.
-     *
-     * @param prependedErrorMessage the exception message to use if the check
-     * fails; will be converted to a string using String.valueOf(Object) and
-     * prepended to more specific error messages.
-     *
-     * @throws InvalidArgumentException on invalid meaning
-     */
-    public static void checkMeaning(Meaning m, @Nullable Object prependedErrorMessage) {
-        checkScore(m.getProbability(), String.valueOf(prependedErrorMessage) + " -- Invalid meaning probability!");
-        checkNotNull(m.getName(), String.valueOf(prependedErrorMessage) + " -- Invalid meaning name!");
     }
 
     /**
@@ -183,12 +172,12 @@ public final class SemTexts {
      * fails; will be converted to a string using String.valueOf(Object) and
      * prepended to more specific error messages.
      *
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException on invalid span.
      */
     public static void checkSpan(int startOffset, int endOffset, @Nullable Object prependedErrorMessage) {
         Preconditions.checkArgument(startOffset >= 0
                 && startOffset <= endOffset,
-                String.valueOf(prependedErrorMessage) + " -- Reason: invalid bounds [" + startOffset + ", " + endOffset + ")");
+                "%s -- Reason: invalid bounds [%s , %s)", prependedErrorMessage, startOffset, endOffset);
     }
 
     /**
@@ -208,7 +197,7 @@ public final class SemTexts {
      */
     public static void checkSpans(Iterable<? extends Span> spans, int leftOffset, int rightOffset, @Nullable Object prependedErrorMessage) {
 
-        checkNotNull(spans, prependedErrorMessage);
+        checkArgument(spans != null, "%s -- spans are null!", prependedErrorMessage);
         checkSpan(leftOffset, rightOffset, prependedErrorMessage);
 
         // check containment        
@@ -230,8 +219,9 @@ public final class SemTexts {
                 if (lastSpan.getEnd() > span.getStart()) {
                     throw new IllegalArgumentException(String.valueOf(prependedErrorMessage) + " -- Found overlapping span! Span " + lastSpan + " overlaps with span " + span);
                 }
-                lastSpan = span;
+
             }
+            lastSpan = span;
         }
 
     }
@@ -262,9 +252,10 @@ public final class SemTexts {
     }
 
     /**
-     * A new immutable list of meanings is returned with the provided meanings
-     * merged to the existing ones. New meanings will replace equals old
-     * meanings.
+     * A new immutable list of sorted meanings is returned with the provided
+     * meanings merged to the existing ones. The first one has highest prob and
+     * probabilities are normalized so they sum up to 1.0. If a new meaning
+     * equals an existing meaning it will replace it.
      */
     public static ImmutableList<Meaning> mergeMeanings(Iterable<Meaning> oldMeanings, Iterable<Meaning> newMeanings) {
 
@@ -278,7 +269,7 @@ public final class SemTexts {
             dedupMeanings.add(m2);
         }
 
-        float total = 0;
+        double total = 0;
         for (Meaning m : dedupMeanings) {
             total += m.getProbability();
         }
@@ -312,11 +303,14 @@ public final class SemTexts {
         if (span1 == null) {
             return span2 == null;
         }
+        if (span2 == null) {
+            return false;
+        }
         return span1.getStart() == span2.getStart() && span1.getEnd() == span2.getEnd();
     }
 
     /**
-     * Returns a copy of provided metadata with the newMetadata set under the
+     * Returns a copy of provided metadata with {@code newMetadata} set under the
      * given namespace.
      *
      * @param newMetadata Must be an immutable object.

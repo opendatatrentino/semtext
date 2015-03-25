@@ -70,11 +70,16 @@ public class TermTest {
     }
 
     @Test
+    @SuppressWarnings({"ObjectEqualsNull", "IncompatibleEquals"})
     public void testEquality() {
-        assertEquals(Term.of(0, 2, MeaningStatus.NOT_SURE, null, ImmutableList.<Meaning>of()),
-                Term.of(0, 2, MeaningStatus.NOT_SURE, null, ImmutableList.<Meaning>of()));
-        assertNotEquals(Term.of(0, 2, MeaningStatus.NOT_SURE, null, ImmutableList.<Meaning>of()),
-                Term.of(0, 3, MeaningStatus.NOT_SURE, null, ImmutableList.<Meaning>of()));
+        Term t1 = Term.of(0, 2, MeaningStatus.NOT_SURE, null, ImmutableList.<Meaning>of());
+        Term t2 = Term.of(0, 2, MeaningStatus.NOT_SURE, null);
+        Term t3 = Term.of(0, 3, MeaningStatus.NOT_SURE, null, ImmutableList.<Meaning>of());
+        assertEquals(t1,t2);
+        assertEquals(t1.hashCode(),t2.hashCode());
+        assertNotEquals(t1,t3);
+        assertFalse(t1.equals(null));
+        assertFalse(t1.equals(""));
     }
 
     @Test

@@ -209,8 +209,9 @@ public final class SemText implements Serializable, HasMetadata {
                 if (intersection.isEmpty()) {
                     termsB.add(term);
                 }
-                sentencesB.add(sentence.withTerms(termsB.build()));
+                
             }
+            sentencesB.add(sentence.withTerms(termsB.build()));
         }
 
         return this.withSentences(sentencesB.build());

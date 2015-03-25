@@ -18,7 +18,6 @@ package eu.trentorise.opendata.semtext.test;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import eu.trentorise.opendata.commons.Dict;
-import eu.trentorise.opendata.commons.LocalizedString;
 import eu.trentorise.opendata.commons.NotFoundException;
 import eu.trentorise.opendata.commons.OdtConfig;
 import eu.trentorise.opendata.semtext.MeaningKind;
@@ -28,7 +27,6 @@ import eu.trentorise.opendata.semtext.SemText;
 import eu.trentorise.opendata.semtext.SemTexts;
 import eu.trentorise.opendata.semtext.Sentence;
 import eu.trentorise.opendata.semtext.Term;
-import eu.trentorise.opendata.semtext.TermIterator;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.NoSuchElementException;
@@ -56,169 +54,8 @@ public class SemTextTest {
     }
 
     @Test
-    public void testTermIteratorOneSentenceZeroTerms() {
-
-        assertFalse(SemText.of(Locale.FRENCH, "abcde", Sentence.of(0, 1))
-                .terms().iterator().hasNext());
-        try {
-            SemText.of(Locale.FRENCH, "abcde", Sentence.of(0, 1))
-                    .terms().iterator().next();
-            Assert.fail("Should have found no term!");
-        }
-        catch (NoSuchElementException ex) {
-
-        }
-    }
-
-    @Test
-    public void testTermIteratorOneSentenceOneTerm() {
-
-        assertTrue(SemText.of(Locale.FRENCH, "abcde", MeaningStatus.REVIEWED, Meaning.of("a", MeaningKind.ENTITY, 0.2))
-                .terms().iterator().hasNext());
-
-        SemText semText = SemText.of(Locale.FRENCH, "abcde", MeaningStatus.REVIEWED, Meaning.of("a", MeaningKind.ENTITY, 0.2));
-
-        Iterator<Term> termIter = semText.terms().iterator();
-        Term term = termIter.next();
-
-        assertEquals("a", term.getSelectedMeaning().getId());
-        try {
-            assertFalse(termIter.hasNext());
-            termIter.next();
-            Assert.fail("Should have found no term!");
-        }
-        catch (NoSuchElementException ex) {
-
-        }
-    }
-
-    @Test
-    public void testTermIteratorOneSentenceTwoTerms() {
-
-        SemText st = SemText.of(Locale.FRENCH, "abcde", Sentence.of(0, 7,
-                ImmutableList.of(Term.of(0, 1, MeaningStatus.SELECTED, Meaning.of("a", MeaningKind.CONCEPT, 0.2)),
-                        Term.of(2, 3, MeaningStatus.SELECTED, Meaning.of("b", MeaningKind.CONCEPT, 0.2)))));
-
-        try {
-            new TermIterator(SemText.of()).term();
-            Assert.fail();
-        }
-        catch (Exception ex) {
-
-        }
-
-        try {
-            new TermIterator(SemText.of()).sentence();
-            Assert.fail();
-        }
-        catch (Exception ex) {
-
-        }
-
-        TermIterator termIter
-                = new TermIterator(st);
-
-        Term term1 = termIter.next();
-        assertEquals("a", term1.getSelectedMeaning().getId());
-        assertTrue(termIter.hasCurrentTerm());
-        assertTrue(termIter.hasCurrentSentence());
-
-        assertEquals("a", termIter.term().getSelectedMeaning().getId());
-        assertEquals(termIter.sentence(), st.getSentences().get(0));
-        assertTrue(termIter.toString().length() > 0);
-
-        Term term2 = termIter.next();
-        assertEquals("b", term2.getSelectedMeaning().getId());
-
-        try {
-            assertFalse(termIter.hasNext());
-            termIter.next();
-            Assert.fail("Should have found no term!");
-        }
-        catch (NoSuchElementException ex) {
-
-        }
-    }
-
-    @Test
-    public void testTermIteratorTwoSentencesFourTerms() {
-
-        assertTrue(SemText.of().terms().isEmpty());
-
-        Sentence s1 = Sentence.of(0, 5,
-                ImmutableList.of(Term.of(0, 1, MeaningStatus.SELECTED, Meaning.of("a", MeaningKind.CONCEPT, 0.2)),
-                        Term.of(2, 3, MeaningStatus.SELECTED, Meaning.of("b", MeaningKind.CONCEPT, 0.2))));
-
-        Sentence s2 = Sentence.of(6, 10,
-                ImmutableList.of(Term.of(6, 7, MeaningStatus.SELECTED, Meaning.of("c", MeaningKind.CONCEPT, 0.2)),
-                        Term.of(8, 9, MeaningStatus.SELECTED, Meaning.of("d", MeaningKind.CONCEPT, 0.2))));
-
-        SemText st = SemText.ofSentences(Locale.FRENCH, "abcdefghilmnopqrs", ImmutableList.of(s1, s2));
-
-        Iterator<Term> termIter
-                = st.terms().iterator();
-        Term term1 = termIter.next();
-        assertEquals("a", term1.getSelectedMeaning().getId());
-        Term term2 = termIter.next();
-        assertEquals("b", term2.getSelectedMeaning().getId());
-        Term term3 = termIter.next();
-        assertEquals("c", term3.getSelectedMeaning().getId());
-        Term term4 = termIter.next();
-        assertEquals("d", term4.getSelectedMeaning().getId());
-
-        try {
-            assertFalse(termIter.hasNext());
-            termIter.next();
-            Assert.fail("Should have found no term!");
-        }
-        catch (NoSuchElementException ex) {
-
-        }
-
-        assertEquals("a", st.terms().get(0).getSelectedMeaning().getId());
-
-        assertEquals("b", st.terms().get(1).getSelectedMeaning().getId());
-        assertEquals("c", st.terms().get(2).getSelectedMeaning().getId());
-        assertEquals("d", st.terms().get(3).getSelectedMeaning().getId());
-
-        assertTrue(SemText.of().terms().isEmpty());
-
-        assertEquals(4, st.terms().toArray().length);
-        assertEquals("a", st.terms().get(0).getSelectedMeaning().getId());
-
-        assertTrue(st.terms().contains(term3));
-        Term outsideTerm = Term.of(55, 66, MeaningStatus.NOT_SURE, null);
-        assertFalse(st.terms().contains(outsideTerm));
-
-        assertTrue(st.terms().containsAll(ImmutableList.of(term2, term3)));
-        assertFalse(st.terms().containsAll(ImmutableList.of(outsideTerm)));
-
-        assertEquals(4, st.terms().size());
-
-        try {
-            st.terms().get(4);
-            Assert.fail("Should had exceeded bounds!");
-        }
-        catch (IndexOutOfBoundsException ex) {
-
-        }
-
-        try {
-            st.terms().get(-1);
-            Assert.fail("Should have exceeded bounds!");
-        }
-        catch (IndexOutOfBoundsException ex) {
-
-        }
-
-    }
-
-    @Test
+    @SuppressWarnings({"IncompatibleEquals", "ObjectEqualsNull"})
     public void testEquality() {
-
-        assertNotEquals(Meaning.of("a", MeaningKind.CONCEPT, 0.1), Meaning.of("a", MeaningKind.ENTITY, 0.1));
-        assertNotEquals(Meaning.of("a", MeaningKind.CONCEPT, 0.1), Meaning.of("b", MeaningKind.CONCEPT, 0.1));
-        assertEquals(Meaning.of("a", MeaningKind.CONCEPT, 0.1), Meaning.of("a", MeaningKind.CONCEPT, 0.9));
 
         assertEquals(SemText.of(), SemText.of());
         assertEquals(SemText.of("a"), SemText.of("a"));
@@ -229,8 +66,16 @@ public class SemTextTest {
         Sentence s1 = Sentence.of(0, 2);
         Sentence s2 = Sentence.of(0, 2);
 
-        assertEquals(SemText.of(Locale.ITALIAN, "ab", s1), SemText.of(Locale.ITALIAN, "ab", s2));
+        SemText st1 = SemText.of(Locale.ITALIAN, "ab", s1);
+        SemText st2 = SemText.of(Locale.ITALIAN, "ab", s2);
+
+        assertEquals(st1, st2);
+        assertEquals(st1.hashCode(), st2.hashCode());
+
         assertNotEquals(SemText.of(Locale.ITALIAN, "ab", s1), SemText.of(Locale.ITALIAN, "ab"));
+
+        assertFalse(s1.equals(null));
+        assertFalse(s1.equals(""));
 
     }
 
@@ -244,10 +89,13 @@ public class SemTextTest {
                 .getId());
 
         assertEquals("b", SemText.of("a").with("b").getText());
+
         assertEquals(Locale.ITALIAN, SemText.of("a").with(Locale.ITALIAN).getLocale());
+        assertEquals(Locale.ROOT, SemText.of(null, "a").getLocale()); // for nasty Locale json deserializers...
 
         assertFalse(SemText.of().hasMetadata("a"));
         assertEquals("b", SemText.of("").withMetadata("a", "b").getMetadata("a"));
+        assertEquals("c", SemText.of("").withMetadata("a", "b").withMetadata("a", "c").getMetadata("a"));
         assertTrue("b", SemText.of("").withMetadata("a", "b").hasMetadata("a"));
 
         assertEquals("c", SemText.of("").withMetadata("a", "b")
@@ -268,25 +116,33 @@ public class SemTextTest {
         catch (IllegalArgumentException ex) {
 
         }
-        
-        Term t2 = Term.of(0,1, MeaningStatus.NOT_SURE, null);
-        SemText newSemText = SemText.ofTerms(Locale.ITALIAN, "abc",Term.of(0, 2, MeaningStatus.NOT_SURE, null))
+
+        Term t2 = Term.of(0, 1, MeaningStatus.NOT_SURE, null);
+        SemText newSemText = SemText.ofTerms(Locale.ITALIAN, "abc", Term.of(0, 2, MeaningStatus.NOT_SURE, null))
                 .withTerms(ImmutableList.of(t2));
         assertEquals(1, newSemText.terms().size());
         assertEquals(t2, newSemText.terms().get(0));
-        
+
         try {
             SemText.of(Locale.ITALIAN, "abc", Sentence.of(0, 3)).with("ab");
             Assert.fail();
-        } catch (IllegalArgumentException ex){
-            
         }
-        
-        assertTrue(SemText.of().toString().length() > 0);                
-        
+        catch (IllegalArgumentException ex) {
+
+        }
+
+        assertEquals(SemText.of(Locale.ITALIAN, "ab", Sentence.of(0, 1)),
+                SemText.of(Locale.ITALIAN, "abc", Sentence.of(0, 1)).with("ab"));
+
+        assertEquals(SemText.ofSentences(Locale.ITALIAN, "a", ImmutableList.of(Sentence.of(0, 1, Term.of(0, 1, MeaningStatus.NOT_SURE, null)))),
+                SemText.of(Locale.ITALIAN, "a", MeaningStatus.NOT_SURE, null, ImmutableList.<Meaning>of()));
+
+        assertTrue(SemText.of().toString().length() > 0);
+
         assertEquals(Dict.of(Locale.ITALIAN, "a"), SemText.of(Locale.ITALIAN, "a").asDict());
         assertEquals(SemText.of(Locale.ITALIAN, "a"), SemText.of(SemText.of(Locale.ITALIAN, "a").asLocalizedString()));
         assertEquals(SemText.of(Locale.ITALIAN, "a"), SemText.of(Dict.of(Locale.ITALIAN, "a"), Locale.CANADA));
+        assertEquals(SemText.of(Locale.ITALIAN, "a"), SemText.of(Dict.of(Locale.ITALIAN, "a"), ImmutableList.of(Locale.CANADA)));
         assertEquals(Dict.of(Locale.ITALIAN, "a"), SemText.of(Locale.ITALIAN, "a").asDict());
     }
 

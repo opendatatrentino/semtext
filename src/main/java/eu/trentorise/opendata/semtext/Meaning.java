@@ -45,6 +45,7 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
     private MeaningKind kind;
     private double probability;
     private Dict name;
+    private Dict description;
     private ImmutableMap<String, ?> metadata;
 
     private Meaning() {
@@ -52,6 +53,7 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
         this.kind = MeaningKind.UNKNOWN;
         this.probability = 0.0;
         this.name = Dict.of();
+        this.description = Dict.of();
         this.metadata = ImmutableMap.of();
     }
 
@@ -63,6 +65,7 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
         this.kind = m.getKind();
         this.probability = m.getProbability();
         this.name = m.getName();
+        this.description = m.getDescription();
         this.metadata = m.getMetadata();
     }
 
@@ -129,18 +132,19 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
      * unknwon, use {@link Dict#of()}
      * @param metadata metadata will be stored in an immutable map.
      */
-    private Meaning(String id, MeaningKind kind, double probability, Dict name, Map<String, ?> metadata) {
-        checkNotNull(id);
-        checkNotNull(name);
+    private Meaning(String id, MeaningKind kind, double probability, Dict name, Dict description,  Map<String, ?> metadata) {
+        checkNotNull(id);        
         checkNotNull(kind);
-        checkNotNull(metadata);
-
         checkPositiveScore(probability, "Invalid probability for meaning!");
-
+        checkNotNull(name);
+        checkNotNull(description);
+        checkNotNull(metadata);
+       
         this.id = id;
         this.kind = kind;
         this.probability = probability;
         this.name = name;
+        this.description = description;        
         this.metadata = ImmutableMap.copyOf(metadata);
     }
     
@@ -155,7 +159,7 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
     
      */
     public static Meaning of(String id, MeaningKind kind, double probability) {
-        return of(id, kind, probability, Dict.of(), SemTexts.EMPTY_METADATA);
+        return of(id, kind, probability, Dict.of(), Dict.of(), SemTexts.EMPTY_METADATA);
     }    
 
     /**
@@ -168,9 +172,11 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
      * @param probability Must be greater or equal than 0
      * @param name the name of the entity or concept this meaning represents. If
      * unknwon, use {@link Dict#of()}
+     * @param description the description of the entity or concept this meaning represents. If
+     * unknwon, use {@link Dict#of()}
      */
-    public static Meaning of(String id, MeaningKind kind, double probability, Dict name) {
-        return of(id, kind, probability, name, SemTexts.EMPTY_METADATA);
+    public static Meaning of(String id, MeaningKind kind, double probability, Dict name, Dict description) {
+        return of(id, kind, probability, name, description, SemTexts.EMPTY_METADATA);
     }
 
     /**
@@ -183,11 +189,13 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
      * @param probability Must be greater or equal than 0
      * @param name the name of the entity or concept this meaning represents. If
      * unknwon, use {@link Dict#of()}
+     * @param description the description of the entity or concept this meaning represents. If
+     * unknwon, use {@link Dict#of()}
      * @param metadata the metadata to associate to the meaning. Objects
      * contained in the map must be immutable.
      */
-    public static Meaning of(String id, MeaningKind kind, double probability, Dict name, Map<String, ?> metadata) {
-        return new Meaning(id, kind, probability, name, metadata);
+    public static Meaning of(String id, MeaningKind kind, double probability, Dict name, Dict description, Map<String, ?> metadata) {
+        return new Meaning(id, kind, probability, name, description, metadata);
     }
 
     /**
@@ -246,6 +254,16 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
     public Dict getName() {
         return name;
     }
+    
+    /**
+     * Gets the descriptione of the entity or concept represented by this meaning
+     *
+     * @return the description of the entity or concept represented by the meaning. The
+     * dictionary can be empty.
+     */
+    public Dict getDescription() {
+        return description;
+    }    
 
     /**
      * Returns a shallow copy of this meaning with provided probability set.

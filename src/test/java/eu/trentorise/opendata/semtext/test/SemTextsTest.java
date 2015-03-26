@@ -93,14 +93,14 @@ public class SemTextsTest {
 
     @Test
     public void testDisambiguate() {
-        Meaning meaningA = Meaning.of("a", MeaningKind.ENTITY, 0.8, Dict.of());
+        Meaning meaningA = Meaning.of("a", MeaningKind.ENTITY, 0.8);
 
         assertEquals(meaningA, SemTexts.disambiguate(ImmutableList.of(
                 meaningA,
-                Meaning.of("b", MeaningKind.ENTITY, 0.2, Dict.of()))));
+                Meaning.of("b", MeaningKind.ENTITY, 0.2))));
 
-        assertEquals(null, SemTexts.disambiguate(ImmutableList.of(Meaning.of("a", MeaningKind.ENTITY, 0.2, Dict.of()),
-                Meaning.of("b", MeaningKind.ENTITY, 0.2, Dict.of()))));
+        assertEquals(null, SemTexts.disambiguate(ImmutableList.of(Meaning.of("a", MeaningKind.ENTITY, 0.2),
+                Meaning.of("b", MeaningKind.ENTITY, 0.2))));
 
         assertEquals(meaningA, SemTexts.disambiguate(ImmutableList.of(meaningA)));
         assertEquals(null, SemTexts.disambiguate(ImmutableList.<Meaning>of()));
@@ -111,7 +111,7 @@ public class SemTextsTest {
         SemTexts.checkMeaningStatus(MeaningStatus.NOT_SURE, null, "a");
 
         try {
-            SemTexts.checkMeaningStatus(MeaningStatus.NOT_SURE, Meaning.of("b", MeaningKind.ENTITY, 0.2, Dict.of()), "a");
+            SemTexts.checkMeaningStatus(MeaningStatus.NOT_SURE, Meaning.of("b", MeaningKind.ENTITY, 0.2), "a");
             Assert.fail();
         }
         catch (IllegalArgumentException ex) {
@@ -120,14 +120,14 @@ public class SemTextsTest {
 
         SemTexts.checkMeaningStatus(MeaningStatus.TO_DISAMBIGUATE, null, "a");
         try {
-            SemTexts.checkMeaningStatus(MeaningStatus.TO_DISAMBIGUATE, Meaning.of("b", MeaningKind.ENTITY, 0.2, Dict.of()), "a");
+            SemTexts.checkMeaningStatus(MeaningStatus.TO_DISAMBIGUATE, Meaning.of("b", MeaningKind.ENTITY, 0.2), "a");
             Assert.fail();
         }
         catch (IllegalArgumentException ex) {
 
         }
 
-        SemTexts.checkMeaningStatus(MeaningStatus.REVIEWED, Meaning.of("b", MeaningKind.ENTITY, 0.2, Dict.of()), "a");
+        SemTexts.checkMeaningStatus(MeaningStatus.REVIEWED, Meaning.of("b", MeaningKind.ENTITY, 0.2), "a");
         try {
             SemTexts.checkMeaningStatus(MeaningStatus.REVIEWED, null, "a");
             Assert.fail();
@@ -136,7 +136,7 @@ public class SemTextsTest {
 
         }
 
-        SemTexts.checkMeaningStatus(MeaningStatus.SELECTED, Meaning.of("b", MeaningKind.ENTITY, 0.2, Dict.of()), "a");
+        SemTexts.checkMeaningStatus(MeaningStatus.SELECTED, Meaning.of("b", MeaningKind.ENTITY, 0.2), "a");
 
         try {
             SemTexts.checkMeaningStatus(MeaningStatus.SELECTED, null, "a");

@@ -50,13 +50,21 @@ public class MeaningTest {
         double p = Meaning.of("a", MeaningKind.ENTITY, 0.1).withProbability(prob).getProbability();
         assertTrue(Math.abs(p - prob) < SemTexts.TOLERANCE);
 
+        Meaning ma = Meaning.of("a", MeaningKind.ENTITY, 0.3, Dict.of("a"), Dict.of("b"));
+        assertEquals("a", ma.getId());
+        assertEquals(MeaningKind.ENTITY, ma.getKind());
+        assertTrue(ma.getProbability() > 0.29);
+        assertTrue(ma.getProbability() < 0.31);
+        assertEquals(Dict.of("a"), ma.getName());
+        assertEquals(Dict.of("b"), ma.getDescription());
+        
         
         assertEquals("b", Meaning.of("a", MeaningKind.ENTITY, 0.3).withMetadata("a", "b").getMetadata("a"));        
         assertFalse(Meaning.of().hasMetadata("a"));
         assertTrue(Meaning.of().withMetadata("a", "b").hasMetadata("a"));
         
-        assertEquals(Meaning.of("a", MeaningKind.ENTITY, 0.3, Dict.of()),
-                     Meaning.of("a", MeaningKind.ENTITY, 0.3, Dict.of(), SemTexts.EMPTY_METADATA));
+        assertEquals(Meaning.of("a", MeaningKind.ENTITY, 0.3, Dict.of(), Dict.of()),
+                     Meaning.of("a", MeaningKind.ENTITY, 0.3, Dict.of(), Dict.of(), SemTexts.EMPTY_METADATA));
         
         assertTrue(Meaning.of("a", MeaningKind.ENTITY, 0.3).compareTo(Meaning.of("b", MeaningKind.CONCEPT, 0.2)) > 0);
         
@@ -99,3 +107,4 @@ public class MeaningTest {
         assertFalse(maConcept01.equals(""));        
     }
 }
+

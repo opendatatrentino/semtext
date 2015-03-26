@@ -20,6 +20,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import eu.trentorise.opendata.commons.Dict;
 import static eu.trentorise.opendata.commons.OdtUtils.checkNotEmpty;
@@ -63,8 +64,7 @@ public final class SemTexts {
      * Determines the best meaning among the given ones according to their
      * probabilities. If no best meaning is found null is returned.
      *
-     * @param meanings a sorted list of meanings, with the first ones being the
-     * most important.
+     * @param meanings a list of meanings.
      * @return the disambiguated meaning or null if no meaning can be clearly
      * identified.
      */
@@ -85,8 +85,10 @@ public final class SemTexts {
                 return m;
             }
         }
-
-        Meaning first = Iterables.getFirst(meanings, null);
+        
+        List<Meaning> mgs = Lists.newArrayList(meanings);
+        Collections.sort(mgs, Collections.reverseOrder());
+        Meaning first = mgs.get(0);
 
         if (first.getProbability() > DISAMBIGUATION_FACTOR / size
                 && first.getId() != null) {

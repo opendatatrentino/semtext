@@ -38,7 +38,7 @@ public class TermIteratorTest {
 
     @BeforeClass
     public static void beforeClass() {
-        OdtConfig.of(TermIteratorTest.class).loadLogConfig();
+        OdtConfig.of(TermIteratorTest.class);
     }
         
     @Test

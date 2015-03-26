@@ -29,7 +29,6 @@ import eu.trentorise.opendata.semtext.Sentence;
 import eu.trentorise.opendata.semtext.Term;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.NoSuchElementException;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.junit.Assert;
@@ -50,7 +49,7 @@ public class SemTextTest {
 
     @BeforeClass
     public static void beforeClass() {
-        OdtConfig.of(SemTextTest.class).loadLogConfig();
+         OdtConfig.init(SemTextTest.class);
     }
 
     @Test

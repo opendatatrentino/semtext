@@ -22,7 +22,6 @@ import eu.trentorise.opendata.semtext.Meaning;
 import eu.trentorise.opendata.semtext.MeaningKind;
 import eu.trentorise.opendata.semtext.MeaningStatus;
 import eu.trentorise.opendata.semtext.SemTexts;
-import eu.trentorise.opendata.semtext.Sentence;
 import eu.trentorise.opendata.semtext.Term;
 import java.util.logging.Logger;
 import org.junit.Assert;
@@ -43,7 +42,7 @@ public class TermTest {
 
     @BeforeClass
     public static void beforeClass() {
-        OdtConfig.of(TermTest.class).loadLogConfig();
+         OdtConfig.init(TermTest.class);
     }
 
     @Test

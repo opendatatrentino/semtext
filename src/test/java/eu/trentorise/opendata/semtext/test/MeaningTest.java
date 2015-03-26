@@ -20,7 +20,6 @@ import eu.trentorise.opendata.commons.NotFoundException;
 import eu.trentorise.opendata.commons.OdtConfig;
 import eu.trentorise.opendata.semtext.Meaning;
 import eu.trentorise.opendata.semtext.MeaningKind;
-import eu.trentorise.opendata.semtext.SemText;
 import eu.trentorise.opendata.semtext.SemTexts;
 import java.util.logging.Logger;
 import org.junit.Assert;
@@ -41,7 +40,7 @@ public class MeaningTest {
 
     @BeforeClass
     public static void beforeClass() {
-        OdtConfig.of(MeaningTest.class).loadLogConfig();
+        OdtConfig.init(MeaningTest.class);
     }
 
     @Test

@@ -37,11 +37,11 @@ import org.junit.Test;
  */
 public class SentenceTest {
 
-    private static final Logger LOG = Logger.getLogger(MeaningTest.class.getName());
+    private static final Logger LOG = Logger.getLogger(SentenceTest.class.getName());
 
     @BeforeClass
     public static void beforeClass() {
-        OdtConfig.of(SentenceTest.class).loadLogConfig();
+         OdtConfig.init(SentenceTest.class);
     }
 
     @Test

@@ -45,7 +45,7 @@ public class SemTextsTest {
 
     @BeforeClass
     public static void beforeClass() {
-        OdtConfig.of(SemTextsTest.class).loadLogConfig();
+         OdtConfig.init(SemTextsTest.class);
     }
 
     @Test

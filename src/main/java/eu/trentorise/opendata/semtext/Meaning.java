@@ -228,7 +228,7 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
     /**
      * @return the id of the entity or the concept represented by this meaning,
      * <a href="http://www.w3.org/TR/json-ld/#node-identifiers" target="_blank">
-     * as specified in JSON-LD </a>. If no id was assigned to meaning, returns
+     * as specified in JSON-LD</a>. If no id was assigned to meaning, returns
      * the empty string.
      */
     public String getId() {

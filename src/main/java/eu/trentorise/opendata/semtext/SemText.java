@@ -459,7 +459,7 @@ public final class SemText implements Serializable, HasMetadata {
             String text,
             MeaningStatus meaningStatus,
             @Nullable Meaning selectedMeaning,
-            List<Meaning> meanings) {
+            Iterable<Meaning> meanings) {
         return SemText.ofSentences(
                 locale,
                 text,

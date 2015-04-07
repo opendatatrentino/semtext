@@ -65,13 +65,13 @@ public class SemTextTest {
         Sentence s1 = Sentence.of(0, 2);
         Sentence s2 = Sentence.of(0, 2);
 
-        SemText st1 = SemText.of(Locale.ITALIAN, "ab", s1);
-        SemText st2 = SemText.of(Locale.ITALIAN, "ab", s2);
+        SemText st1 = SemText.ofSentences(Locale.ITALIAN, "ab", s1);
+        SemText st2 = SemText.ofSentences(Locale.ITALIAN, "ab", s2);
 
         assertEquals(st1, st2);
         assertEquals(st1.hashCode(), st2.hashCode());
 
-        assertNotEquals(SemText.of(Locale.ITALIAN, "ab", s1), SemText.of(Locale.ITALIAN, "ab"));
+        assertNotEquals(SemText.ofSentences(Locale.ITALIAN, "ab", s1), SemText.of(Locale.ITALIAN, "ab"));
 
         assertFalse(s1.equals(null));
         assertFalse(s1.equals(""));
@@ -123,15 +123,15 @@ public class SemTextTest {
         assertEquals(t2, newSemText.terms().get(0));
 
         try {
-            SemText.of(Locale.ITALIAN, "abc", Sentence.of(0, 3)).with("ab");
+            SemText.ofSentences(Locale.ITALIAN, "abc", Sentence.of(0, 3)).with("ab");
             Assert.fail();
         }
         catch (IllegalArgumentException ex) {
 
         }
 
-        assertEquals(SemText.of(Locale.ITALIAN, "ab", Sentence.of(0, 1)),
-                SemText.of(Locale.ITALIAN, "abc", Sentence.of(0, 1)).with("ab"));
+        assertEquals(SemText.ofSentences(Locale.ITALIAN, "ab", Sentence.of(0, 1)),
+                SemText.ofSentences(Locale.ITALIAN, "abc", Sentence.of(0, 1)).with("ab"));
 
         assertEquals(SemText.ofSentences(Locale.ITALIAN, "a", ImmutableList.of(Sentence.of(0, 1, Term.of(0, 1, MeaningStatus.NOT_SURE, null)))),
                 SemText.of(Locale.ITALIAN, "a", MeaningStatus.NOT_SURE, null, ImmutableList.<Meaning>of()));
@@ -278,7 +278,7 @@ public class SemTextTest {
         Sentence sentence1 = Sentence.of(0, 1);
         Sentence sentence2 = Sentence.of(2, 3);
 
-        SemText semText = SemText.of(Locale.ITALIAN, "abcd", sentence1, sentence2);
+        SemText semText = SemText.ofSentences(Locale.ITALIAN, "abcd", sentence1, sentence2);
         SemText updatedSemText = semText.merge(newTerm1, newTerm2);
         assertEquals(1, updatedSemText.terms().size());
         assertEquals(sentence1, updatedSemText.getSentences().get(0));
@@ -425,7 +425,7 @@ public class SemTextTest {
         Sentence s1 = Sentence.of(0, 1, t1);
         Sentence s2 = Sentence.of(1, 3, t2);
 
-        SemText st = SemText.of(Locale.FRENCH, "abc", s1, s2);
+        SemText st = SemText.ofSentences(Locale.FRENCH, "abc", s1, s2);
         SemText newText = st.deleteTerms(ImmutableList.of(Range.closed(0, 1)));
         assertEquals(2, newText.getSentences().size());
         Sentence newSentence1 = newText.getSentences().get(0);
@@ -480,7 +480,7 @@ public class SemTextTest {
         Term term = Term.of(11, 21, MeaningStatus.SELECTED, meaning);
 
         // Language can be set only for the whole SemText:
-        SemText semText = SemText.of(
+        SemText semText = SemText.ofSentences(
                 Locale.ENGLISH,
                 text,
                 Sentence.of(0, 26, term)); // sentence spans the whole text

@@ -54,10 +54,10 @@ public class TermIteratorTest {
       @Test
     public void testTermIteratorOneSentenceZeroTerms() {
 
-        assertFalse(SemText.of(Locale.FRENCH, "abcde", Sentence.of(0, 1))
+        assertFalse(SemText.ofSentences(Locale.FRENCH, "abcde", Sentence.of(0, 1))
                 .terms().iterator().hasNext());
         try {
-            SemText.of(Locale.FRENCH, "abcde", Sentence.of(0, 1))
+            SemText.ofSentences(Locale.FRENCH, "abcde", Sentence.of(0, 1))
                     .terms().iterator().next();
             Assert.fail("Should have found no term!");
         }
@@ -112,10 +112,10 @@ public class TermIteratorTest {
         }
         
         assertEquals(Sentence.of(1,2), 
-                     ((TermIterator) SemText.of(Locale.ITALIAN, "abcd", Sentence.of(1,2)).terms().iterator()).sentence());
+                     ((TermIterator) SemText.ofSentences(Locale.ITALIAN, "abcd", Sentence.of(1,2)).terms().iterator()).sentence());
         
         
-        SemText st = SemText.of(Locale.FRENCH, "abcde", Sentence.of(0, 7,
+        SemText st = SemText.ofSentences(Locale.FRENCH, "abcde", Sentence.of(0, 7,
                 ImmutableList.of(Term.of(0, 1, MeaningStatus.SELECTED, Meaning.of("a", MeaningKind.CONCEPT, 0.2)),
                         Term.of(2, 3, MeaningStatus.SELECTED, Meaning.of("b", MeaningKind.CONCEPT, 0.2)))));
                                     

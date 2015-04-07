@@ -172,7 +172,7 @@ public final class SemText implements Serializable, HasMetadata {
      * Returns a new SemText with all the terms matching the provided regex text
      * deleted.
      *
-     */    
+     */
     public SemText deleteTerms(Pattern pattern) {
         checkNotNull(pattern);
         checkNotEmpty(pattern.pattern(), "Pattern can't be empty!!");
@@ -209,7 +209,7 @@ public final class SemText implements Serializable, HasMetadata {
                 if (intersection.isEmpty()) {
                     termsB.add(term);
                 }
-                
+
             }
             sentencesB.add(sentence.withTerms(termsB.build()));
         }
@@ -270,10 +270,10 @@ public final class SemText implements Serializable, HasMetadata {
             termToMergeRanges.put(spanToRange(termToMerge), termToMerge);
         }
 
-        for (Sentence sentence : sentences) {            
+        for (Sentence sentence : sentences) {
 
             RangeMap<Integer, Term> mergeRanges = enclosingNewTerms(sentence, termToMergeRanges);
-            Map<Range<Integer>,Term> mergeRangesMap = mergeRanges.asMapOfRanges();           
+            Map<Range<Integer>, Term> mergeRangesMap = mergeRanges.asMapOfRanges();
 
             for (Term origTerm : sentence.getTerms()) {
                 Term newTerm = mergeRangesMap.get(spanToRange(origTerm));
@@ -282,7 +282,7 @@ public final class SemText implements Serializable, HasMetadata {
                     if (mergeRanges.subRangeMap(spanToRange(origTerm)).asMapOfRanges().isEmpty()) {
                         // origTerm does not overlap with new terms, add it                                                    
                         mergeRanges.put(spanToRange(origTerm), origTerm);
-                    }                    
+                    }
                 } else { // orig term coincides with new term, merge it
                     mergeRanges.put(spanToRange(newTerm),
                             newTerm.with(Iterables.concat(newTerm.getMeanings(), origTerm.getMeanings())));
@@ -426,7 +426,7 @@ public final class SemText implements Serializable, HasMetadata {
             String text,
             MeaningStatus meaningStatus,
             @Nullable Meaning selectedMeaning) {
-        return ofSentences(locale,
+        return SemText.ofSentences(locale,
                 text,
                 ImmutableList.of(Sentence.of(0,
                                 text.length(),
@@ -460,7 +460,7 @@ public final class SemText implements Serializable, HasMetadata {
             MeaningStatus meaningStatus,
             @Nullable Meaning selectedMeaning,
             List<Meaning> meanings) {
-        return ofSentences(
+        return SemText.ofSentences(
                 locale,
                 text,
                 ImmutableList.of(Sentence.of(0,
@@ -488,7 +488,7 @@ public final class SemText implements Serializable, HasMetadata {
      * {@link Locale#ROOT}
      */
     public static SemText of(String text) {
-        return ofSentences(Locale.ROOT, text, ImmutableList.<Sentence>of(), SemTexts.EMPTY_METADATA);
+        return SemText.ofSentences(Locale.ROOT, text, ImmutableList.<Sentence>of(), SemTexts.EMPTY_METADATA);
     }
 
     /**
@@ -500,35 +500,57 @@ public final class SemText implements Serializable, HasMetadata {
      * {@link Locale#ROOT}.
      */
     public static SemText of(Locale locale, String text) {
-        return ofSentences(locale, text, ImmutableList.<Sentence>of(), SemTexts.EMPTY_METADATA);
+        return SemText.ofSentences(locale, text, ImmutableList.<Sentence>of(), SemTexts.EMPTY_METADATA);
     }
 
+
+
+
     /**
+     * Creates a SemText with provided sentences
+     *
      * @param locale if unknown use {@link Locale#ROOT}
      */
-    public static SemText of(Locale locale, String text, Sentence... sentences) {
-        return ofSentences(locale, text, ImmutableList.copyOf(sentences));
-    }
-
-    /**
-     * @param locale Locale of the whole text. if unknown use
-     * {@link Locale#ROOT}
-     */
     public static SemText ofSentences(Locale locale, String text, Iterable<Sentence> sentences) {
-        return ofSentences(locale, text, sentences, SemTexts.EMPTY_METADATA);
+        return SemText.ofSentences(locale, text, sentences, SemTexts.EMPTY_METADATA);
     }
 
     /**
-     * @param locale Locale of the whole text. if unknown use
-     * {@link Locale#ROOT}
+     * Creates a SemText with provided sentences
+     *
+     * @param locale if unknown use {@link Locale#ROOT}
+     */
+    public static SemText ofSentences(Locale locale, String text, Sentence... sentences) {
+        return SemText.ofSentences(locale, text, ImmutableList.copyOf(sentences));
+    }    
+    
+    /**
+     * Creates a SemText with provided sentences and metadata
+     *
+     * @param locale if unknown use {@link Locale#ROOT}
+     * @param metadata a map of immutable objects.
      */
     public static SemText ofSentences(Locale locale, String text, Iterable<Sentence> sentences, Map<String, ?> metadata) {
         return new SemText(locale, text, sentences, metadata);
     }
 
+    
+
     /**
-     * @param locale Locale of the whole text. if unknown use
-     * {@link Locale#ROOT}
+     * Creates a SemText with provided terms, which will be put into a
+     * {@link Sentence} spanning the whole text.
+     *
+     * @param locale if unknown use {@link Locale#ROOT}
+     */
+    public static SemText ofTerms(Locale locale, String text, Term... terms) {
+        return SemText.ofTerms(locale, text, ImmutableList.copyOf(terms));
+    }
+    
+    /**
+     * Creates a SemText with provided terms, which will be put into a
+     * {@link Sentence} spanning the whole text.
+     *
+     * @param locale if unknown use {@link Locale#ROOT}
      */
     public static SemText ofTerms(Locale locale, String text, Iterable<Term> terms) {
         return new SemText(locale,
@@ -538,13 +560,19 @@ public final class SemText implements Serializable, HasMetadata {
     }
 
     /**
-     * @param locale Locale of the whole text. if unknown use
-     * {@link Locale#ROOT}
+     * Creates a SemText with provided terms, which will be put into a
+     * {@link Sentence} spanning the whole text.
+     *
+     * @param locale if unknown use {@link Locale#ROOT}
+     * @param metadata a map of immutable objects.
      */
-    public static SemText ofTerms(Locale locale, String text, Term... terms) {
-        return ofTerms(locale, text, ImmutableList.copyOf(terms));
-    }
-
+    public static SemText ofTerms(Locale locale, String text, Iterable<Term> terms, Map<String, ?> metadata) {
+        return new SemText(locale,
+                text,
+                ImmutableList.of(Sentence.of(0, text.length(), terms)),
+                metadata);
+    }    
+    
     /**
      * Tries its best to return a meaningful semantic text in one of the
      * provided languages.

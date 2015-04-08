@@ -484,7 +484,7 @@ public final class SemText implements Serializable, HasMetadata {
     }
 
     /**
-     * Creates SemText with the provided string. Locale is set to
+     * Creates SemText with the given string. Locale is set to
      * {@link Locale#ROOT}
      */
     public static SemText of(String text) {
@@ -492,7 +492,7 @@ public final class SemText implements Serializable, HasMetadata {
     }
 
     /**
-     * Creates SemText with the provided string. Locale is set to english and
+     * Creates SemText with the given string. Locale is set to english and
      * the string is not enriched.
      *
      * @param text
@@ -507,7 +507,7 @@ public final class SemText implements Serializable, HasMetadata {
 
 
     /**
-     * Creates a SemText with provided sentences
+     * Creates a SemText with given sentences
      *
      * @param locale if unknown use {@link Locale#ROOT}
      */
@@ -516,11 +516,11 @@ public final class SemText implements Serializable, HasMetadata {
     }
 
     /**
-     * Creates a SemText with provided sentences
+     * Creates a SemText with given sentences
      *
      * @param locale if unknown use {@link Locale#ROOT}
      */
-    public static SemText ofSentences(Locale locale, String text, Sentence... sentences) {
+    public static SemText of(Locale locale, String text, Sentence... sentences) {
         return SemText.ofSentences(locale, text, ImmutableList.copyOf(sentences));
     }    
     
@@ -542,7 +542,7 @@ public final class SemText implements Serializable, HasMetadata {
      *
      * @param locale if unknown use {@link Locale#ROOT}
      */
-    public static SemText ofTerms(Locale locale, String text, Term... terms) {
+    public static SemText of(Locale locale, String text, Term... terms) {
         return SemText.ofTerms(locale, text, ImmutableList.copyOf(terms));
     }
     

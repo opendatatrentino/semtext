@@ -157,17 +157,17 @@ public final class Sentence implements Span, Serializable, HasMetadata {
     }
 
     /**
-     * Creates a sentence of one term.
+     * Creates a sentence with the given terms.
      *
      * @param start 0-indexed span offset start. Position is absolute with
      * respect to the text stored in the {@code SemText} container.
      * @param end the position of the character immediately *after* the sentence
      * itself. Position is absolute with respect to the text stored in the
      * {@code SemText} container.
-     * @param term the term within the sentence.
+     * @param terms the terms within the sentence.
      */
-    public static Sentence of(int start, int end, Term term) {
-        return of(start, end, ImmutableList.of(term), SemTexts.EMPTY_METADATA);
+    public static Sentence of(int start, int end, Term... terms) {
+        return of(start, end, ImmutableList.copyOf(terms), SemTexts.EMPTY_METADATA);
     }
 
     /**

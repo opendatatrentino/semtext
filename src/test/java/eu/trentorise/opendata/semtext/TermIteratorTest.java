@@ -29,7 +29,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * For these tests to work we need to stay in same SemText package as TermIterator and TermView are not public
+ * For these tests to work we need to stay in same SemText package as
+ * TermIterator and TermView are not public
+ *
  * @author David Leoni
  */
 public class TermIteratorTest {
@@ -40,24 +42,24 @@ public class TermIteratorTest {
     public static void beforeClass() {
         OdtConfig.of(TermIteratorTest.class);
     }
-        
+
     @Test
     @SuppressWarnings({"ObjectEqualsNull", "IncompatibleEquals"})
-    public void testTermViewEquality(){
-        SemText st = SemText.ofTerms(Locale.ITALIAN, "blabla", Term.of(0,2,MeaningStatus.NOT_SURE, null));
+    public void testTermViewEquality() {
+        SemText st = SemText.of(Locale.ITALIAN, "blabla", Term.of(0, 2, MeaningStatus.NOT_SURE, null));
         assertTrue(TermsView.of(st).equals(TermsView.of(st)));
         assertTrue(TermsView.of(st).hashCode() == TermsView.of(st).hashCode());
         assertFalse(TermsView.of(st).equals(null));
         assertFalse(TermsView.of(st).equals("ciao"));
-    }    
+    }
 
-      @Test
+    @Test
     public void testTermIteratorOneSentenceZeroTerms() {
 
-        assertFalse(SemText.ofSentences(Locale.FRENCH, "abcde", Sentence.of(0, 1))
+        assertFalse(SemText.of(Locale.FRENCH, "abcde", Sentence.of(0, 1))
                 .terms().iterator().hasNext());
         try {
-            SemText.ofSentences(Locale.FRENCH, "abcde", Sentence.of(0, 1))
+            SemText.of(Locale.FRENCH, "abcde", Sentence.of(0, 1))
                     .terms().iterator().next();
             Assert.fail("Should have found no term!");
         }
@@ -91,8 +93,7 @@ public class TermIteratorTest {
     @Test
     public void testTermIteratorOneSentenceTwoTerms() {
 
-        
-        TermIterator titer1 = ((TermIterator)(SemText.of().terms().iterator()));
+        TermIterator titer1 = ((TermIterator) (SemText.of().terms().iterator()));
         assertFalse(titer1.hasCurrentTerm());
         assertFalse(titer1.hasCurrentSentence());
         try {
@@ -110,15 +111,19 @@ public class TermIteratorTest {
         catch (NoSuchElementException ex) {
 
         }
-        
-        assertEquals(Sentence.of(1,2), 
-                     ((TermIterator) SemText.ofSentences(Locale.ITALIAN, "abcd", Sentence.of(1,2)).terms().iterator()).sentence());
-        
-        
-        SemText st = SemText.ofSentences(Locale.FRENCH, "abcde", Sentence.of(0, 7,
-                ImmutableList.of(Term.of(0, 1, MeaningStatus.SELECTED, Meaning.of("a", MeaningKind.CONCEPT, 0.2)),
-                        Term.of(2, 3, MeaningStatus.SELECTED, Meaning.of("b", MeaningKind.CONCEPT, 0.2)))));
-                                    
+
+        assertEquals(Sentence.of(1, 2),
+                ((TermIterator) SemText.of(Locale.ITALIAN, "abcd", Sentence.of(1, 2)).terms().iterator()).sentence());
+
+        SemText st = SemText.of(
+                Locale.FRENCH,
+                "abcde",
+                Sentence.of(
+                        0,
+                        7,
+                        Term.of(0, 1, MeaningStatus.SELECTED, Meaning.of("a", MeaningKind.CONCEPT, 0.2)),
+                        Term.of(2, 3, MeaningStatus.SELECTED, Meaning.of("b", MeaningKind.CONCEPT, 0.2))));
+
         TermIterator termIter
                 = (TermIterator) st.terms().iterator();
 
@@ -216,6 +221,5 @@ public class TermIteratorTest {
         }
 
     }
-
 
 }

@@ -54,10 +54,8 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>animal-sniffer-maven-plugin</artifactId>
             </plugin>               
-            
-              
-            
-  <plugin>
+                                                  
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
             </plugin>
@@ -144,8 +142,7 @@
             <groupId>eu.trentorise.opendata.commons</groupId>
             <artifactId>odt-commons</artifactId>                    
         </dependency>      
-                                                                                                             		
-		       
+                                                                                                 
         <!-- *****************************   STUFF FOR TESTING ********************************  -->
 
         <dependency>
@@ -171,9 +168,7 @@
         
         
     </dependencies>
-    
-    
-    
+            
     <reporting>
         <plugins>                        
             <plugin>

@@ -3,16 +3,6 @@ WARNING: WORK IN PROGRESS - THIS IS ONLY A TEMPLATE FOR THE DOCUMENTATION. <br/>
 RELEASE DOCS ARE ON THE <a href="http://opendatatrentino.github.io/semtext/" target="_blank">PROJECT WEBSITE</a>
 </p>
 
-### About
-
-SemText is a lightweight model for semantically annotated text, designed for reliable exchange among applications rather than for efficiency.
-
-  * provides a simple hierarchy of sentences and terms
-  * has immutable data structures
-  * allows attaching metadata to spans
-
-The purpose of this release is to provide a first model sufficiently stable to be reusable in different projects.
-
 ### UML diagram
 
 A `SemText` object contains a list of `Sentence` objects, which in turn can contain a list of `Term` objects.
@@ -39,9 +29,8 @@ SemText data model supports a simple interaction cycle with the user, where some
 </p>
 
 
-### Usage
+### Maven
 
-#### Maven dependency
 
 SemText is available on Maven Central. To use it, put this in the dependencies section of your _pom.xml_: 
 
@@ -56,7 +45,7 @@ SemText is available on Maven Central. To use it, put this in the dependencies s
 
 In case updates are available, version numbers follows [semantic versioning](http://semver.org/) rules.
 
-#### Examples
+### Examples
 
 Objects have no public constructor. To make them use factory methods starting with `of`:
 
@@ -64,7 +53,7 @@ Objects have no public constructor. To make them use factory methods starting wi
 	SemText semText1 = SemText.of(Locale.ITALIAN, "ciao");
 ```
 
-To obtain a modified version of an object, use 'with' methods:
+To obtain a modified version of an object, use `with` methods:
 
 ```
     SemText semText2 = semText1.with("buongiorno");

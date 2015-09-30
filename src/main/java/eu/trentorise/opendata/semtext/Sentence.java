@@ -18,6 +18,8 @@ package eu.trentorise.opendata.semtext;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import eu.trentorise.opendata.commons.NotFoundException;
+import eu.trentorise.opendata.commons.OdtUtils;
+
 import static eu.trentorise.opendata.semtext.SemTexts.checkSpan;
 import static eu.trentorise.opendata.semtext.SemTexts.checkSpans;
 import java.io.Serializable;
@@ -221,7 +223,7 @@ public final class Sentence implements Span, Serializable, HasMetadata {
      */
     public Sentence withMetadata(String namespace, Object metadata) {
         Sentence ret = new Sentence(this);
-        ret.metadata = SemTexts.replaceMetadata(this.metadata, namespace, metadata);
+        ret.metadata = OdtUtils.putKey((Map<String, Object>) this.metadata, namespace, metadata);
         return ret;
     }
 

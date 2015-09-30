@@ -23,12 +23,15 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import eu.trentorise.opendata.commons.Dict;
+import eu.trentorise.opendata.commons.OdtUtils;
+
 import static eu.trentorise.opendata.commons.OdtUtils.checkNotEmpty;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 
@@ -310,17 +313,12 @@ public final class SemTexts {
     /**
      * Returns a copy of provided metadata with {@code newMetadata} set under
      * the given namespace.
+     * 
+     * @deprecated use {@link eu.trentorise.opendata.commons.OdtUtils#putKey(java.util.Map, Object, Object) instead}
      *
      * @param newMetadata Must be an immutable object.
      */
-    static ImmutableMap<String, ?> replaceMetadata(ImmutableMap<String, ?> metadata, String namespace, Object newMetadata) {
-        ImmutableMap.Builder<String, Object> mapb = ImmutableMap.builder();
-        for (String ns : metadata.keySet()) {
-            if (!ns.equals(namespace)) {
-                mapb.put(ns, metadata.get(ns));
-            }
-        }
-        mapb.put(namespace, newMetadata);
-        return mapb.build();
+    static <V> ImmutableMap<String, ?> replaceMetadata(Map<String, ?> metadata, String namespace, Object newMetadata) {
+	return OdtUtils.putKey((Map<String, Object>) metadata, namespace, newMetadata);
     }
 }

@@ -20,6 +20,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import eu.trentorise.opendata.commons.NotFoundException;
+import eu.trentorise.opendata.commons.OdtUtils;
+
 import static eu.trentorise.opendata.semtext.SemTexts.checkMeaningStatus;
 import static eu.trentorise.opendata.semtext.SemTexts.checkSpan;
 import java.io.Serializable;
@@ -154,15 +156,17 @@ public final class Term implements Span, Serializable, HasMetadata {
 
     /**
      *
-     * Returns the selected meaning. Note selected meaning can be partial, that
-     * is, have empty URL or meaning kind set to UNKNOWN, or both.
+     * Returns the selected meaning, according to the meaning status. Note
+     * selected meaning can still be partial, that is, have empty URL or meaning
+     * kind set to UNKNOWN, or both.
      *
      * <ul>
-     * <li> SELECTED: Returns the selected meaning. Meaning will have a
+     * <li> SELECTED: Returns the selected meaning, with a 
      * non-empty ID. </li>
      * <li> TO_DISAMBIGUATE: Returns null </li>
+     * <li> VALIDATED: Returns the selected meaning, with a non-empty ID.
+     * </li>
      * <li> NOT_SURE: Returns null </li>
-     * <li> VALIDATED: Returns the selected meaning, with a valid ID. </li>
      * </ul>
      */
     @Nullable
@@ -300,7 +304,7 @@ public final class Term implements Span, Serializable, HasMetadata {
      */
     public Term withMetadata(String namespace, Object metadata) {
         Term ret = new Term(this);
-        ret.metadata = SemTexts.replaceMetadata(this.metadata, namespace, metadata);
+        ret.metadata = OdtUtils.putKey((Map<String, Object>) this.metadata, namespace, metadata);
         return ret;
     }
 

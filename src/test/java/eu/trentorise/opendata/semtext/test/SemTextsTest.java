@@ -17,7 +17,7 @@ package eu.trentorise.opendata.semtext.test;
 
 import com.google.common.collect.ImmutableList;
 import eu.trentorise.opendata.commons.Dict;
-import eu.trentorise.opendata.commons.OdtConfig;
+import eu.trentorise.opendata.commons.TodConfig;
 import eu.trentorise.opendata.semtext.Meaning;
 import eu.trentorise.opendata.semtext.MeaningKind;
 import eu.trentorise.opendata.semtext.MeaningStatus;
@@ -45,7 +45,7 @@ public class SemTextsTest {
 
     @BeforeClass
     public static void beforeClass() {
-         OdtConfig.init(SemTextsTest.class);
+         TodConfig.init(SemTextsTest.class);
     }
 
     @Test

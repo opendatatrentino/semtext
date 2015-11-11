@@ -19,7 +19,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.ImmutableMap;
 import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.commons.NotFoundException;
-import eu.trentorise.opendata.commons.OdtUtils;
+import eu.trentorise.opendata.commons.TodUtils;
 
 import static eu.trentorise.opendata.semtext.SemTexts.TOLERANCE;
 import static eu.trentorise.opendata.semtext.SemTexts.checkPositiveScore;
@@ -294,7 +294,7 @@ public final class Meaning implements Comparable<Meaning>, Serializable, HasMeta
      */
     public Meaning withMetadata(String namespace, Object metadata) {
         Meaning ret = new Meaning(this);
-        ret.metadata = OdtUtils.putKey((Map<String, Object>) this.metadata, namespace, metadata);
+        ret.metadata = TodUtils.putKey((Map<String, Object>) this.metadata, namespace, metadata);
         return ret;
     }
 }

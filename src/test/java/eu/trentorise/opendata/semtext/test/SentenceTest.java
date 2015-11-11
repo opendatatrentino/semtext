@@ -17,7 +17,7 @@ package eu.trentorise.opendata.semtext.test;
 
 import com.google.common.collect.ImmutableList;
 import eu.trentorise.opendata.commons.NotFoundException;
-import eu.trentorise.opendata.commons.OdtConfig;
+import eu.trentorise.opendata.commons.TodConfig;
 import eu.trentorise.opendata.semtext.MeaningStatus;
 import eu.trentorise.opendata.semtext.Sentence;
 import eu.trentorise.opendata.semtext.Term;
@@ -41,7 +41,7 @@ public class SentenceTest {
 
     @BeforeClass
     public static void beforeClass() {
-         OdtConfig.init(SentenceTest.class);
+         TodConfig.init(SentenceTest.class);
     }
 
     @Test

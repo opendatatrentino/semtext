@@ -1,5 +1,12 @@
 
-##SEMTEXT RELEASE NOTES
+## SEMTEXT RELEASE NOTES
+
+### 1.1.0
+
+todo
+
+- upgraded:
+	* tod-super-pom 1.4.0
 
 
 ### 1.0.0

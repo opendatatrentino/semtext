@@ -23,9 +23,9 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import eu.trentorise.opendata.commons.Dict;
-import eu.trentorise.opendata.commons.OdtUtils;
+import eu.trentorise.opendata.commons.TodUtils;
 
-import static eu.trentorise.opendata.commons.OdtUtils.checkNotEmpty;
+import static eu.trentorise.opendata.commons.TodUtils.checkNotEmpty;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -314,11 +314,11 @@ public final class SemTexts {
      * Returns a copy of provided metadata with {@code newMetadata} set under
      * the given namespace.
      * 
-     * @deprecated use {@link eu.trentorise.opendata.commons.OdtUtils#putKey(java.util.Map, Object, Object) instead}
+     * @deprecated use {@link eu.trentorise.opendata.commons.TodUtils#putKey(java.util.Map, Object, Object) instead}
      *
      * @param newMetadata Must be an immutable object.
      */
     static <V> ImmutableMap<String, ?> replaceMetadata(Map<String, ?> metadata, String namespace, Object newMetadata) {
-	return OdtUtils.putKey((Map<String, Object>) metadata, namespace, newMetadata);
+	return TodUtils.putKey((Map<String, Object>) metadata, namespace, newMetadata);
     }
 }

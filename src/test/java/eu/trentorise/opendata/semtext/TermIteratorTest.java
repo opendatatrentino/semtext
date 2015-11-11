@@ -16,7 +16,7 @@
 package eu.trentorise.opendata.semtext;
 
 import com.google.common.collect.ImmutableList;
-import eu.trentorise.opendata.commons.OdtConfig;
+import eu.trentorise.opendata.commons.TodConfig;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.NoSuchElementException;
@@ -40,7 +40,7 @@ public class TermIteratorTest {
 
     @BeforeClass
     public static void beforeClass() {
-        OdtConfig.of(TermIteratorTest.class);
+        TodConfig.of(TermIteratorTest.class);
     }
 
     @Test

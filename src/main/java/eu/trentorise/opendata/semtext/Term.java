@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import eu.trentorise.opendata.commons.NotFoundException;
-import eu.trentorise.opendata.commons.OdtUtils;
+import eu.trentorise.opendata.commons.TodUtils;
 
 import static eu.trentorise.opendata.semtext.SemTexts.checkMeaningStatus;
 import static eu.trentorise.opendata.semtext.SemTexts.checkSpan;
@@ -304,7 +304,7 @@ public final class Term implements Span, Serializable, HasMetadata {
      */
     public Term withMetadata(String namespace, Object metadata) {
         Term ret = new Term(this);
-        ret.metadata = OdtUtils.putKey((Map<String, Object>) this.metadata, namespace, metadata);
+        ret.metadata = TodUtils.putKey((Map<String, Object>) this.metadata, namespace, metadata);
         return ret;
     }
 

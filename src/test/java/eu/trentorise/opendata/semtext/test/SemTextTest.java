@@ -19,7 +19,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.commons.NotFoundException;
-import eu.trentorise.opendata.commons.OdtConfig;
+import eu.trentorise.opendata.commons.TodConfig;
 import eu.trentorise.opendata.semtext.MeaningKind;
 import eu.trentorise.opendata.semtext.Meaning;
 import eu.trentorise.opendata.semtext.MeaningStatus;
@@ -49,7 +49,7 @@ public class SemTextTest {
 
     @BeforeClass
     public static void beforeClass() {
-         OdtConfig.init(SemTextTest.class);
+         TodConfig.init(SemTextTest.class);
     }
 
     @Test

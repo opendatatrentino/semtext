@@ -17,7 +17,7 @@ package eu.trentorise.opendata.semtext.test;
 
 import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.commons.NotFoundException;
-import eu.trentorise.opendata.commons.OdtConfig;
+import eu.trentorise.opendata.commons.TodConfig;
 import eu.trentorise.opendata.semtext.Meaning;
 import eu.trentorise.opendata.semtext.MeaningKind;
 import eu.trentorise.opendata.semtext.SemTexts;
@@ -40,7 +40,7 @@ public class MeaningTest {
 
     @BeforeClass
     public static void beforeClass() {
-        OdtConfig.init(MeaningTest.class);
+        TodConfig.init(MeaningTest.class);
     }
 
     @Test

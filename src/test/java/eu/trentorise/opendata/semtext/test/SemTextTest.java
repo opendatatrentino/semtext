@@ -18,7 +18,6 @@ package eu.trentorise.opendata.semtext.test;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import eu.trentorise.opendata.commons.Dict;
-import eu.trentorise.opendata.commons.NotFoundException;
 import eu.trentorise.opendata.commons.TodConfig;
 import eu.trentorise.opendata.semtext.MeaningKind;
 import eu.trentorise.opendata.semtext.Meaning;
@@ -27,6 +26,8 @@ import eu.trentorise.opendata.semtext.SemText;
 import eu.trentorise.opendata.semtext.SemTexts;
 import eu.trentorise.opendata.semtext.Sentence;
 import eu.trentorise.opendata.semtext.Term;
+import eu.trentorise.opendata.semtext.exceptions.SemTextNotFoundException;
+
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.logging.Logger;
@@ -104,7 +105,7 @@ public class SemTextTest {
             SemText.of().getMetadata("blabla");
             Assert.fail();
         }
-        catch (NotFoundException ex) {
+        catch (SemTextNotFoundException ex) {
 
         }
 

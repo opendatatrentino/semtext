@@ -1,10 +1,15 @@
 
 ## SEMTEXT RELEASE NOTES
 
+http://opendatatrentino.github.io/semtext
+
+
 ### 1.1.0
 
 todo
 
+- added dep immutables
+- merged semtext-jackson
 - upgraded:
 	* tod-super-pom 1.4.0
 

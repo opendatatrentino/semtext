@@ -16,11 +16,12 @@
 package eu.trentorise.opendata.semtext.test;
 
 import com.google.common.collect.ImmutableList;
-import eu.trentorise.opendata.commons.NotFoundException;
 import eu.trentorise.opendata.commons.TodConfig;
 import eu.trentorise.opendata.semtext.MeaningStatus;
 import eu.trentorise.opendata.semtext.Sentence;
 import eu.trentorise.opendata.semtext.Term;
+import eu.trentorise.opendata.semtext.exceptions.SemTextNotFoundException;
+
 import java.util.List;
 import java.util.logging.Logger;
 import org.junit.Assert;
@@ -64,7 +65,7 @@ public class SentenceTest {
             Sentence.of(0, 1).getMetadata("blabla");
             Assert.fail();
         }
-        catch (NotFoundException ex) {
+        catch (SemTextNotFoundException ex) {
 
         }
 

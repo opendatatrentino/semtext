@@ -17,8 +17,8 @@ package eu.trentorise.opendata.semtext;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import eu.trentorise.opendata.commons.NotFoundException;
 import eu.trentorise.opendata.commons.TodUtils;
+import eu.trentorise.opendata.semtext.exceptions.SemTextNotFoundException;
 
 import static eu.trentorise.opendata.semtext.SemTexts.checkSpan;
 import static eu.trentorise.opendata.semtext.SemTexts.checkSpans;
@@ -96,7 +96,7 @@ public final class Sentence implements Span, Serializable, HasMetadata {
     public Object getMetadata(String namespace) {
         Object ret = metadata.get(namespace);
         if (ret == null) {
-            throw new NotFoundException("There is no metadata under the namespace " + namespace + " in " + this);
+            throw new SemTextNotFoundException("There is no metadata under the namespace " + namespace + " in " + this);
         } else {
             return ret;
         }

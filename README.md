@@ -16,7 +16,7 @@ SemText is a lightweight model for semantically annotated text, designed for rel
   * provides a simple hierarchy of sentences and terms
   * has immutable data structures
   * allows attaching metadata to spans
-  * has separate [JSON serialization module](https://github.com/opendatatrentino/semtext-jackson)
+  * provides JSON serialization via Jackson
   * has separate [NLText/SemanticString converters module](https://github.com/opendatatrentino/semtext-nltext)
   * well documented
   * dependency handling with Maven

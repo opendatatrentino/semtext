@@ -19,8 +19,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
-import eu.trentorise.opendata.commons.NotFoundException;
 import eu.trentorise.opendata.commons.TodUtils;
+import eu.trentorise.opendata.semtext.exceptions.SemTextNotFoundException;
 
 import static eu.trentorise.opendata.semtext.SemTexts.checkMeaningStatus;
 import static eu.trentorise.opendata.semtext.SemTexts.checkSpan;
@@ -41,7 +41,6 @@ import javax.annotation.concurrent.Immutable;
  * @author David Leoni <david.leoni@unitn.it>
  */
 @Immutable
-@ParametersAreNonnullByDefault
 public final class Term implements Span, Serializable, HasMetadata {
 
     private static final long serialVersionUID = 1L;
@@ -148,7 +147,7 @@ public final class Term implements Span, Serializable, HasMetadata {
     public Object getMetadata(String namespace) {
         Object ret = metadata.get(namespace);
         if (ret == null) {
-            throw new NotFoundException("There is no metadata under the namespace " + namespace + " in " + this);
+            throw new SemTextNotFoundException("There is no metadata under the namespace " + namespace + " in " + this);
         } else {
             return ret;
         }
@@ -228,6 +227,7 @@ public final class Term implements Span, Serializable, HasMetadata {
         this.start = term.getStart();
         this.end = term.getEnd();
         this.meanings = term.getMeanings();
+        this.meaningStatus = term.getMeaningStatus();
         this.selectedMeaning = term.getSelectedMeaning();
         this.metadata = term.getMetadata();
     }

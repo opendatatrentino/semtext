@@ -16,13 +16,14 @@
 package eu.trentorise.opendata.semtext.test;
 
 import com.google.common.collect.ImmutableList;
-import eu.trentorise.opendata.commons.NotFoundException;
 import eu.trentorise.opendata.commons.TodConfig;
 import eu.trentorise.opendata.semtext.Meaning;
 import eu.trentorise.opendata.semtext.MeaningKind;
 import eu.trentorise.opendata.semtext.MeaningStatus;
 import eu.trentorise.opendata.semtext.SemTexts;
 import eu.trentorise.opendata.semtext.Term;
+import eu.trentorise.opendata.semtext.exceptions.SemTextNotFoundException;
+
 import java.util.logging.Logger;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
@@ -62,7 +63,7 @@ public class TermTest {
             Term.of(0, 1, MeaningStatus.NOT_SURE, null).getMetadata("blabla");
             Assert.fail();
         }
-        catch (NotFoundException ex) {
+        catch (SemTextNotFoundException ex) {
 
         }
 

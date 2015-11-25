@@ -26,8 +26,8 @@ import com.google.common.collect.TreeRangeMap;
 import com.google.common.collect.TreeRangeSet;
 import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.commons.LocalizedString;
-import eu.trentorise.opendata.commons.NotFoundException;
 import eu.trentorise.opendata.commons.TodUtils;
+import eu.trentorise.opendata.semtext.exceptions.SemTextNotFoundException;
 
 import static eu.trentorise.opendata.commons.TodUtils.checkNotEmpty;
 import static eu.trentorise.opendata.semtext.SemTexts.spanToRange;
@@ -121,7 +121,7 @@ public final class SemText implements Serializable, HasMetadata {
     public Object getMetadata(String namespace) {
         Object ret = metadata.get(namespace);
         if (ret == null) {
-            throw new NotFoundException("There is no metadata under the namespace " + namespace + " in " + this);
+            throw new SemTextNotFoundException("There is no metadata under the namespace " + namespace + " in " + this);
         } else {
             return ret;
         }

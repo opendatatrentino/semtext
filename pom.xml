@@ -92,7 +92,7 @@
                 <artifactId>maven-enforcer-plugin</artifactId>
             </plugin>                
             <plugin>
-                <groupId>eu.trentorise.opendata.josman</groupId>
+                <groupId>eu.trentorise.opendata</groupId>
                 <artifactId>josman-maven-plugin</artifactId>              
             </plugin>    
             <plugin>
@@ -135,13 +135,26 @@
 		
     </developers>
 
-
     <dependencies>
-        
+                
         <dependency>
             <groupId>eu.trentorise.opendata</groupId>
             <artifactId>tod-commons</artifactId>                    
         </dependency>      
+
+		<dependency>
+            <groupId>eu.trentorise.opendata</groupId>
+            <artifactId>tod-commons-jackson</artifactId>            
+        </dependency>        
+
+		<dependency>
+			<groupId>org.immutables</groupId>
+			<artifactId>value</artifactId>
+			<scope>provided</scope>
+			<optional>true</optional>
+		</dependency>
+
+		 
                                                                                                  
         <!-- *****************************   STUFF FOR TESTING ********************************  -->
 
@@ -164,6 +177,13 @@
 
         </dependency>                              
         
+                
+        <dependency>
+            <groupId>eu.trentorise.opendata</groupId>
+            <artifactId>tod-commons-jackson</artifactId>            
+            <scope>test</scope>
+            <type>test-jar</type>
+        </dependency>
         
     </dependencies>
             

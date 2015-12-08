@@ -76,30 +76,31 @@ public final class Term implements Span, Serializable, HasMetadata {
      * Constructs a Term. Meaning probabilities are stored deduplicated and
      * normalized so total sum is 1.0 .
      *
-     * @param start 0-indexed span offset start. Position is absolute with
-     * respect to the text stored in the {@code SemText} container.
-     * @param end the position of the character immediately *after* the term
-     * itself. Position is absolute with respect to the text stored in the
-     * {@code SemText} container.
-     * @param meaningStatus Must have a corresponding correct
-     * {@code selectedMeaning}. See
-     * {@link SemTexts#checkMeaningStatus(eu.trentorise.opendata.semtext.MeaningStatus, eu.trentorise.opendata.semtext.Meaning, java.lang.Object) SemTexts.checkMeaningStatus}
-     * method.
-     * @param selectedMeaning Must have a corresponding correct
-     * {@code meaningStatus}. See
-     * {@link SemTexts#checkMeaningStatus(eu.trentorise.opendata.semtext.MeaningStatus, eu.trentorise.opendata.semtext.Meaning, java.lang.Object) SemTexts.checkMeaningStatus}
-     * method.
-     * @param meanings the suggested meanings. Internally, a new collection is
-     * created to store the deduplicated meanings with normalized probabilities.
-     * @param metadata a map of metadata. Provided metadata objects must be
-     * immutable.
+     * @param start
+     *            0-indexed span offset start. Position is absolute with respect
+     *            to the text stored in the {@code SemText} container.
+     * @param end
+     *            the position of the character immediately *after* the term
+     *            itself. Position is absolute with respect to the text stored
+     *            in the {@code SemText} container.
+     * @param meaningStatus
+     *            Must have a corresponding correct {@code selectedMeaning}. See
+     *            {@link SemTexts#checkMeaningStatus(eu.trentorise.opendata.semtext.MeaningStatus, eu.trentorise.opendata.semtext.Meaning, java.lang.Object)
+     *            SemTexts.checkMeaningStatus} method.
+     * @param selectedMeaning
+     *            Must have a corresponding correct {@code meaningStatus}. See
+     *            {@link SemTexts#checkMeaningStatus(eu.trentorise.opendata.semtext.MeaningStatus, eu.trentorise.opendata.semtext.Meaning, java.lang.Object)
+     *            SemTexts.checkMeaningStatus} method.
+     * @param meanings
+     *            the suggested meanings. Internally, a new collection is
+     *            created to store the deduplicated meanings with normalized
+     *            probabilities.
+     * @param metadata
+     *            a map of metadata. Provided metadata objects must be
+     *            immutable.
      */
-    private Term(int start,
-            int end,
-            MeaningStatus meaningStatus,
-            @Nullable Meaning selectedMeaning,
-            Iterable<Meaning> meanings,
-            Map<String, ?> metadata) {
+    private Term(int start, int end, MeaningStatus meaningStatus, @Nullable Meaning selectedMeaning,
+            Iterable<Meaning> meanings, Map<String, ?> metadata) {
         this();
 
         checkSpan(start, end, "Term span is invalid!");
@@ -127,7 +128,8 @@ public final class Term implements Span, Serializable, HasMetadata {
     }
 
     /**
-     * Returns the sorted meanings, the first having the highest probability
+     * Returns the sorted meanings, the first having the highest probability.
+     * Note meanings might have an empty id and/or {@link MeaningKind#UNKNOWN}.
      */
     public ImmutableList<Meaning> getMeanings() {
         return meanings;
@@ -155,17 +157,15 @@ public final class Term implements Span, Serializable, HasMetadata {
 
     /**
      *
-     * Returns the selected meaning, according to the meaning status. Note
-     * selected meaning can still be partial, that is, have empty URL or meaning
-     * kind set to UNKNOWN, or both.
+     * Returns the selected meaning, according to the meaning status. Returns
+     * the selected meaning. Note selected meaning can have meaning kind set to
+     * {@link MeaningKind#UNKNOWN}.
      *
      * <ul>
-     * <li> SELECTED: Returns the selected meaning, with a 
-     * non-empty ID. </li>
-     * <li> TO_DISAMBIGUATE: Returns null </li>
-     * <li> VALIDATED: Returns the selected meaning, with a non-empty ID.
-     * </li>
-     * <li> NOT_SURE: Returns null </li>
+     * <li>SELECTED: Returns the selected meaning, with a non-empty ID.</li>
+     * <li>TO_DISAMBIGUATE: Returns null</li>
+     * <li>VALIDATED: Returns the selected meaning, with a non-empty ID.</li>
+     * <li>NOT_SURE: Returns null</li>
      * </ul>
      */
     @Nullable
@@ -206,7 +206,8 @@ public final class Term implements Span, Serializable, HasMetadata {
         if (this.meaningStatus != other.meaningStatus) {
             return false;
         }
-        if (this.selectedMeaning != other.selectedMeaning && (this.selectedMeaning == null || !this.selectedMeaning.equals(other.selectedMeaning))) {
+        if (this.selectedMeaning != other.selectedMeaning
+                && (this.selectedMeaning == null || !this.selectedMeaning.equals(other.selectedMeaning))) {
             return false;
         }
         if (this.metadata != other.metadata && (this.metadata == null || !this.metadata.equals(other.metadata))) {
@@ -217,7 +218,8 @@ public final class Term implements Span, Serializable, HasMetadata {
 
     @Override
     public String toString() {
-        return "Term{" + "start=" + start + ", end=" + end + ", meanings=" + meanings + ", meaningStatus=" + meaningStatus + ", selectedMeaning=" + selectedMeaning + ", metadata=" + metadata + '}';
+        return "Term{" + "start=" + start + ", end=" + end + ", meanings=" + meanings + ", meaningStatus="
+                + meaningStatus + ", selectedMeaning=" + selectedMeaning + ", metadata=" + metadata + '}';
     }
 
     /**
@@ -237,9 +239,11 @@ public final class Term implements Span, Serializable, HasMetadata {
      * probabilities and also the provided selected meaning. Inputs are not
      * changed.
      *
-     * @param meanings won't be changed by the method. When deduplicating,
-     * meanings occurring first will be used.
-     * @param selectedMeaning if unknown use null
+     * @param meanings
+     *            won't be changed by the method. When deduplicating, meanings
+     *            occurring first will be used.
+     * @param selectedMeaning
+     *            if unknown use null
      */
     private void normalizeMeanings(Iterable<Meaning> meanings, @Nullable Meaning selectedMeaning) {
         checkNotNull(meanings);
@@ -273,8 +277,9 @@ public final class Term implements Span, Serializable, HasMetadata {
      * Returns a new term with the provided meanings. Internally, a new list of
      * normalized and deduplicated meanings will be stored.
      *
-     * @param meanings won't be changed by the method. When deduplicating,
-     * meanings occurring first will be used.
+     * @param meanings
+     *            won't be changed by the method. When deduplicating, meanings
+     *            occurring first will be used.
      */
     public Term with(Iterable<Meaning> meanings) {
         Term ret = new Term(this);
@@ -287,11 +292,13 @@ public final class Term implements Span, Serializable, HasMetadata {
      * meaning set.
      *
      * @param meaningStatus
-     * @param selectedMeaning if unknown use null
+     * @param selectedMeaning
+     *            if unknown use null
      */
     public Term with(MeaningStatus meaningStatus, @Nullable Meaning selectedMeaning) {
         Term ret = new Term(this);
-        checkMeaningStatus(meaningStatus, selectedMeaning, "Trying to modify a term with invalid meaning status / selected meaning!");
+        checkMeaningStatus(meaningStatus, selectedMeaning,
+                "Trying to modify a term with invalid meaning status / selected meaning!");
         ret.normalizeMeanings(ret.meanings, selectedMeaning);
         return ret;
     }
@@ -300,7 +307,8 @@ public final class Term implements Span, Serializable, HasMetadata {
      * Returns a copy of this object with the provided metadata set under the
      * given namespace.
      *
-     * @param metadata Must be an immutable object.
+     * @param metadata
+     *            Must be an immutable object.
      */
     public Term withMetadata(String namespace, Object metadata) {
         Term ret = new Term(this);
@@ -312,101 +320,87 @@ public final class Term implements Span, Serializable, HasMetadata {
      * Factory method for a Term with only one meaning. Meaning probabilities
      * are stored deduplicated and normalized so total sum is 1.0 .
      *
-     * @param start 0-indexed span offset start. Position is absolute with
-     * respect to the text stored in the {@code SemText} container.
-     * @param end the position of the character immediately *after* the term
-     * itself. Position is absolute with respect to the text stored in the
-     * {@code SemText} container.
-     * @param meaningStatus Must have a corresponding correct
-     * {@code selectedMeaning}. See
-     * {@link SemTexts#checkMeaningStatus(eu.trentorise.opendata.semtext.MeaningStatus, eu.trentorise.opendata.semtext.Meaning, java.lang.Object) SemTexts.checkMeaningStatus}
-     * method.
-     * @param selectedMeaning Must have a corresponding correct
-     * {@code meaningStatus}. See
-     * {@link SemTexts#checkMeaningStatus(eu.trentorise.opendata.semtext.MeaningStatus, eu.trentorise.opendata.semtext.Meaning, java.lang.Object) SemTexts.checkMeaningStatus}
-     * method.
+     * @param start
+     *            0-indexed span offset start. Position is absolute with respect
+     *            to the text stored in the {@code SemText} container.
+     * @param end
+     *            the position of the character immediately *after* the term
+     *            itself. Position is absolute with respect to the text stored
+     *            in the {@code SemText} container.
+     * @param meaningStatus
+     *            Must have a corresponding correct {@code selectedMeaning}. See
+     *            {@link SemTexts#checkMeaningStatus(eu.trentorise.opendata.semtext.MeaningStatus, eu.trentorise.opendata.semtext.Meaning, java.lang.Object)
+     *            SemTexts.checkMeaningStatus} method.
+     * @param selectedMeaning
+     *            Must have a corresponding correct {@code meaningStatus}. See
+     *            {@link SemTexts#checkMeaningStatus(eu.trentorise.opendata.semtext.MeaningStatus, eu.trentorise.opendata.semtext.Meaning, java.lang.Object)
+     *            SemTexts.checkMeaningStatus} method.
      */
-    public static Term of(int start,
-            int end,
-            MeaningStatus meaningStatus,
-            Meaning selectedMeaning) {
+    public static Term of(int start, int end, MeaningStatus meaningStatus, Meaning selectedMeaning) {
 
-        return of(start,
-                end,
-                meaningStatus,
-                selectedMeaning,
-                ImmutableList.<Meaning>of(),
-                SemTexts.EMPTY_METADATA);
+        return of(start, end, meaningStatus, selectedMeaning, ImmutableList.<Meaning> of(), SemTexts.EMPTY_METADATA);
     }
 
     /**
      * Factory method for a Term. Meaning probabilities are stored deduplicated
      * and normalized so total sum is 1.0 .
      *
-     * @param start 0-indexed span offset start. Position is absolute with
-     * respect to the text stored in the {@code SemText} container.
-     * @param end the position of the character immediately *after* the term
-     * itself. Position is absolute with respect to the text stored in the
-     * {@code SemText} container.
-     * @param meaningStatus Must have a corresponding correct
-     * {@code selectedMeaning}. See
-     * {@link SemTexts#checkMeaningStatus(eu.trentorise.opendata.semtext.MeaningStatus, eu.trentorise.opendata.semtext.Meaning, java.lang.Object) SemTexts.checkMeaningStatus}
-     * method.
-     * @param selectedMeaning Must have a corresponding correct
-     * {@code meaningStatus}. See
-     * {@link SemTexts#checkMeaningStatus(eu.trentorise.opendata.semtext.MeaningStatus, eu.trentorise.opendata.semtext.Meaning, java.lang.Object) SemTexts.checkMeaningStatus}
-     * method.
-     * @param meanings the suggested meanings. Internally, a new collection is
-     * created to store the deduplicated meanings with normalized probabilities.
+     * @param start
+     *            0-indexed span offset start. Position is absolute with respect
+     *            to the text stored in the {@code SemText} container.
+     * @param end
+     *            the position of the character immediately *after* the term
+     *            itself. Position is absolute with respect to the text stored
+     *            in the {@code SemText} container.
+     * @param meaningStatus
+     *            Must have a corresponding correct {@code selectedMeaning}. See
+     *            {@link SemTexts#checkMeaningStatus(eu.trentorise.opendata.semtext.MeaningStatus, eu.trentorise.opendata.semtext.Meaning, java.lang.Object)
+     *            SemTexts.checkMeaningStatus} method.
+     * @param selectedMeaning
+     *            Must have a corresponding correct {@code meaningStatus}. See
+     *            {@link SemTexts#checkMeaningStatus(eu.trentorise.opendata.semtext.MeaningStatus, eu.trentorise.opendata.semtext.Meaning, java.lang.Object)
+     *            SemTexts.checkMeaningStatus} method.
+     * @param meanings
+     *            the suggested meanings. Internally, a new collection is
+     *            created to store the deduplicated meanings with normalized
+     *            probabilities.
      */
-    public static Term of(int start,
-            int end,
-            MeaningStatus meaningStatus,
-            @Nullable Meaning selectedMeaning,
+    public static Term of(int start, int end, MeaningStatus meaningStatus, @Nullable Meaning selectedMeaning,
             Iterable<Meaning> meanings) {
 
-        return of(start,
-                end,
-                meaningStatus,
-                selectedMeaning,
-                meanings,
-                SemTexts.EMPTY_METADATA);
+        return of(start, end, meaningStatus, selectedMeaning, meanings, SemTexts.EMPTY_METADATA);
     }
 
     /**
      * Factory method for a Term. Meaning probabilities are stored deduplicated
      * and normalized so total sum is 1.0 .
      *
-     * @param start 0-indexed span offset start. Position is absolute with
-     * respect to the text stored in the {@code SemText} container.
-     * @param end the position of the character immediately *after* the term
-     * itself. Position is absolute with respect to the text stored in the
-     * {@code SemText} container.
-     * @param meaningStatus Must have a corresponding correct
-     * {@code selectedMeaning}. See
-     * {@link SemTexts#checkMeaningStatus(eu.trentorise.opendata.semtext.MeaningStatus, eu.trentorise.opendata.semtext.Meaning, java.lang.Object) SemTexts.checkMeaningStatus}
-     * method.
-     * @param selectedMeaning Must have a corresponding correct
-     * {@code meaningStatus}. See
-     * {@link SemTexts#checkMeaningStatus(eu.trentorise.opendata.semtext.MeaningStatus, eu.trentorise.opendata.semtext.Meaning, java.lang.Object) SemTexts.checkMeaningStatus}
-     * method.
-     * @param meanings the suggested meanings. Internally, a new collection is
-     * created to store the deduplicated meanings with normalized probabilities.
-     * @param metadata a map of metadata. Provided metadata objects must be
-     * immutable.
+     * @param start
+     *            0-indexed span offset start. Position is absolute with respect
+     *            to the text stored in the {@code SemText} container.
+     * @param end
+     *            the position of the character immediately *after* the term
+     *            itself. Position is absolute with respect to the text stored
+     *            in the {@code SemText} container.
+     * @param meaningStatus
+     *            Must have a corresponding correct {@code selectedMeaning}. See
+     *            {@link SemTexts#checkMeaningStatus(eu.trentorise.opendata.semtext.MeaningStatus, eu.trentorise.opendata.semtext.Meaning, java.lang.Object)
+     *            SemTexts.checkMeaningStatus} method.
+     * @param selectedMeaning
+     *            Must have a corresponding correct {@code meaningStatus}. See
+     *            {@link SemTexts#checkMeaningStatus(eu.trentorise.opendata.semtext.MeaningStatus, eu.trentorise.opendata.semtext.Meaning, java.lang.Object)
+     *            SemTexts.checkMeaningStatus} method.
+     * @param meanings
+     *            the suggested meanings. Internally, a new collection is
+     *            created to store the deduplicated meanings with normalized
+     *            probabilities.
+     * @param metadata
+     *            a map of metadata. Provided metadata objects must be
+     *            immutable.
      */
-    public static Term of(int start,
-            int end,
-            MeaningStatus meaningStatus,
-            @Nullable Meaning selectedMeaning,
-            Iterable<Meaning> meanings,
-            Map<String, ?> metadata) {
-        return new Term(start,
-                end,
-                meaningStatus,
-                selectedMeaning,
-                meanings,
-                metadata);
+    public static Term of(int start, int end, MeaningStatus meaningStatus, @Nullable Meaning selectedMeaning,
+            Iterable<Meaning> meanings, Map<String, ?> metadata) {
+        return new Term(start, end, meaningStatus, selectedMeaning, meanings, metadata);
     }
 
 }

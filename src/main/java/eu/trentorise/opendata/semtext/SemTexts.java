@@ -26,7 +26,7 @@ import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.commons.TodUtils;
 import eu.trentorise.opendata.semtext.exceptions.SemTextNotFoundException;
 
-import static eu.trentorise.opendata.commons.TodUtils.checkNotEmpty;
+import static eu.trentorise.opendata.commons.validation.Preconditions.checkNotEmpty;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -106,8 +106,8 @@ public final class SemTexts {
 	/**
 	 * Checks that the provided couple meaning status / selected meaning is
 	 * valid. For {@code SELECTED} and {@code REVIEWED} statuses there must be a
-	 * {@code selectedMeaning} with valid id, while {@code TO_DISAMBIGUATE} and
-	 * {@code NOT_SURE} statuses must have a null {@code selectedMeaning}.
+	 * {@code selectedMeaning} with valid non-empty id, while {@code TO_DISAMBIGUATE} and
+	 * {@code NOT_SURE} statuses must have a {@code null selectedMeaning}.
 	 *
 	 * @param prependedErrorMessage
 	 *            the exception message to use if the check fails; will be
